@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getCourses, getCourseBySlug } from "@/lib/api/courses";
 import type { Course } from "@/lib/types";
+import CourseDetailClient from "@/components/courses/CourseDetailClient";
 
 export async function generateStaticParams() {
   const courses = await getCourses();
@@ -78,16 +79,8 @@ export default async function CourseDetailPage({
       />
 
       {/* Hero */}
-      <section
-        className="py-20 px-6 relative overflow-hidden"
-        style={{ background: "linear-gradient(160deg, #0d2028 0%, #162830 60%, #0f1e26 100%)" }}
-      >
-        <div
-          className="absolute top-[-10%] right-[-5%] w-80 h-80 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle, #2A9D8F20 0%, transparent 70%)" }}
-        />
-
-        <div className="max-w-6xl mx-auto relative">
+      <section className="bg-charcoal-sea py-16 lg:py-24 px-6">
+        <div className="max-w-6xl mx-auto">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-warm-white/35 text-xs mb-7">
             <Link href="/" className="hover:text-warm-white/60 transition-colors">Home</Link>
@@ -175,7 +168,7 @@ export default async function CourseDetailPage({
                 <ul className="space-y-3">
                   {course.includes.map((item) => (
                     <li key={item} className="flex items-start gap-3">
-                      <span className="mt-0.5 text-shallow-water text-lg leading-none">✓</span>
+                      <span className="mt-0.5 text-tropic-coral text-lg leading-none">✓</span>
                       <span className="text-charcoal-sea/75 leading-relaxed">{item}</span>
                     </li>
                   ))}
@@ -191,53 +184,16 @@ export default async function CourseDetailPage({
 
             {/* Right: booking card */}
             <div className="lg:col-span-1">
-              <div className="sticky top-24 bg-white rounded-2xl shadow-md p-7 border border-charcoal-sea/8">
-                <div className="mb-6">
-                  <p className="text-charcoal-sea/45 text-xs uppercase tracking-widest mb-1">Course price</p>
-                  <p className="text-charcoal-sea text-4xl font-bold leading-none">
-                    ${course.price}
-                    <span className="text-charcoal-sea/35 text-base font-normal ml-1">{course.currency}</span>
-                  </p>
-                </div>
-
-                <div className="space-y-3 mb-7 text-sm text-charcoal-sea/60">
-                  <div className="flex justify-between">
-                    <span>Duration</span>
-                    <span className="font-semibold text-charcoal-sea">{course.duration}</span>
-                  </div>
-                  {course.maxDepth !== "N/A" && (
-                    <div className="flex justify-between">
-                      <span>Max depth</span>
-                      <span className="font-semibold text-charcoal-sea">{course.maxDepth}</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between">
-                    <span>Min age</span>
-                    <span className="font-semibold text-charcoal-sea">{course.minAge}+</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Level</span>
-                    <span className={`font-semibold ${meta.textClass}`}>{meta.label}</span>
-                  </div>
-                </div>
-
-                <a
-                  href="tel:0743945010"
-                  className="block w-full text-center bg-charcoal-sea text-warm-white font-bold py-3.5 rounded-full hover:bg-shallow-water transition-colors text-sm mb-3"
-                >
-                  Book This Course
-                </a>
-                <a
-                  href="/contact"
-                  className="block w-full text-center border border-charcoal-sea/20 text-charcoal-sea/70 font-semibold py-3.5 rounded-full hover:border-charcoal-sea/40 hover:text-charcoal-sea transition-colors text-sm"
-                >
-                  Ask a question
-                </a>
-
-                <p className="text-center text-xs text-charcoal-sea/35 mt-4 leading-relaxed">
-                  All equipment included · Small groups · PADI certified
-                </p>
-              </div>
+              <CourseDetailClient
+                courseName={course.name}
+                price={course.price}
+                currency={course.currency}
+                duration={course.duration}
+                maxDepth={course.maxDepth}
+                minAge={course.minAge}
+                metaTextClass={meta.textClass}
+                metaLabel={meta.label}
+              />
             </div>
 
           </div>
@@ -245,19 +201,20 @@ export default async function CourseDetailPage({
       </section>
 
       {/* Bottom CTA */}
-      <section className="py-16 px-6 bg-tropic-coral">
+      <section className="bg-charcoal-sea py-20 px-6">
         <div className="max-w-2xl mx-auto text-center">
-          <p className="text-white/70 text-sm mb-2 uppercase tracking-widest">Ready to dive?</p>
-          <h2 className="text-white text-2xl sm:text-3xl font-bold mb-4">
+          <div className="w-12 h-px bg-tropic-coral mx-auto mb-8" />
+          <span className="block text-[11px] uppercase tracking-[0.25em] font-semibold text-tropic-coral/70 mb-4">Ready to dive?</span>
+          <h2 className="text-warm-white font-display text-[clamp(2rem,5vw,3.5rem)] font-extrabold leading-tight mb-5">
             Let&apos;s get you in the water
           </h2>
-          <p className="text-white/80 mb-8 leading-relaxed">
+          <p className="text-warm-white/50 text-base leading-relaxed max-w-lg mx-auto mb-10">
             Call us or send a message and we&apos;ll sort the dates, answer any questions, and get you booked in.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
               href="tel:0743945010"
-              className="inline-flex items-center gap-2.5 bg-charcoal-sea text-warm-white font-bold px-8 py-3.5 rounded-full hover:bg-[#1a3340] transition-colors text-sm"
+              className="inline-flex items-center gap-2.5 bg-tropic-coral text-white font-bold px-8 py-3.5 rounded-full hover:bg-[#d4603f] transition-colors text-sm"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                 <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -266,7 +223,7 @@ export default async function CourseDetailPage({
             </a>
             <Link
               href="/courses"
-              className="inline-flex items-center gap-2 border border-white/40 text-white/80 font-semibold px-8 py-3.5 rounded-full hover:border-white hover:text-white transition-colors text-sm"
+              className="inline-flex items-center gap-2 text-warm-white/50 font-semibold text-sm hover:text-warm-white transition-colors"
             >
               ← View all courses
             </Link>

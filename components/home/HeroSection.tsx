@@ -3,12 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
-const stats = [
-  { value: "9", label: "PADI Courses" },
-  { value: "5", label: "Experiences" },
-  { value: "7:30am", label: "Daily from" },
-];
-
 const ease = "cubic-bezier(0.16, 1, 0.3, 1)";
 
 export default function HeroSection() {
@@ -34,11 +28,11 @@ export default function HeroSection() {
     function update() {
       const scrollY = window.scrollY;
       if (bgRef.current) {
-        const pct = Math.min((scrollY / 700) * 28, 28);
-        bgRef.current.style.transform = `scale(1.1) translateY(${pct}%)`;
+        const pct = Math.min((scrollY / 700) * 12, 12);
+        bgRef.current.style.transform = `scale(1.05) translateY(${pct}%)`;
       }
       if (textRef.current) {
-        const pct = Math.min((scrollY / 500) * 12, 12);
+        const pct = Math.min((scrollY / 500) * 5, 5);
         textRef.current.style.transform = `translateY(${pct}%)`;
       }
       ticking = false;
@@ -59,160 +53,138 @@ export default function HeroSection() {
   }, [isMobile]);
 
   return (
-    <section className="relative h-[100svh] min-h-[600px] overflow-hidden flex items-center">
-
-      {/* Parallax background layer */}
+    <section className="relative min-h-[100svh] bg-charcoal-sea overflow-hidden flex items-center">
+      {/* Subtle background gradient layer */}
       <div
         ref={bgRef}
         className="parallax-layer absolute inset-0"
-        style={{ transform: "scale(1.1)" }}
+        style={{ transform: "scale(1.05)" }}
       >
         <div
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse at 45% 45%, #1e5c54 0%, #16424c 40%, #0d2b35 80%, #091f28 100%)",
-          }}
-        />
-        <div
-          className="absolute inset-0 opacity-40"
-          style={{
-            background:
-              "linear-gradient(160deg, transparent 30%, #2A9D8F22 50%, transparent 70%), linear-gradient(210deg, transparent 20%, #2A9D8F18 45%, transparent 65%)",
+              "radial-gradient(ellipse at 70% 40%, #1e4a5a 0%, #264653 50%, #1a3540 100%)",
           }}
         />
       </div>
 
-      {/* Floating orbs */}
-      <div
-        className="absolute top-[18%] right-[8%] w-80 h-80 rounded-full pointer-events-none"
-        style={{
-          background: "radial-gradient(circle, #2A9D8F30 0%, transparent 70%)",
-          animation: "float-a 9s ease-in-out infinite",
-        }}
-      />
-      <div
-        className="absolute bottom-[22%] left-[-4%] w-64 h-64 rounded-full pointer-events-none"
-        style={{
-          background: "radial-gradient(circle, #F4A26125 0%, transparent 70%)",
-          animation: "float-b 12s ease-in-out 4s infinite",
-        }}
-      />
-      <div
-        className="absolute top-[60%] right-[20%] w-44 h-44 rounded-full pointer-events-none"
-        style={{
-          background: "radial-gradient(circle, #E76F5120 0%, transparent 70%)",
-          animation: "float-c 7s ease-in-out 2s infinite",
-        }}
-      />
-
-      {/* Dark overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#091f28]/80 via-transparent to-[#091f28]/20" />
-
-      {/* Foreground content */}
+      {/* Content grid */}
       <div
         ref={textRef}
-        className="relative z-10 w-full max-w-5xl mx-auto px-6"
+        className="relative z-10 w-full max-w-6xl mx-auto px-6 pt-24 pb-16 lg:py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center"
       >
-        {/* Tag */}
-        <div
-          className="flex items-center gap-3 mb-6"
-          style={
-            mounted
-              ? { animation: `hero-slide-up 0.7s 0.2s ${ease} both` }
-              : { opacity: 0 }
-          }
-        >
-          <span className="h-px w-10 bg-shallow-water" />
-          <span className="text-shallow-water text-sm font-semibold tracking-[0.2em] uppercase">
-            Trincomalee · Sri Lanka
-          </span>
-        </div>
+        {/* Left — heading + CTAs */}
+        <div>
+          {/* Label */}
+          <div
+            className="flex items-center gap-3 mb-5 lg:mb-8"
+            style={mounted ? { animation: `hero-slide-up 0.7s 0.2s ${ease} both` } : { opacity: 0 }}
+          >
+            <span className="h-px w-6 bg-tropic-coral/60" />
+            <span className="text-[11px] uppercase tracking-[0.25em] font-semibold text-tropic-coral/80">
+              Trincomalee · Sri Lanka
+            </span>
+          </div>
 
-        {/* Heading with 3D entrance */}
-        <div style={{ perspective: "1000px" }}>
+          {/* H1 */}
           <h1
-            className="text-warm-white text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.05] mb-6"
+            className="font-display leading-[1.05] mb-6"
             style={
               mounted
-                ? { animation: `hero-rotate-in 0.9s 0.1s ${ease} both` }
-                : { opacity: 0 }
+                ? {
+                    fontSize: "clamp(2.8rem, 8vw, 7rem)",
+                    animation: `hero-slide-up 0.9s 0.1s ${ease} both`,
+                  }
+                : { opacity: 0, fontSize: "clamp(3.5rem, 8vw, 7rem)" }
             }
           >
-            Dive into<br />
-            <span
-              className="text-transparent bg-clip-text"
-              style={{ backgroundImage: "linear-gradient(90deg, #2A9D8F, #4bbfb0)" }}
-            >
-              Trincomalee&apos;s
+            <span className="block font-light text-warm-white/40">Dive</span>
+            <span className="block font-bold text-warm-white">into</span>
+            <span className="block font-extrabold italic text-shallow-water">
+              Trincomalee
             </span>
-            <br />
-            Crystal Waters
           </h1>
+
+          {/* Fine rule */}
+          <div
+            className="w-24 border-t border-warm-white/15 mb-6"
+            style={mounted ? { animation: `hero-slide-up 0.6s 0.3s ${ease} both` } : { opacity: 0 }}
+          />
+
+          {/* Subtitle */}
+          <p
+            className="text-warm-white/55 text-base leading-relaxed max-w-[38ch] mb-8 lg:mb-10"
+            style={mounted ? { animation: `hero-slide-up 0.8s 0.35s ${ease} both` } : { opacity: 0 }}
+          >
+            PADI courses, guided reef dives, and whale watching — no experience necessary.
+            The Indian Ocean is waiting right outside our door.
+          </p>
+
+          {/* CTAs */}
+          <div
+            className="flex flex-col sm:flex-row gap-4"
+            style={mounted ? { animation: `hero-slide-up 0.7s 0.45s ${ease} both` } : { opacity: 0 }}
+          >
+            <Link
+              href="/courses"
+              className="inline-flex items-center justify-center bg-tropic-coral text-white font-semibold px-8 py-3.5 rounded-full text-sm hover:bg-[#d4603f] transition-colors duration-200"
+            >
+              Explore Courses
+            </Link>
+            <Link
+              href="/contact"
+              className="inline-flex items-center justify-center gap-1.5 text-warm-white/60 text-sm font-semibold hover:text-tropic-coral transition-colors"
+            >
+              Book a Dive
+              <span aria-hidden="true">→</span>
+            </Link>
+          </div>
         </div>
 
-        {/* Subtitle — no opacity:0 so LCP fires immediately */}
-        <p
-          className="text-warm-white/75 text-lg sm:text-xl max-w-lg mb-9 leading-relaxed"
-          style={
-            mounted
-              ? { animation: `hero-slide-up-only 0.8s ${ease} both` }
-              : undefined
-          }
-        >
-          PADI courses, guided reef dives, and whale watching — no experience necessary.
-          The Indian Ocean is waiting right outside our door.
-        </p>
-
-        {/* CTAs */}
+        {/* Right — photo placeholder + stat card */}
         <div
-          className="flex flex-col sm:flex-row gap-4 mb-14"
-          style={
-            mounted
-              ? { animation: `hero-slide-up 0.7s 0.4s ${ease} both` }
-              : { opacity: 0 }
-          }
+          className="hidden lg:block relative"
+          style={mounted ? { animation: `hero-slide-up 0.9s 0.3s ${ease} both` } : { opacity: 0 }}
         >
-          <Link
-            href="/courses"
-            className="inline-flex items-center justify-center gap-2 bg-shallow-water text-warm-white font-bold px-8 py-4 rounded-full hover:bg-[#239085] transition-colors text-base"
-          >
-            Explore Courses
-          </Link>
-          <Link
-            href="/contact"
-            className="inline-flex items-center justify-center border-2 border-warm-white/40 text-warm-white font-semibold px-8 py-4 rounded-full hover:border-warm-white hover:bg-warm-white/10 transition-colors text-base"
-          >
-            Book a Dive
-          </Link>
-        </div>
-
-        {/* Stats row */}
-        <div
-          className="flex flex-wrap gap-x-8 gap-y-4"
-          style={
-            mounted
-              ? { animation: `hero-slide-up 0.7s 0.6s ${ease} both` }
-              : { opacity: 0 }
-          }
-        >
-          {stats.map((s, i) => (
-            <div key={i} className="flex flex-col">
-              <span className="text-warm-white text-2xl font-bold leading-none">{s.value}</span>
-              <span className="text-warm-white/45 text-xs uppercase tracking-widest mt-1">{s.label}</span>
+          {/* Photo placeholder */}
+          <div className="rounded-3xl overflow-hidden aspect-[3/4] bg-[#1a3540] relative">
+            {/* Placeholder wave SVG */}
+            <svg
+              className="absolute bottom-0 left-0 w-full opacity-10"
+              viewBox="0 0 400 120"
+              preserveAspectRatio="none"
+              fill="#2A9D8F"
+              aria-hidden="true"
+            >
+              <path d="M0 60 Q100 20 200 60 Q300 100 400 60 L400 120 L0 120 Z" />
+              <path d="M0 80 Q100 50 200 80 Q300 110 400 80 L400 120 L0 120 Z" opacity="0.5" />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <svg
+                className="w-20 h-20 text-shallow-water/20"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d="M21 19V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
+              </svg>
             </div>
-          ))}
+          </div>
+
+          {/* Floating stat card */}
+          <div className="absolute bottom-8 -left-6 bg-warm-white rounded-2xl p-5 shadow-xl">
+            <p className="text-charcoal-sea font-extrabold font-display text-2xl leading-none">15+</p>
+            <p className="text-charcoal-sea/40 text-[11px] uppercase tracking-widest mt-1">Years · Trincomalee</p>
+            <div className="w-8 h-0.5 bg-tropic-coral mt-3" />
+          </div>
         </div>
       </div>
 
       {/* Scroll indicator */}
       <div
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5"
-        style={
-          mounted
-            ? { animation: `hero-slide-up 0.6s 1.5s ${ease} both` }
-            : { opacity: 0 }
-        }
+        style={mounted ? { animation: `hero-slide-up 0.6s 1.5s ${ease} both` } : { opacity: 0 }}
       >
         <span className="text-warm-white/30 text-[10px] tracking-[0.2em] uppercase">Scroll</span>
         <div

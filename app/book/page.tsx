@@ -36,37 +36,25 @@ export default function BookPage() {
       />
 
       {/* Hero */}
-      <section
-        className="py-20 px-6 relative overflow-hidden"
-        style={{ background: "linear-gradient(160deg, #0d2028 0%, #162830 60%, #0f1e26 100%)" }}
-      >
-        <div
-          className="absolute top-[-15%] right-[-5%] w-96 h-96 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle, #2A9D8F25 0%, transparent 70%)" }}
-        />
-        <div
-          className="absolute bottom-[-20%] left-[-8%] w-72 h-72 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle, #F4A26115 0%, transparent 70%)" }}
-        />
-
-        <div className="max-w-6xl mx-auto relative">
-          <nav className="flex items-center gap-2 text-warm-white/35 text-xs mb-7">
+      <section className="bg-charcoal-sea py-16 lg:py-24 px-6">
+        <div className="max-w-6xl mx-auto">
+          <nav className="flex items-center gap-2 text-warm-white/35 text-xs mb-8">
             <Link href="/" className="hover:text-warm-white/60 transition-colors">Home</Link>
             <span>/</span>
             <span className="text-warm-white/60">Book a Dive</span>
           </nav>
 
           <div className="flex items-center gap-3 mb-5">
-            <span className="h-px w-8 bg-shallow-water" />
-            <span className="text-shallow-water text-xs font-semibold tracking-[0.2em] uppercase">
+            <span className="h-px w-6 bg-tropic-coral" />
+            <span className="text-tropic-coral text-[11px] font-semibold tracking-[0.22em] uppercase">
               Reserve your spot · No payment now
             </span>
           </div>
 
-          <h1 className="text-warm-white text-4xl sm:text-6xl font-bold mb-5 leading-tight">
+          <h1 className="text-warm-white font-display text-[clamp(2.5rem,6vw,5rem)] font-extrabold leading-tight mb-5">
             Book a Dive
           </h1>
-          <p className="text-warm-white/55 text-lg max-w-xl leading-relaxed">
+          <p className="text-warm-white/55 text-base leading-relaxed max-w-xl">
             Fill in the form and we&apos;ll confirm your booking within 24 hours. No payment needed upfront — just pick a date and we&apos;ll sort the rest.
           </p>
         </div>
@@ -78,12 +66,15 @@ export default function BookPage() {
 
           {/* Left: form */}
           <div className="lg:col-span-3">
-            <div className="bg-white rounded-2xl border border-charcoal-sea/8 p-8">
-              <h2 className="text-charcoal-sea text-2xl font-bold mb-2">Your booking details</h2>
-              <p className="text-charcoal-sea/55 text-sm mb-7 leading-relaxed">
-                Select a course or activity, tell us when you&apos;re coming, and we&apos;ll do the rest.
-              </p>
-              <BookingForm showItemSelect={true} />
+            <div className="bg-white rounded-2xl border border-charcoal-sea/8 overflow-hidden">
+              <div className="h-1 w-full bg-tropic-coral" aria-hidden="true" />
+              <div className="p-8">
+                <h2 className="text-charcoal-sea text-2xl font-bold mb-2">Your booking details</h2>
+                <p className="text-charcoal-sea/55 text-sm mb-7 leading-relaxed">
+                  Select a course or activity, tell us when you&apos;re coming, and we&apos;ll do the rest.
+                </p>
+                <BookingForm showItemSelect={true} />
+              </div>
             </div>
           </div>
 
@@ -93,13 +84,13 @@ export default function BookPage() {
             {/* How it works */}
             <div className="bg-white rounded-2xl border border-charcoal-sea/8 p-6">
               <h3 className="text-charcoal-sea font-bold text-lg mb-5">How it works</h3>
-              <ol className="space-y-5">
+              <ol className="relative">
                 {[
                   {
                     step: "1",
                     title: "Fill in the form",
                     body: "Choose your course or activity, add your dates and contact details.",
-                    color: "bg-shallow-water",
+                    color: "bg-tropic-coral",
                   },
                   {
                     step: "2",
@@ -113,9 +104,13 @@ export default function BookPage() {
                     body: "We handle everything — gear, boat, guides. You just bring yourself.",
                     color: "bg-tropic-coral",
                   },
-                ].map(({ step, title, body, color }) => (
-                  <li key={step} className="flex gap-4">
-                    <span className={`w-8 h-8 rounded-full ${color} text-white text-sm font-bold flex items-center justify-center flex-shrink-0 mt-0.5`}>
+                ].map(({ step, title, body, color }, i, arr) => (
+                  <li key={step} className="flex gap-4 relative pb-5 last:pb-0">
+                    {/* Connecting vertical line */}
+                    {i < arr.length - 1 && (
+                      <div className="absolute left-4 top-9 bottom-0 w-px bg-charcoal-sea/10" aria-hidden="true" />
+                    )}
+                    <span className={`w-8 h-8 rounded-full ${color} text-white text-sm font-bold flex items-center justify-center flex-shrink-0 mt-0.5 relative z-10`}>
                       {step}
                     </span>
                     <div>
@@ -139,7 +134,7 @@ export default function BookPage() {
                   "Post-dive refreshments",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-2.5 text-sm text-charcoal-sea/70">
-                    <span className="text-shallow-water mt-0.5 font-bold">✓</span>
+                    <span className="text-tropic-coral mt-0.5 font-bold">✓</span>
                     {item}
                   </li>
                 ))}
@@ -169,24 +164,25 @@ export default function BookPage() {
       </section>
 
       {/* Bottom CTA */}
-      <section className="py-14 px-6 bg-tropic-coral">
+      <section className="bg-charcoal-sea py-20 px-6">
         <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-white text-2xl font-bold mb-3">Not sure what to book?</h2>
-          <p className="text-white/80 mb-6 leading-relaxed">
+          <div className="w-12 h-px bg-tropic-coral mx-auto mb-8" />
+          <h2 className="text-warm-white font-display text-[clamp(1.8rem,4vw,3rem)] font-extrabold leading-tight mb-4">Not sure what to book?</h2>
+          <p className="text-warm-white/50 text-base leading-relaxed max-w-lg mx-auto mb-10">
             Browse our courses and activities first, or just give us a call — we&apos;ll help you pick the right experience for your level and time in Trincomalee.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/courses"
-              className="inline-block bg-charcoal-sea text-warm-white font-bold px-7 py-3 rounded-full hover:bg-[#1a3340] transition-colors text-sm"
+              className="inline-block bg-tropic-coral text-white font-bold px-7 py-3 rounded-full hover:bg-[#d4603f] transition-colors text-sm"
             >
               View Courses
             </Link>
             <Link
               href="/activities"
-              className="inline-block border border-white/40 text-white/80 font-semibold px-7 py-3 rounded-full hover:border-white hover:text-white transition-colors text-sm"
+              className="inline-flex items-center gap-2 text-warm-white/50 font-semibold text-sm hover:text-warm-white transition-colors"
             >
-              View Activities
+              View Activities →
             </Link>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { getExperiences } from "@/lib/api/experiences";
 import ActivitiesGrid from "@/components/activities/ActivitiesGrid";
 
@@ -49,44 +50,32 @@ export default async function ActivitiesPage() {
       />
 
       {/* Page hero */}
-      <section
-        className="py-20 px-6 relative overflow-hidden"
-        style={{ background: "linear-gradient(160deg, #0d2028 0%, #162830 60%, #0f1e26 100%)" }}
-      >
-        <div
-          className="absolute top-[-15%] right-[-5%] w-96 h-96 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle, #2A9D8F25 0%, transparent 70%)" }}
-        />
-        <div
-          className="absolute bottom-[-20%] left-[-8%] w-72 h-72 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle, #F4A26115 0%, transparent 70%)" }}
-        />
-
-        <div className="max-w-6xl mx-auto relative">
+      <section className="bg-charcoal-sea py-16 lg:py-24 px-6">
+        <div className="max-w-6xl mx-auto">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-warm-white/35 text-xs mb-7">
-            <a href="/" className="hover:text-warm-white/60 transition-colors">Home</a>
+          <nav className="flex items-center gap-2 text-warm-white/35 text-xs mb-8">
+            <Link href="/" className="hover:text-warm-white/60 transition-colors">Home</Link>
             <span>/</span>
             <span className="text-warm-white/60">Activities</span>
           </nav>
 
           <div className="flex items-center gap-3 mb-5">
-            <span className="h-px w-8 bg-shallow-water" />
-            <span className="text-shallow-water text-xs font-semibold tracking-[0.2em] uppercase">
+            <span className="h-px w-6 bg-tropic-coral" />
+            <span className="text-tropic-coral text-[11px] font-semibold tracking-[0.22em] uppercase">
               No experience needed · Trincomalee
             </span>
           </div>
 
-          <h1 className="text-warm-white text-4xl sm:text-6xl font-bold mb-5 leading-tight">
+          <h1 className="text-warm-white font-display text-[clamp(2.5rem,6vw,5rem)] font-extrabold leading-tight mb-5">
             Activities
           </h1>
-          <p className="text-warm-white/55 text-lg max-w-xl leading-relaxed mb-10">
+          <p className="text-warm-white/55 text-base leading-relaxed max-w-xl mb-10">
             Whether you&apos;ve never seen a tank before or you&apos;re logging your hundredth dive — there&apos;s
             something in Trincomalee&apos;s waters waiting for you.
           </p>
 
-          {/* Stats */}
-          <div className="flex flex-wrap gap-8">
+          {/* Stats row */}
+          <div className="flex flex-wrap gap-8 pt-6 border-t border-warm-white/10">
             {[
               { value: "5", label: "Activities" },
               { value: "From $35", label: "Starting price" },
@@ -94,8 +83,8 @@ export default async function ActivitiesPage() {
               { value: "Small groups", label: "Personal attention" },
             ].map((s) => (
               <div key={s.label} className="flex flex-col">
-                <span className="text-warm-white text-2xl font-bold leading-none">{s.value}</span>
-                <span className="text-warm-white/35 text-xs uppercase tracking-widest mt-1">{s.label}</span>
+                <span className="text-warm-white text-2xl font-extrabold font-display leading-none">{s.value}</span>
+                <span className="text-warm-white/35 text-[10px] uppercase tracking-widest mt-1">{s.label}</span>
               </div>
             ))}
           </div>
@@ -106,32 +95,33 @@ export default async function ActivitiesPage() {
       <ActivitiesGrid experiences={experiences} />
 
       {/* Bottom CTA */}
-      <section className="py-16 px-6 bg-tropic-coral">
+      <section className="bg-charcoal-sea py-20 px-6">
         <div className="max-w-2xl mx-auto text-center">
-          <p className="text-white/70 text-sm mb-2 uppercase tracking-widest">Need guidance?</p>
-          <h2 className="text-white text-2xl sm:text-3xl font-bold mb-4">
+          <div className="w-12 h-px bg-tropic-coral mx-auto mb-8" />
+          <span className="block text-[11px] uppercase tracking-[0.25em] font-semibold text-tropic-coral/70 mb-4">Need guidance?</span>
+          <h2 className="text-warm-white font-display text-[clamp(2rem,5vw,3.5rem)] font-extrabold leading-tight mb-5">
             Not sure which activity to pick?
           </h2>
-          <p className="text-white/80 mb-8 leading-relaxed">
+          <p className="text-warm-white/50 text-base leading-relaxed max-w-lg mx-auto mb-10">
             Give us a call and we&apos;ll match you to the right experience — whether it&apos;s your first time
             in the ocean or you&apos;re chasing blue whales.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
               href="tel:0743945010"
-              className="inline-flex items-center gap-2.5 bg-charcoal-sea text-warm-white font-bold px-8 py-3.5 rounded-full hover:bg-[#1a3340] transition-colors text-sm"
+              className="inline-flex items-center gap-2.5 bg-tropic-coral text-white font-bold px-8 py-3.5 rounded-full hover:bg-[#d4603f] transition-colors text-sm"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                 <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
               </svg>
               0743 945 010
             </a>
-            <a
+            <Link
               href="/contact"
-              className="inline-flex items-center gap-2 border border-white/40 text-white/80 font-semibold px-8 py-3.5 rounded-full hover:border-white hover:text-white transition-colors text-sm"
+              className="inline-flex items-center gap-2 text-warm-white/50 font-semibold text-sm hover:text-warm-white transition-colors"
             >
-              Send a message
-            </a>
+              Send a message →
+            </Link>
           </div>
         </div>
       </section>

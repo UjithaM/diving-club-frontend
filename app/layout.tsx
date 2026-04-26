@@ -3,6 +3,7 @@ import { Bricolage_Grotesque, DM_Sans } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import WhatsAppFab from "@/components/ui/WhatsAppFab";
 import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
 
 const bricolage = Bricolage_Grotesque({
@@ -80,6 +81,7 @@ export default function RootLayout({
           <Header />
           <main className="flex-1">{children}</main>
           <Footer />
+          <WhatsAppFab />
         </SmoothScrollProvider>
       </body>
     </html>

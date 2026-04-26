@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 
 const courseItems = [
@@ -41,9 +42,10 @@ interface DropdownProps {
   href: string;
   baseHref: string;
   items: { slug: string; name: string }[];
+  scrolled: boolean;
 }
 
-function DesktopDropdown({ label, href, baseHref, items }: DropdownProps) {
+function DesktopDropdown({ label, href, baseHref, items, scrolled }: DropdownProps) {
   const [open, setOpen] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
@@ -59,8 +61,10 @@ function DesktopDropdown({ label, href, baseHref, items }: DropdownProps) {
   return (
     <div className="relative" onMouseEnter={enter} onMouseLeave={leave}>
       <button
-        className={`flex items-center gap-1 text-sm font-medium transition-colors ${
-          open ? "text-shallow-water" : "text-warm-white/80 hover:text-warm-white"
+        className={`flex items-center gap-1 text-[13px] font-medium tracking-wide transition-colors ${
+          scrolled
+            ? open ? "text-charcoal-sea" : "text-charcoal-sea/70 hover:text-charcoal-sea"
+            : open ? "text-warm-white" : "text-warm-white/75 hover:text-warm-white"
         }`}
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
@@ -70,20 +74,17 @@ function DesktopDropdown({ label, href, baseHref, items }: DropdownProps) {
         <ChevronDown className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
       </button>
 
-      {/* pt-2 bridges the gap so onMouseLeave doesn't fire mid-transition */}
       <div className="absolute top-full left-0 w-60 pt-2">
         <div
-          className={`rounded-xl overflow-hidden border border-white/10 transition-all duration-200 ${
+          className={`rounded-xl overflow-hidden border border-charcoal-sea/10 shadow-xl bg-warm-white transition-all duration-200 ${
             open
               ? "opacity-100 translate-y-0 pointer-events-auto"
               : "opacity-0 -translate-y-1 pointer-events-none"
           }`}
-          style={{ background: "#162830" }}
         >
-          {/* View All */}
           <Link
             href={href}
-            className="flex items-center justify-between px-4 py-3 text-shallow-water font-semibold text-sm hover:bg-white/5 transition-colors border-b border-white/8"
+            className="flex items-center justify-between px-4 py-3 text-tropic-coral font-semibold text-sm hover:bg-charcoal-sea/5 transition-colors border-b border-charcoal-sea/8"
             onClick={() => setOpen(false)}
           >
             View All {label}
@@ -91,13 +92,12 @@ function DesktopDropdown({ label, href, baseHref, items }: DropdownProps) {
               <path d="M5 12h14M12 5l7 7-7 7" />
             </svg>
           </Link>
-          {/* Items */}
           <div className="py-1.5">
             {items.map((item) => (
               <Link
                 key={item.slug}
                 href={`${baseHref}/${item.slug}`}
-                className="block px-4 py-2 text-warm-white/55 text-sm hover:text-warm-white hover:bg-white/5 transition-colors"
+                className="block px-4 py-2 text-charcoal-sea/60 text-sm hover:text-charcoal-sea hover:bg-charcoal-sea/5 transition-colors"
                 onClick={() => setOpen(false)}
               >
                 {item.name}
@@ -114,26 +114,25 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileSection, setMobileSection] = useState<string | null>(null);
   const [hidden, setHidden] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const lastScrollY = useRef(0);
   const ticking = useRef(false);
   const mobileOpenRef = useRef(false);
 
-  // Keep ref in sync so the scroll handler always sees current value
   useEffect(() => {
     mobileOpenRef.current = mobileOpen;
-    // Always show header when mobile menu is open
     if (mobileOpen) setHidden(false);
   }, [mobileOpen]);
 
   useEffect(() => {
     function update() {
-      // Never hide while mobile menu is open
       if (mobileOpenRef.current) {
         lastScrollY.current = window.scrollY;
         ticking.current = false;
         return;
       }
       const scrollY = window.scrollY;
+      setScrolled(scrollY > 60);
       if (scrollY < 10) {
         setHidden(false);
       } else if (scrollY > lastScrollY.current) {
@@ -165,19 +164,42 @@ export default function Header() {
     setMobileSection(null);
   }
 
+  const navLinkClass = scrolled
+    ? "text-[13px] font-medium tracking-wide text-charcoal-sea/70 hover:text-charcoal-sea transition-colors"
+    : "text-[13px] font-medium tracking-wide text-warm-white/75 hover:text-warm-white transition-colors";
+
+  const bookCtaClass = scrolled
+    ? "border border-charcoal-sea text-charcoal-sea text-xs font-medium px-5 py-2 rounded-full hover:bg-charcoal-sea hover:text-warm-white transition-colors duration-200"
+    : "border border-warm-white/50 text-warm-white text-xs font-medium px-5 py-2 rounded-full hover:bg-warm-white/10 hover:border-warm-white transition-colors duration-200";
+
   return (
     <header
-      className={`bg-charcoal-sea text-warm-white sticky top-0 z-50 transition-transform duration-300 ${
+      className={`sticky top-0 z-50 transition-all duration-300 ${
         hidden ? "-translate-y-full" : "translate-y-0"
+      } ${
+        scrolled
+          ? "bg-warm-white/95 backdrop-blur-md border-b border-charcoal-sea/10"
+          : "bg-charcoal-sea/95 backdrop-blur-sm md:bg-transparent border-b border-transparent"
       }`}
     >
       <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-16">
         {/* Logo */}
         <Link
           href="/"
-          className="text-xl font-bold tracking-tight text-warm-white hover:text-sunrise transition-colors"
+          className="flex items-center gap-2.5 hover:opacity-85 transition-opacity"
+          aria-label="Diving Club — home"
         >
-          Diving Club
+          <Image
+            src="/logo.webp"
+            alt="Diving Club logo"
+            width={36}
+            height={36}
+            className="rounded-full"
+            priority
+          />
+          <span className={`text-xs font-medium tracking-[0.18em] uppercase ${scrolled ? "text-charcoal-sea" : "text-warm-white"} transition-colors`}>
+            Diving Club
+          </span>
         </Link>
 
         {/* Desktop nav */}
@@ -187,42 +209,31 @@ export default function Header() {
             href="/courses"
             baseHref="/courses"
             items={courseItems}
+            scrolled={scrolled}
           />
           <DesktopDropdown
             label="Activities"
             href="/activities"
             baseHref="/activities"
             items={experienceItems}
+            scrolled={scrolled}
           />
-          <Link
-            href="/about"
-            className="text-sm font-medium text-warm-white/80 hover:text-warm-white transition-colors"
-          >
-            About Us
-          </Link>
-          <Link
-            href="/contact"
-            className="text-sm font-medium text-warm-white/80 hover:text-warm-white transition-colors"
-          >
-            Contact
-          </Link>
-          <Link
-            href="/contact"
-            className="bg-tropic-coral text-white text-sm font-semibold px-4 py-2 rounded-full hover:bg-sunrise transition-colors"
-          >
+          <Link href="/about" className={navLinkClass}>About Us</Link>
+          <Link href="/contact" className={navLinkClass}>Contact</Link>
+          <Link href="/book" className={bookCtaClass}>
             Book a Dive
           </Link>
         </nav>
 
         {/* Mobile hamburger */}
         <button
-          className="md:hidden flex flex-col gap-1.5 p-2"
+          className="md:hidden flex flex-col gap-1.5 p-2 cursor-pointer"
           onClick={() => { setMobileOpen((v) => !v); setMobileSection(null); }}
           aria-label="Toggle menu"
         >
-          <span className={`block w-6 h-0.5 bg-warm-white transition-transform origin-center duration-300 ${mobileOpen ? "rotate-45 translate-y-2" : ""}`} />
-          <span className={`block w-6 h-0.5 bg-warm-white transition-opacity duration-300 ${mobileOpen ? "opacity-0" : ""}`} />
-          <span className={`block w-6 h-0.5 bg-warm-white transition-transform origin-center duration-300 ${mobileOpen ? "-rotate-45 -translate-y-2" : ""}`} />
+          <span className={`block w-6 h-0.5 transition-all origin-center duration-300 ${mobileOpen ? "rotate-45 translate-y-2" : ""} ${scrolled ? "bg-charcoal-sea md:bg-charcoal-sea" : "bg-warm-white"}`} />
+          <span className={`block w-6 h-0.5 transition-opacity duration-300 ${mobileOpen ? "opacity-0" : ""} ${scrolled ? "bg-charcoal-sea md:bg-charcoal-sea" : "bg-warm-white"}`} />
+          <span className={`block w-6 h-0.5 transition-all origin-center duration-300 ${mobileOpen ? "-rotate-45 -translate-y-2" : ""} ${scrolled ? "bg-charcoal-sea md:bg-charcoal-sea" : "bg-warm-white"}`} />
         </button>
       </div>
 
@@ -230,35 +241,32 @@ export default function Header() {
       <div
         className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
           mobileOpen ? "max-h-[800px]" : "max-h-0"
-        }`}
+        } bg-warm-white`}
       >
-        <nav className="border-t border-white/10 px-4 py-2 flex flex-col">
+        <nav className="border-t border-charcoal-sea/8 px-4 py-2 flex flex-col">
 
           {/* Courses accordion */}
           <button
-            className="flex items-center justify-between w-full py-3 text-warm-white/80 hover:text-warm-white font-medium transition-colors text-left"
+            className="flex items-center justify-between w-full py-3 text-charcoal-sea/70 hover:text-charcoal-sea font-medium transition-colors text-left text-sm cursor-pointer"
             onClick={() => toggleSection("courses")}
           >
             Courses
             <ChevronDown className={`transition-transform duration-200 ${mobileSection === "courses" ? "rotate-180" : ""}`} />
           </button>
           <div className={`overflow-hidden transition-all duration-300 ${mobileSection === "courses" ? "max-h-[600px]" : "max-h-0"}`}>
-            <div className="pb-3 flex flex-col gap-0.5 pl-2 border-l border-shallow-water/40 ml-1 mb-1">
+            <div className="pb-3 flex flex-col gap-0.5 pl-2 border-l border-shallow-water/30 ml-1 mb-1">
               <Link
                 href="/courses"
-                className="py-2 text-shallow-water font-semibold text-sm flex items-center gap-1.5 hover:text-sunrise transition-colors"
+                className="py-2 text-tropic-coral font-semibold text-sm flex items-center gap-1.5 hover:text-charcoal-sea transition-colors"
                 onClick={closeMobile}
               >
-                View All Courses
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
+                View All Courses →
               </Link>
               {courseItems.map((item) => (
                 <Link
                   key={item.slug}
                   href={`/courses/${item.slug}`}
-                  className="py-1.5 text-warm-white/50 text-sm hover:text-warm-white transition-colors"
+                  className="py-1.5 text-charcoal-sea/50 text-sm hover:text-charcoal-sea transition-colors"
                   onClick={closeMobile}
                 >
                   {item.name}
@@ -269,29 +277,26 @@ export default function Header() {
 
           {/* Activities accordion */}
           <button
-            className="flex items-center justify-between w-full py-3 text-warm-white/80 hover:text-warm-white font-medium transition-colors text-left border-t border-white/5"
+            className="flex items-center justify-between w-full py-3 text-charcoal-sea/70 hover:text-charcoal-sea font-medium transition-colors text-left text-sm border-t border-charcoal-sea/5 cursor-pointer"
             onClick={() => toggleSection("activities")}
           >
             Activities
             <ChevronDown className={`transition-transform duration-200 ${mobileSection === "activities" ? "rotate-180" : ""}`} />
           </button>
           <div className={`overflow-hidden transition-all duration-300 ${mobileSection === "activities" ? "max-h-[300px]" : "max-h-0"}`}>
-            <div className="pb-3 flex flex-col gap-0.5 pl-2 border-l border-shallow-water/40 ml-1 mb-1">
+            <div className="pb-3 flex flex-col gap-0.5 pl-2 border-l border-shallow-water/30 ml-1 mb-1">
               <Link
                 href="/activities"
-                className="py-2 text-shallow-water font-semibold text-sm flex items-center gap-1.5 hover:text-sunrise transition-colors"
+                className="py-2 text-tropic-coral font-semibold text-sm flex items-center gap-1.5 hover:text-charcoal-sea transition-colors"
                 onClick={closeMobile}
               >
-                View All Activities
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
+                View All Activities →
               </Link>
               {experienceItems.map((item) => (
                 <Link
                   key={item.slug}
                   href={`/activities/${item.slug}`}
-                  className="py-1.5 text-warm-white/50 text-sm hover:text-warm-white transition-colors"
+                  className="py-1.5 text-charcoal-sea/50 text-sm hover:text-charcoal-sea transition-colors"
                   onClick={closeMobile}
                 >
                   {item.name}
@@ -300,25 +305,12 @@ export default function Header() {
             </div>
           </div>
 
-          {/* Plain links */}
-          <Link
-            href="/about"
-            className="py-3 text-warm-white/80 hover:text-warm-white font-medium transition-colors border-t border-white/5"
-            onClick={closeMobile}
-          >
-            About Us
-          </Link>
-          <Link
-            href="/contact"
-            className="py-3 text-warm-white/80 hover:text-warm-white font-medium transition-colors border-t border-white/5"
-            onClick={closeMobile}
-          >
-            Contact
-          </Link>
-          <div className="pt-3 pb-2 border-t border-white/5">
+          <Link href="/about" className="py-3 text-charcoal-sea/70 hover:text-charcoal-sea text-sm font-medium transition-colors border-t border-charcoal-sea/5" onClick={closeMobile}>About Us</Link>
+          <Link href="/contact" className="py-3 text-charcoal-sea/70 hover:text-charcoal-sea text-sm font-medium transition-colors border-t border-charcoal-sea/5" onClick={closeMobile}>Contact</Link>
+          <div className="pt-3 pb-2 border-t border-charcoal-sea/5">
             <Link
-              href="/contact"
-              className="block bg-tropic-coral text-white font-semibold px-4 py-2.5 rounded-full text-center hover:bg-sunrise transition-colors"
+              href="/book"
+              className="block border border-charcoal-sea text-charcoal-sea font-medium px-4 py-2.5 rounded-full text-center hover:bg-charcoal-sea hover:text-warm-white transition-colors text-sm"
               onClick={closeMobile}
             >
               Book a Dive

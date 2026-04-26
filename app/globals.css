@@ -9,6 +9,11 @@
   --color-tropic-coral: #E76F51;
   --color-charcoal-sea: #264653;
   --color-shallow-water: #2A9D8F;
+
+  --color-surface-dark: #0f1e25;
+  --color-surface-muted: #f7f3ee;
+  --color-border-subtle: rgba(38, 70, 83, 0.08);
+  --color-border-medium: rgba(38, 70, 83, 0.15);
 }
 
 body {
@@ -77,6 +82,27 @@ h1, h2, h3, h4, h5 {
 @keyframes orb-pulse-2 {
   0%, 100% { transform: scale(1); }
   50%       { transform: scale(1.2); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes stat-reveal {
+  from { opacity: 0; transform: translateY(16px) scaleY(0.85); transform-origin: bottom; }
+  to   { opacity: 1; transform: translateY(0) scaleY(1); }
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+@media (min-width: 1024px) {
+  .gallery-grid { grid-template-columns: repeat(3, 1fr); }
+  .gallery-grid > *:first-child { grid-row: span 2; }
 }
 
 /* react-phone-number-input overrides */

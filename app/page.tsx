@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import { getCourses } from "@/lib/api/courses";
 import { getExperiences } from "@/lib/api/experiences";
 import HeroSection from "@/components/home/HeroSection";
+import StatsSection from "@/components/home/StatsSection";
 import FeaturedExperiencesSection from "@/components/home/FeaturedExperiencesSection";
 import FeaturedCoursesSection from "@/components/home/FeaturedCoursesSection";
 import WhyChooseUsSection from "@/components/home/WhyChooseUsSection";
 import DiveSitesSection from "@/components/home/DiveSitesSection";
 import TestimonialsSection from "@/components/home/TestimonialsSection";
+import GallerySection from "@/components/home/GallerySection";
 import ContactCtaSection from "@/components/home/ContactCtaSection";
 
 export const metadata: Metadata = {
@@ -100,11 +102,13 @@ export default async function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
       <HeroSection />
+      <StatsSection />
       <FeaturedExperiencesSection experiences={featuredExperiences} />
       <FeaturedCoursesSection courses={featuredCourses} />
       <WhyChooseUsSection />
       <DiveSitesSection />
       <TestimonialsSection />
+      <GallerySection />
       <ContactCtaSection />
     </>
   );

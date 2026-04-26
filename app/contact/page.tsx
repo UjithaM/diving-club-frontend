@@ -44,37 +44,25 @@ export default function ContactPage() {
       />
 
       {/* Hero */}
-      <section
-        className="py-20 px-6 relative overflow-hidden"
-        style={{ background: "linear-gradient(160deg, #0d2028 0%, #162830 60%, #0f1e26 100%)" }}
-      >
-        <div
-          className="absolute top-[-15%] right-[-5%] w-96 h-96 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle, #2A9D8F25 0%, transparent 70%)" }}
-        />
-        <div
-          className="absolute bottom-[-20%] left-[-8%] w-72 h-72 rounded-full pointer-events-none"
-          style={{ background: "radial-gradient(circle, #E76F5115 0%, transparent 70%)" }}
-        />
-
-        <div className="max-w-6xl mx-auto relative">
-          <nav className="flex items-center gap-2 text-warm-white/35 text-xs mb-7">
+      <section className="bg-charcoal-sea py-16 lg:py-24 px-6">
+        <div className="max-w-6xl mx-auto">
+          <nav className="flex items-center gap-2 text-warm-white/35 text-xs mb-8">
             <Link href="/" className="hover:text-warm-white/60 transition-colors">Home</Link>
             <span>/</span>
             <span className="text-warm-white/60">Contact</span>
           </nav>
 
           <div className="flex items-center gap-3 mb-5">
-            <span className="h-px w-8 bg-shallow-water" />
-            <span className="text-shallow-water text-xs font-semibold tracking-[0.2em] uppercase">
+            <span className="h-px w-6 bg-tropic-coral" />
+            <span className="text-tropic-coral text-[11px] font-semibold tracking-[0.22em] uppercase">
               Open 7 days · Trincomalee
             </span>
           </div>
 
-          <h1 className="text-warm-white text-4xl sm:text-6xl font-bold mb-5 leading-tight">
+          <h1 className="text-warm-white font-display text-[clamp(2.5rem,6vw,5rem)] font-extrabold leading-tight mb-5">
             Get in Touch
           </h1>
-          <p className="text-warm-white/55 text-lg max-w-xl leading-relaxed">
+          <p className="text-warm-white/55 text-base leading-relaxed max-w-xl">
             Got a question? Want to book? Just give us a call or drop a message — we&apos;re always happy to help.
           </p>
         </div>
@@ -94,16 +82,16 @@ export default function ContactPage() {
               <div className="space-y-4">
                 <a
                   href="tel:0743945010"
-                  className="flex items-center gap-4 bg-white rounded-2xl p-5 border border-charcoal-sea/8 hover:border-shallow-water/40 hover:shadow-md transition-all group"
+                  className="flex items-center gap-4 bg-white rounded-2xl p-5 border border-charcoal-sea/8 hover:border-tropic-coral/40 hover:shadow-md transition-all group"
                 >
-                  <span className="w-11 h-11 rounded-full bg-shallow-water/10 flex items-center justify-center flex-shrink-0 group-hover:bg-shallow-water/20 transition-colors">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2A9D8F" strokeWidth="2" strokeLinecap="round">
+                  <span className="w-11 h-11 rounded-full bg-tropic-coral/10 flex items-center justify-center flex-shrink-0 group-hover:bg-tropic-coral/20 transition-colors">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E76F51" strokeWidth="2" strokeLinecap="round">
                       <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>
                   </span>
                   <div>
                     <p className="text-xs text-charcoal-sea/45 uppercase tracking-widest mb-0.5">Call us</p>
-                    <p className="text-charcoal-sea font-bold text-lg">0743 945 010</p>
+                    <p className="text-charcoal-sea font-black text-2xl">0743 945 010</p>
                   </div>
                 </a>
 
@@ -120,7 +108,7 @@ export default function ContactPage() {
                   </span>
                   <div>
                     <p className="text-xs text-charcoal-sea/45 uppercase tracking-widest mb-0.5">WhatsApp</p>
-                    <p className="text-charcoal-sea font-bold text-lg">+94 743 945 010</p>
+                    <p className="text-charcoal-sea font-black text-2xl">+94 743 945 010</p>
                   </div>
                 </a>
               </div>
@@ -166,7 +154,8 @@ export default function ContactPage() {
               <p className="text-warm-white font-bold text-lg mb-4">Use our booking form to reserve your spot.</p>
               <Link
                 href="/book"
-                className="block text-center bg-tropic-coral text-white font-bold py-3 rounded-full hover:bg-sunrise transition-colors text-sm"
+                className="block text-center text-white font-bold py-3 rounded-full text-sm transition-opacity hover:opacity-90"
+                style={{ background: "#E76F51" }}
               >
                 Book a Dive →
               </Link>
@@ -175,12 +164,19 @@ export default function ContactPage() {
 
           {/* Right: general enquiry form */}
           <div className="lg:col-span-3">
-            <div className="bg-white rounded-2xl border border-charcoal-sea/8 p-8">
-              <h2 className="text-charcoal-sea text-2xl font-bold mb-2">Send a message</h2>
-              <p className="text-charcoal-sea/55 text-sm mb-7 leading-relaxed">
-                Got a question about courses, conditions, what to pack, or anything else? Fill this in and we&apos;ll get back to you fast.
-              </p>
-              <ContactForm />
+            <div className="bg-white rounded-2xl border border-charcoal-sea/8 overflow-hidden">
+              <div
+                className="h-1 w-full"
+                style={{ background: "#E76F51" }}
+                aria-hidden="true"
+              />
+              <div className="p-8">
+                <h2 className="text-charcoal-sea text-2xl font-bold mb-2">Send a message</h2>
+                <p className="text-charcoal-sea/55 text-sm mb-7 leading-relaxed">
+                  Got a question about courses, conditions, what to pack, or anything else? Fill this in and we&apos;ll get back to you fast.
+                </p>
+                <ContactForm />
+              </div>
             </div>
           </div>
 
