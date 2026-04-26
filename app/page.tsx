@@ -1,65 +1,111 @@
-import Image from "next/image";
+import type { Metadata } from "next";
+import { getCourses } from "@/lib/api/courses";
+import { getExperiences } from "@/lib/api/experiences";
+import HeroSection from "@/components/home/HeroSection";
+import FeaturedExperiencesSection from "@/components/home/FeaturedExperiencesSection";
+import FeaturedCoursesSection from "@/components/home/FeaturedCoursesSection";
+import WhyChooseUsSection from "@/components/home/WhyChooseUsSection";
+import DiveSitesSection from "@/components/home/DiveSitesSection";
+import TestimonialsSection from "@/components/home/TestimonialsSection";
+import ContactCtaSection from "@/components/home/ContactCtaSection";
 
-export default function Home() {
+export const metadata: Metadata = {
+  title: "Diving Club Trincomalee | PADI Courses & Dive Experiences in Sri Lanka",
+  description:
+    "Dive Trincomalee's coral reefs, WWII wrecks, and whale-watching waters with a PADI-certified team. Open Water courses from $395. Try diving from $65. Small groups, all equipment included.",
+  alternates: { canonical: "https://divingclub.lk" },
+  openGraph: {
+    title: "Diving Club Trincomalee | Dive Sri Lanka's Best Waters",
+    description:
+      "PADI courses, fun diving, snorkeling, and whale watching in Trincomalee. Small groups, local guides, all equipment included.",
+    url: "https://divingclub.lk",
+    images: [
+      {
+        url: "/images/og-home.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Coral reefs and crystal-clear water in Trincomalee, Sri Lanka",
+      },
+    ],
+  },
+};
+
+const touristAttractionJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "TouristAttraction",
+  name: "Trincomalee Dive Sites — Coral Garden, Powder Blue Bay, Wreck of the Hermes",
+  description:
+    "World-class scuba diving sites in Trincomalee, Sri Lanka including coral reefs, drop-offs, and WWII wrecks.",
+  touristType: ["Scuba Divers", "Snorkelers", "Marine Life Enthusiasts"],
+  geo: {
+    "@type": "GeoCoordinates",
+    latitude: 8.5874,
+    longitude: 81.2152,
+  },
+  isAccessibleForFree: false,
+  availableLanguage: ["English"],
+  provider: {
+    "@type": "LocalBusiness",
+    "@id": "https://divingclub.lk",
+  },
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "Do I need experience to go scuba diving in Trincomalee?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "No experience is needed for our Try Diving or Discover Scuba experiences. A PADI-certified instructor is with you throughout your first underwater dive.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "How much does a PADI Open Water course cost in Sri Lanka?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Our PADI Open Water Diver course in Trincomalee costs $395 USD, including all equipment, pool sessions, four open-water dives, and your certification card.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "What is the best time to see blue whales in Trincomalee?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Blue whales are most reliably spotted from January to April when they migrate through the waters off Trincomalee's north coast.",
+      },
+    },
+  ],
+};
+
+export default async function HomePage() {
+  const [allCourses, allExperiences] = await Promise.all([getCourses(), getExperiences()]);
+
+  const featuredCourses = allCourses.filter((c) => c.popular).slice(0, 3);
+  const featuredExperiences = allExperiences.filter((e) =>
+    ["try-diving", "fun-diving-2", "whale-watching"].includes(e.slug)
+  );
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(touristAttractionJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+      <HeroSection />
+      <FeaturedExperiencesSection experiences={featuredExperiences} />
+      <FeaturedCoursesSection courses={featuredCourses} />
+      <WhyChooseUsSection />
+      <DiveSitesSection />
+      <TestimonialsSection />
+      <ContactCtaSection />
+    </>
   );
 }
