@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Course } from "@/lib/types";
 
@@ -22,18 +23,45 @@ const levelAccents: Record<Course["level"], string> = {
   professional: "text-warm-white/60",
 };
 
+const levelImages: Record<Course["level"], { src: string; alt: string }> = {
+  beginner: {
+    src: "/assets/scuba-diving-trincomalee-sri-lanka.webp",
+    alt: "Beginner scuba diver in the clear waters of Trincomalee, Sri Lanka",
+  },
+  advanced: {
+    src: "/assets/scuba-diver-exploring-shipwreck-trincomalee.webp",
+    alt: "Advanced scuba diver exploring a shipwreck in Trincomalee",
+  },
+  specialty: {
+    src: "/assets/sea-snake-tropical-fish-trincomalee.webp",
+    alt: "Sea snake and tropical fish encountered during a specialty dive in Trincomalee",
+  },
+  professional: {
+    src: "/assets/scuba-diver-ok-signal-underwater-trincomalee.webp",
+    alt: "Professional scuba diver giving OK signal underwater in Trincomalee",
+  },
+};
+
 export default function CourseCard({ course }: { course: Course }) {
   return (
     <article className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden flex flex-col hover:-translate-y-1 hover:border-white/25 transition-all duration-200 cursor-pointer">
-      {/* Image header placeholder */}
+      {/* Image header */}
       <div
-        className={`aspect-video flex-shrink-0 relative bg-gradient-to-br ${levelHeaderGradients[course.level]}`}
+        className={`aspect-video flex-shrink-0 relative overflow-hidden bg-gradient-to-br ${levelHeaderGradients[course.level]}`}
       >
+        <Image
+          src={levelImages[course.level].src}
+          alt={levelImages[course.level].alt}
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, 33vw"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-charcoal-sea/50 to-transparent" />
         <span className={`absolute top-4 left-4 text-[10px] uppercase tracking-widest font-semibold ${levelAccents[course.level]}`}>
           {levelLabels[course.level]}
         </span>
         {course.popular && (
-          <span className="absolute top-4 right-4 text-[10px] uppercase tracking-widest font-semibold text-warm-white/40">
+          <span className="absolute top-4 right-4 text-[10px] uppercase tracking-widest font-semibold text-warm-white/70">
             Popular
           </span>
         )}
@@ -60,9 +88,9 @@ export default function CourseCard({ course }: { course: Course }) {
           </div>
           <Link
             href={`/courses/${course.slug}`}
-            className={`text-sm font-semibold underline underline-offset-4 hover:text-sunrise transition-colors ${levelAccents[course.level]}`}
+            className="inline-block bg-tropic-coral text-white text-sm font-semibold px-5 py-2 rounded-full hover:bg-[#d4603f] transition-colors duration-200"
           >
-            View &amp; Book
+            View
           </Link>
         </div>
       </div>

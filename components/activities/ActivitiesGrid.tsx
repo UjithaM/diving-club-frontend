@@ -11,6 +11,9 @@ const typeMeta: Record<Experience["type"], { label: string; accent: string; text
   "fun-diving":     { label: "Fun Diving",     accent: "#F4A261", textClass: "text-sunrise",       bgClass: "bg-sunrise/10",       emoji: "🐠" },
   snorkeling:       { label: "Snorkeling",     accent: "#E76F51", textClass: "text-tropic-coral",  bgClass: "bg-tropic-coral/10",  emoji: "🐟" },
   "whale-watching": { label: "Whale Watching", accent: "#264653", textClass: "text-charcoal-sea",  bgClass: "bg-charcoal-sea/10",  emoji: "🐋" },
+  "jet-ski":        { label: "Jet Ski",        accent: "#F4A261", textClass: "text-sunrise",       bgClass: "bg-sunrise/10",       emoji: "🚤" },
+  "boat-tour":      { label: "Boat Tour",      accent: "#2A9D8F", textClass: "text-shallow-water", bgClass: "bg-shallow-water/10", emoji: "⛵" },
+  "sunset-tour":    { label: "Sunset Tour",    accent: "#E76F51", textClass: "text-tropic-coral",  bgClass: "bg-tropic-coral/10",  emoji: "🌅" },
 };
 
 const ease = "cubic-bezier(0.16, 1, 0.3, 1)";
@@ -114,12 +117,15 @@ const filterLabels: Record<ActivityType, string> = {
   "fun-diving":     "Fun Diving",
   snorkeling:       "Snorkeling",
   "whale-watching": "Whale Watching",
+  "jet-ski":        "Jet Ski",
+  "boat-tour":      "Boat Tour",
+  "sunset-tour":    "Sunset Tour",
 };
 
 export default function ActivitiesGrid({ experiences }: { experiences: Experience[] }) {
   const [activeType, setActiveType] = useState<ActivityType>("all");
 
-  const types: ActivityType[] = ["all", "try-diving", "fun-diving", "snorkeling", "whale-watching"];
+  const types: ActivityType[] = ["all", "try-diving", "fun-diving", "snorkeling", "whale-watching", "jet-ski", "boat-tour", "sunset-tour"];
 
   const counts: Record<ActivityType, number> = {
     all:              experiences.length,
@@ -127,6 +133,9 @@ export default function ActivitiesGrid({ experiences }: { experiences: Experienc
     "fun-diving":     experiences.filter((e) => e.type === "fun-diving").length,
     snorkeling:       experiences.filter((e) => e.type === "snorkeling").length,
     "whale-watching": experiences.filter((e) => e.type === "whale-watching").length,
+    "jet-ski":        experiences.filter((e) => e.type === "jet-ski").length,
+    "boat-tour":      experiences.filter((e) => e.type === "boat-tour").length,
+    "sunset-tour":    experiences.filter((e) => e.type === "sunset-tour").length,
   };
 
   const filtered = activeType === "all" ? experiences : experiences.filter((e) => e.type === activeType);

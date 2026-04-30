@@ -4,6 +4,13 @@ import Link from "next/link";
 import { getExperiences, getExperienceBySlug } from "@/lib/api/experiences";
 import type { Experience } from "@/lib/types";
 import ActivityDetailClient from "@/components/activities/ActivityDetailClient";
+import FaqAccordion from "@/components/ui/FaqAccordion";
+import GalleryStrip from "@/components/ui/GalleryStrip";
+import TestimonialStrip from "@/components/ui/TestimonialStrip";
+import RelatedGrid from "@/components/ui/RelatedGrid";
+import { activityFaqs } from "@/lib/data/activity-faqs";
+import { testimonials } from "@/lib/data/testimonials";
+import { experiences as allExperiences } from "@/lib/data/experiences";
 
 export async function generateStaticParams() {
   const experiences = await getExperiences();
@@ -36,12 +43,15 @@ export async function generateMetadata({
 
 const typeMeta: Record<
   Experience["type"],
-  { label: string; accent: string; bgClass: string; textClass: string; emoji: string }
+  { label: string; accent: string; bgClass: string; textClass: string }
 > = {
-  "try-diving":     { label: "Try Diving",     accent: "#2A9D8F", bgClass: "bg-shallow-water/15", textClass: "text-shallow-water", emoji: "🤿" },
-  "fun-diving":     { label: "Fun Diving",     accent: "#F4A261", bgClass: "bg-sunrise/15",       textClass: "text-sunrise",       emoji: "🐠" },
-  snorkeling:       { label: "Snorkeling",     accent: "#E76F51", bgClass: "bg-tropic-coral/15",  textClass: "text-tropic-coral",  emoji: "🐟" },
-  "whale-watching": { label: "Whale Watching", accent: "#264653", bgClass: "bg-charcoal-sea/10",  textClass: "text-charcoal-sea",  emoji: "🐋" },
+  "try-diving":     { label: "Try Diving",     accent: "#2A9D8F", bgClass: "bg-shallow-water/15", textClass: "text-shallow-water" },
+  "fun-diving":     { label: "Fun Diving",     accent: "#F4A261", bgClass: "bg-sunrise/15",       textClass: "text-sunrise"       },
+  snorkeling:       { label: "Snorkeling",     accent: "#E76F51", bgClass: "bg-tropic-coral/15",  textClass: "text-tropic-coral"  },
+  "whale-watching": { label: "Whale Watching", accent: "#264653", bgClass: "bg-charcoal-sea/10",  textClass: "text-charcoal-sea"  },
+  "jet-ski":        { label: "Jet Ski",        accent: "#2A9D8F", bgClass: "bg-shallow-water/15", textClass: "text-shallow-water" },
+  "boat-tour":      { label: "Boat Tour",      accent: "#F4A261", bgClass: "bg-sunrise/15",       textClass: "text-sunrise"       },
+  "sunset-tour":    { label: "Sunset Tour",    accent: "#E76F51", bgClass: "bg-tropic-coral/15",  textClass: "text-tropic-coral"  },
 };
 
 export default async function ActivityDetailPage({
@@ -54,12 +64,31 @@ export default async function ActivityDetailPage({
   if (!experience) notFound();
 
   const meta = typeMeta[experience.type];
+  const pageFaqs = activityFaqs[experience.slug] ?? [];
+
+  // Related activities (up to 3, exclude self)
+  const relatedActivities = allExperiences
+    .filter((e) => e.slug !== experience.slug)
+    .slice(0, 3)
+    .map((e) => ({
+      slug: e.slug,
+      name: e.name,
+      description: e.description.slice(0, 120),
+      badge: typeMeta[e.type].label,
+      badgeColor: typeMeta[e.type].accent,
+      href: `/activities/${e.slug}`,
+    }));
+
+  // Pick 1–2 testimonials
+  const activityTestimonials = testimonials
+    .filter((t) => t.course === "Discover Scuba Diving" || !t.course?.includes("Diver"))
+    .slice(0, 2);
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "TouristAttraction",
     name: experience.name,
-    description: experience.description,
+    description: experience.description.slice(0, 300),
     url: `https://divingclub.lk/activities/${experience.slug}`,
     offers: {
       "@type": "Offer",
@@ -74,17 +103,34 @@ export default async function ActivityDetailPage({
     },
   };
 
+  const faqJsonLd = pageFaqs.length > 0
+    ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: pageFaqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.question,
+          acceptedAnswer: { "@type": "Answer", text: faq.answer },
+        })),
+      }
+    : null;
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
 
       {/* Hero */}
       <section className="bg-charcoal-sea py-16 lg:py-24 px-6">
         <div className="max-w-6xl mx-auto">
-          {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-warm-white/35 text-xs mb-7">
             <Link href="/" className="hover:text-warm-white/60 transition-colors">Home</Link>
             <span>/</span>
@@ -93,7 +139,6 @@ export default async function ActivityDetailPage({
             <span className="text-warm-white/60">{experience.name}</span>
           </nav>
 
-          {/* Type badge */}
           <span
             className="inline-block text-xs font-bold px-3 py-1.5 rounded-full text-white mb-5"
             style={{ background: meta.accent }}
@@ -105,7 +150,6 @@ export default async function ActivityDetailPage({
             {experience.name}
           </h1>
 
-          {/* Meta chips */}
           <div className="flex flex-wrap gap-2 mb-8">
             <span className="text-xs text-warm-white/60 bg-white/10 px-3 py-1.5 rounded-full">
               ⏱ {experience.duration}
@@ -120,7 +164,6 @@ export default async function ActivityDetailPage({
             )}
           </div>
 
-          {/* Price */}
           <div>
             <span className="text-warm-white/50 text-sm uppercase tracking-widest">From</span>
             <p className="text-warm-white text-5xl font-bold leading-none mt-1">
@@ -136,16 +179,15 @@ export default async function ActivityDetailPage({
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
 
-            {/* Left: content */}
             <div className="lg:col-span-2 space-y-10">
 
-              {/* Description */}
               <div>
                 <h2 className="text-charcoal-sea text-2xl font-bold mb-4">About this activity</h2>
-                <p className="text-charcoal-sea/70 leading-relaxed">{experience.description}</p>
+                {experience.description.split("\n\n").map((para, i) => (
+                  <p key={i} className="text-charcoal-sea/70 leading-relaxed mb-4">{para}</p>
+                ))}
               </div>
 
-              {/* What's included */}
               <div>
                 <h2 className="text-charcoal-sea text-2xl font-bold mb-4">What&apos;s included</h2>
                 <ul className="space-y-3">
@@ -165,14 +207,12 @@ export default async function ActivityDetailPage({
                 </ul>
               </div>
 
-              {/* Requirements */}
               <div className={`rounded-2xl p-6 ${meta.bgClass}`}>
                 <h2 className={`text-lg font-bold mb-2 ${meta.textClass}`}>Who can join</h2>
                 <p className="text-charcoal-sea/70 leading-relaxed">{experience.requirements}</p>
               </div>
             </div>
 
-            {/* Right: booking card */}
             <div className="lg:col-span-1">
               <ActivityDetailClient
                 experienceName={experience.name}
@@ -189,6 +229,22 @@ export default async function ActivityDetailPage({
           </div>
         </div>
       </section>
+
+      {/* Gallery */}
+      <GalleryStrip images={[]} heading={`${experience.name} — Photos`} />
+
+      {/* FAQ */}
+      {pageFaqs.length > 0 && (
+        <FaqAccordion faqs={pageFaqs} heading={`Questions about ${experience.name}`} />
+      )}
+
+      {/* Testimonials */}
+      {activityTestimonials.length > 0 && (
+        <TestimonialStrip testimonials={activityTestimonials} />
+      )}
+
+      {/* Related activities */}
+      <RelatedGrid items={relatedActivities} heading="More things to do" />
 
       {/* Bottom CTA */}
       <section className="bg-charcoal-sea py-20 px-6">

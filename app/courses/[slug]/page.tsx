@@ -4,6 +4,13 @@ import Link from "next/link";
 import { getCourses, getCourseBySlug } from "@/lib/api/courses";
 import type { Course } from "@/lib/types";
 import CourseDetailClient from "@/components/courses/CourseDetailClient";
+import FaqAccordion from "@/components/ui/FaqAccordion";
+import GalleryStrip from "@/components/ui/GalleryStrip";
+import TestimonialStrip from "@/components/ui/TestimonialStrip";
+import RelatedGrid from "@/components/ui/RelatedGrid";
+import { courseFaqs } from "@/lib/data/course-faqs";
+import { testimonials } from "@/lib/data/testimonials";
+import { courses as allCourses } from "@/lib/data/courses";
 
 export async function generateStaticParams() {
   const courses = await getCourses();
@@ -51,6 +58,26 @@ export default async function CourseDetailPage({
   if (!course) notFound();
 
   const meta = levelMeta[course.level];
+  const pageFaqs = courseFaqs[course.slug] ?? [];
+
+  // Related courses: same level (exclude self), up to 3
+  const relatedCourses = allCourses
+    .filter((c) => c.slug !== course.slug && c.level === course.level)
+    .concat(allCourses.filter((c) => c.slug !== course.slug && c.level !== course.level))
+    .slice(0, 3)
+    .map((c) => ({
+      slug: c.slug,
+      name: c.name,
+      description: c.description.slice(0, 120),
+      badge: levelMeta[c.level].label,
+      badgeColor: levelMeta[c.level].accent,
+      href: `/courses/${c.slug}`,
+    }));
+
+  // Pick testimonials that mention this course or are general
+  const courseTestimonials = testimonials
+    .filter((t) => !t.course || t.course === course.name || t.course === "Fun Diving")
+    .slice(0, 2);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -71,17 +98,34 @@ export default async function CourseDetailPage({
     },
   };
 
+  const faqJsonLd = pageFaqs.length > 0
+    ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: pageFaqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.question,
+          acceptedAnswer: { "@type": "Answer", text: faq.answer },
+        })),
+      }
+    : null;
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
 
       {/* Hero */}
       <section className="bg-charcoal-sea py-16 lg:py-24 px-6">
         <div className="max-w-6xl mx-auto">
-          {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-warm-white/35 text-xs mb-7">
             <Link href="/" className="hover:text-warm-white/60 transition-colors">Home</Link>
             <span>/</span>
@@ -90,7 +134,6 @@ export default async function CourseDetailPage({
             <span className="text-warm-white/60">{course.name}</span>
           </nav>
 
-          {/* Level badge */}
           <span
             className="inline-block text-xs font-bold px-3 py-1.5 rounded-full text-white mb-5"
             style={{ background: meta.accent }}
@@ -102,7 +145,6 @@ export default async function CourseDetailPage({
             {course.name}
           </h1>
 
-          {/* Meta chips */}
           <div className="flex flex-wrap gap-2 mb-8">
             <span className="text-xs text-warm-white/60 bg-white/10 px-3 py-1.5 rounded-full">
               ⏱ {course.duration}
@@ -117,7 +159,6 @@ export default async function CourseDetailPage({
             </span>
           </div>
 
-          {/* Price */}
           <div>
             <span className="text-warm-white/50 text-sm uppercase tracking-widest">From</span>
             <p className="text-warm-white text-5xl font-bold leading-none mt-1">
@@ -133,16 +174,15 @@ export default async function CourseDetailPage({
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
 
-            {/* Left: content */}
             <div className="lg:col-span-2 space-y-10">
 
-              {/* Description */}
               <div>
                 <h2 className="text-charcoal-sea text-2xl font-bold mb-4">About this course</h2>
-                <p className="text-charcoal-sea/70 leading-relaxed">{course.description}</p>
+                {course.description.split("\n\n").map((para, i) => (
+                  <p key={i} className="text-charcoal-sea/70 leading-relaxed mb-4">{para}</p>
+                ))}
               </div>
 
-              {/* What you'll learn */}
               <div>
                 <h2 className="text-charcoal-sea text-2xl font-bold mb-4">What you&apos;ll learn</h2>
                 <ul className="space-y-3">
@@ -162,7 +202,6 @@ export default async function CourseDetailPage({
                 </ul>
               </div>
 
-              {/* What's included */}
               <div>
                 <h2 className="text-charcoal-sea text-2xl font-bold mb-4">What&apos;s included</h2>
                 <ul className="space-y-3">
@@ -175,14 +214,12 @@ export default async function CourseDetailPage({
                 </ul>
               </div>
 
-              {/* Requirements */}
               <div className={`rounded-2xl p-6 ${meta.bgClass}`}>
                 <h2 className={`text-lg font-bold mb-2 ${meta.textClass}`}>Requirements</h2>
                 <p className="text-charcoal-sea/70 leading-relaxed">{course.requirements}</p>
               </div>
             </div>
 
-            {/* Right: booking card */}
             <div className="lg:col-span-1">
               <CourseDetailClient
                 courseName={course.name}
@@ -199,6 +236,22 @@ export default async function CourseDetailPage({
           </div>
         </div>
       </section>
+
+      {/* Gallery */}
+      <GalleryStrip images={[]} heading={`${course.name} — Photos`} />
+
+      {/* FAQ */}
+      {pageFaqs.length > 0 && (
+        <FaqAccordion faqs={pageFaqs} heading={`Questions about the ${course.name} course`} />
+      )}
+
+      {/* Testimonials */}
+      {courseTestimonials.length > 0 && (
+        <TestimonialStrip testimonials={courseTestimonials} />
+      )}
+
+      {/* Related courses */}
+      <RelatedGrid items={relatedCourses} heading="Other courses you might like" />
 
       {/* Bottom CTA */}
       <section className="bg-charcoal-sea py-20 px-6">

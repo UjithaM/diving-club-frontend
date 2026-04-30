@@ -5,21 +5,27 @@ import AnimatedSection from "@/components/ui/AnimatedSection";
 const testimonials = [
   {
     quote:
-      "I'd never put on a tank before. Three hours later I was 12 metres underwater staring at a turtle. Still can't really believe it.",
-    name: "Sarah M.",
-    origin: "UK",
+      "We went on a boat tour to see dolphins and it was such an amazing experience! The whole trip was really well organised, and seeing the dolphins up close in their natural environment was unforgettable. The crew was super friendly and made sure everyone felt comfortable and safe.",
+    name: "Lavaenya Manirupan",
+    origin: "Google Review · 2 weeks ago",
   },
   {
     quote:
-      "The instructor was with me the whole time and never made me feel rushed. The Open Water course here was the best decision of my holiday.",
-    name: "Marco T.",
-    origin: "Germany",
+      "We visited Trinco Diving Club — awesome experience and the staff are very friendly. Reasonable price and we really enjoyed it. If you visit Trinco you must try this diving club.",
+    name: "Bad Ass",
+    origin: "Google Review · 3 weeks ago",
   },
   {
     quote:
-      "We booked the whale watching on a whim the morning of. Saw three blue whales. Nothing will ever top that.",
-    name: "Priya K.",
-    origin: "Canada",
+      "Wonderful experience — a great place to go snorkelling. People are very polite and really make you feel the experience of the sea and its habitat.",
+    name: "Dinesh Kumar",
+    origin: "Local Guide · Google Review · 4 weeks ago",
+  },
+  {
+    quote:
+      "Very nice experience, friendly and helpful staff. Will recommend to everyone who wishes to enjoy a lovely boat ride.",
+    name: "S. D. Liyanage",
+    origin: "Google Review · 1 month ago",
   },
 ];
 
@@ -49,7 +55,7 @@ export default function TestimonialsSection() {
         </AnimatedSection>
 
         {/* Testimonials grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:divide-x md:divide-charcoal-sea/8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:divide-x md:divide-charcoal-sea/8">
           {testimonials.map((t, i) => (
             <AnimatedSection key={t.name} delay={i * 0.1}>
               <blockquote className="md:px-8 first:pl-0 last:pr-0">

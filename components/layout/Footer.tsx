@@ -47,10 +47,15 @@ export default function Footer() {
           <p className="text-[10px] uppercase tracking-[0.2em] text-warm-white/30 mb-5">Explore</p>
           <ul className="space-y-3">
             <li><Link href="/courses" className="text-sm text-warm-white/50 hover:text-warm-white transition-colors">PADI Courses</Link></li>
+            <li><Link href="/dive-sites" className="text-sm text-warm-white/50 hover:text-warm-white transition-colors">Dive Sites</Link></li>
             <li><Link href="/activities" className="text-sm text-warm-white/50 hover:text-warm-white transition-colors">Activities</Link></li>
+            <li><Link href="/scuba-diving-in-trincomalee" className="text-sm text-warm-white/50 hover:text-warm-white transition-colors">Trincomalee Guide</Link></li>
+            <li><Link href="/scuba-diving-in-sri-lanka" className="text-sm text-warm-white/50 hover:text-warm-white transition-colors">Sri Lanka Diving</Link></li>
+            <li><Link href="/gallery" className="text-sm text-warm-white/50 hover:text-warm-white transition-colors">Gallery</Link></li>
+            <li><Link href="/faq" className="text-sm text-warm-white/50 hover:text-warm-white transition-colors">FAQ</Link></li>
+            <li><Link href="/blog" className="text-sm text-warm-white/50 hover:text-warm-white transition-colors">Blog</Link></li>
             <li><Link href="/about" className="text-sm text-warm-white/50 hover:text-warm-white transition-colors">About Us</Link></li>
             <li><Link href="/contact" className="text-sm text-warm-white/50 hover:text-warm-white transition-colors">Contact</Link></li>
-            <li><Link href="/book" className="text-sm text-warm-white/50 hover:text-warm-white transition-colors">Book a Dive</Link></li>
           </ul>
         </div>
 

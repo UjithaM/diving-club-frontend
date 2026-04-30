@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import AnimatedSection from "@/components/ui/AnimatedSection";
 
@@ -12,6 +13,8 @@ const sites = [
       "A shallow reef teeming with parrotfish, triggerfish, and — if you move slowly and stay quiet — a sleeping turtle tucked into the coral.",
     tint: "bg-tropic-coral/20",
     direction: "left" as const,
+    image: "/assets/scuba-diver-ok-signal-underwater-trincomalee.webp",
+    imageAlt: "Scuba diver giving the OK signal underwater at Coral Garden reef, Trincomalee",
   },
   {
     name: "Powder Blue Bay",
@@ -21,6 +24,8 @@ const sites = [
       "Named for the schools of powder blue surgeonfish that swirl through the water in formation. The visibility on a clear day is something you won't forget.",
     tint: "bg-blue-500/15",
     direction: "right" as const,
+    image: "/assets/group-scuba-diving-trincomalee-sri-lanka.webp",
+    imageAlt: "Group of scuba divers exploring Powder Blue Bay in Trincomalee, Sri Lanka",
   },
   {
     name: "Wreck of the Hermes",
@@ -30,6 +35,8 @@ const sites = [
       "A WWII-era vessel resting on a sandy bed. Lionfish guard the wheelhouse; reef sharks patrol the bow. One of Sri Lanka's most iconic wreck dives.",
     tint: "bg-tropic-coral/20",
     direction: "left" as const,
+    image: "/assets/scuba-diver-exploring-shipwreck-trincomalee.webp",
+    imageAlt: "Scuba diver exploring a historic shipwreck at the bottom of Trincomalee bay",
   },
 ];
 
@@ -45,12 +52,22 @@ export default function DiveSitesSection() {
               Explore Below
             </span>
           </div>
-          <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-extrabold leading-tight text-warm-white font-display">
-            Trincomalee&apos;s Best Dive Sites
-          </h2>
-          <p className="text-warm-white/50 text-base leading-relaxed mt-4 max-w-xl">
-            Every site has its own personality. Here are three that keep divers coming back year after year.
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+            <div>
+              <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-extrabold leading-tight text-warm-white font-display">
+                Trincomalee&apos;s Best Dive Sites
+              </h2>
+              <p className="text-warm-white/50 text-base leading-relaxed mt-4 max-w-xl">
+                Every site has its own personality. Here are three that keep divers coming back year after year.
+              </p>
+            </div>
+            <Link
+              href="/dive-sites"
+              className="text-sm font-semibold text-tropic-coral hover:text-warm-white transition-colors flex-shrink-0"
+            >
+              All 12 sites →
+            </Link>
+          </div>
         </AnimatedSection>
 
         {/* Alternating rows */}
@@ -60,20 +77,18 @@ export default function DiveSitesSection() {
               <div
                 className={`flex flex-col lg:flex-row gap-8 lg:gap-16 items-center${site.direction === "right" ? " lg:flex-row-reverse" : ""}`}
               >
-                {/* Photo placeholder */}
+                {/* Dive site photo */}
                 <div
                   className={`w-full lg:w-1/2 flex-shrink-0 aspect-[4/3] rounded-3xl ${site.tint} overflow-hidden relative`}
                 >
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <svg
-                      className="w-24 h-24 text-white/10"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path d="M21 19V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
-                    </svg>
-                  </div>
+                  <Image
+                    src={site.image}
+                    alt={site.imageAlt}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-charcoal-sea/30 to-transparent" />
                 </div>
 
                 {/* Text block */}
@@ -98,7 +113,7 @@ export default function DiveSitesSection() {
                   </p>
 
                   <Link
-                    href="/activities"
+                    href="/dive-sites"
                     className="text-sm font-semibold text-tropic-coral hover:text-warm-white transition-colors"
                   >
                     Learn more →

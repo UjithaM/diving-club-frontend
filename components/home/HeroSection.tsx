@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 
 const ease = "cubic-bezier(0.16, 1, 0.3, 1)";
@@ -147,29 +148,17 @@ export default function HeroSection() {
           className="hidden lg:block relative"
           style={mounted ? { animation: `hero-slide-up 0.9s 0.3s ${ease} both` } : { opacity: 0 }}
         >
-          {/* Photo placeholder */}
+          {/* Hero photo */}
           <div className="rounded-3xl overflow-hidden aspect-[3/4] bg-[#1a3540] relative">
-            {/* Placeholder wave SVG */}
-            <svg
-              className="absolute bottom-0 left-0 w-full opacity-10"
-              viewBox="0 0 400 120"
-              preserveAspectRatio="none"
-              fill="#2A9D8F"
-              aria-hidden="true"
-            >
-              <path d="M0 60 Q100 20 200 60 Q300 100 400 60 L400 120 L0 120 Z" />
-              <path d="M0 80 Q100 50 200 80 Q300 110 400 80 L400 120 L0 120 Z" opacity="0.5" />
-            </svg>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <svg
-                className="w-20 h-20 text-shallow-water/20"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path d="M21 19V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
-              </svg>
-            </div>
+            <Image
+              src="/assets/couple-scuba-diving-trincomalee.webp"
+              alt="Couple scuba diving together in the clear waters of Trincomalee, Sri Lanka"
+              fill
+              className="object-cover"
+              priority
+              sizes="(max-width: 1024px) 0px, 45vw"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-charcoal-sea/40 to-transparent" />
           </div>
 
           {/* Floating stat card */}

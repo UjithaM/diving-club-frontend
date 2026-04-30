@@ -22,6 +22,18 @@ const experienceItems = [
   { slug: "fun-diving-4", name: "Fun Diving — 4 Dives" },
   { slug: "snorkeling-tour", name: "Snorkeling Tour" },
   { slug: "whale-watching", name: "Whale & Dolphin Watching" },
+  { slug: "jet-ski", name: "Jet Ski" },
+  { slug: "boat-tours", name: "Boat Tours" },
+  { slug: "sunset-tours", name: "Sunset Tours" },
+];
+
+const diveSiteItems = [
+  { slug: "swami-rock", name: "Swami Rock" },
+  { slug: "pigeon-island", name: "Pigeon Island" },
+  { slug: "hms-hermes-wreck", name: "HMS Hermes Wreck" },
+  { slug: "ss-british-sergeant-wreck", name: "SS British Sergeant" },
+  { slug: "coral-garden", name: "Coral Garden" },
+  { slug: "klathipa-deep", name: "Klathipa Deep" },
 ];
 
 function ChevronDown({ className }: { className?: string }) {
@@ -179,7 +191,7 @@ export default function Header() {
       } ${
         scrolled
           ? "bg-warm-white/95 backdrop-blur-md border-b border-charcoal-sea/10"
-          : "bg-charcoal-sea/95 backdrop-blur-sm md:bg-transparent border-b border-transparent"
+          : "bg-charcoal-sea/95 backdrop-blur-sm border-b border-transparent"
       }`}
     >
       <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-16">
@@ -203,12 +215,19 @@ export default function Header() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden md:flex items-center gap-6">
           <DesktopDropdown
             label="Courses"
             href="/courses"
             baseHref="/courses"
             items={courseItems}
+            scrolled={scrolled}
+          />
+          <DesktopDropdown
+            label="Dive Sites"
+            href="/dive-sites"
+            baseHref="/dive-sites"
+            items={diveSiteItems}
             scrolled={scrolled}
           />
           <DesktopDropdown
@@ -218,8 +237,8 @@ export default function Header() {
             items={experienceItems}
             scrolled={scrolled}
           />
-          <Link href="/about" className={navLinkClass}>About Us</Link>
-          <Link href="/contact" className={navLinkClass}>Contact</Link>
+          <Link href="/scuba-diving-in-trincomalee" className={navLinkClass}>Trincomalee Guide</Link>
+          <Link href="/faq" className={navLinkClass}>FAQ</Link>
           <Link href="/book" className={bookCtaClass}>
             Book a Dive
           </Link>
@@ -275,6 +294,36 @@ export default function Header() {
             </div>
           </div>
 
+          {/* Dive Sites accordion */}
+          <button
+            className="flex items-center justify-between w-full py-3 text-charcoal-sea/70 hover:text-charcoal-sea font-medium transition-colors text-left text-sm border-t border-charcoal-sea/5 cursor-pointer"
+            onClick={() => toggleSection("dive-sites")}
+          >
+            Dive Sites
+            <ChevronDown className={`transition-transform duration-200 ${mobileSection === "dive-sites" ? "rotate-180" : ""}`} />
+          </button>
+          <div className={`overflow-hidden transition-all duration-300 ${mobileSection === "dive-sites" ? "max-h-[400px]" : "max-h-0"}`}>
+            <div className="pb-3 flex flex-col gap-0.5 pl-2 border-l border-shallow-water/30 ml-1 mb-1">
+              <Link
+                href="/dive-sites"
+                className="py-2 text-tropic-coral font-semibold text-sm flex items-center gap-1.5 hover:text-charcoal-sea transition-colors"
+                onClick={closeMobile}
+              >
+                All 12 Dive Sites →
+              </Link>
+              {diveSiteItems.map((item) => (
+                <Link
+                  key={item.slug}
+                  href={`/dive-sites/${item.slug}`}
+                  className="py-1.5 text-charcoal-sea/50 text-sm hover:text-charcoal-sea transition-colors"
+                  onClick={closeMobile}
+                >
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+
           {/* Activities accordion */}
           <button
             className="flex items-center justify-between w-full py-3 text-charcoal-sea/70 hover:text-charcoal-sea font-medium transition-colors text-left text-sm border-t border-charcoal-sea/5 cursor-pointer"
@@ -283,7 +332,7 @@ export default function Header() {
             Activities
             <ChevronDown className={`transition-transform duration-200 ${mobileSection === "activities" ? "rotate-180" : ""}`} />
           </button>
-          <div className={`overflow-hidden transition-all duration-300 ${mobileSection === "activities" ? "max-h-[300px]" : "max-h-0"}`}>
+          <div className={`overflow-hidden transition-all duration-300 ${mobileSection === "activities" ? "max-h-[400px]" : "max-h-0"}`}>
             <div className="pb-3 flex flex-col gap-0.5 pl-2 border-l border-shallow-water/30 ml-1 mb-1">
               <Link
                 href="/activities"
@@ -305,6 +354,10 @@ export default function Header() {
             </div>
           </div>
 
+          <Link href="/scuba-diving-in-trincomalee" className="py-3 text-charcoal-sea/70 hover:text-charcoal-sea text-sm font-medium transition-colors border-t border-charcoal-sea/5" onClick={closeMobile}>Trincomalee Guide</Link>
+          <Link href="/faq" className="py-3 text-charcoal-sea/70 hover:text-charcoal-sea text-sm font-medium transition-colors border-t border-charcoal-sea/5" onClick={closeMobile}>FAQ</Link>
+          <Link href="/gallery" className="py-3 text-charcoal-sea/70 hover:text-charcoal-sea text-sm font-medium transition-colors border-t border-charcoal-sea/5" onClick={closeMobile}>Gallery</Link>
+          <Link href="/blog" className="py-3 text-charcoal-sea/70 hover:text-charcoal-sea text-sm font-medium transition-colors border-t border-charcoal-sea/5" onClick={closeMobile}>Blog</Link>
           <Link href="/about" className="py-3 text-charcoal-sea/70 hover:text-charcoal-sea text-sm font-medium transition-colors border-t border-charcoal-sea/5" onClick={closeMobile}>About Us</Link>
           <Link href="/contact" className="py-3 text-charcoal-sea/70 hover:text-charcoal-sea text-sm font-medium transition-colors border-t border-charcoal-sea/5" onClick={closeMobile}>Contact</Link>
           <div className="pt-3 pb-2 border-t border-charcoal-sea/5">
