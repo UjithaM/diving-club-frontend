@@ -10,15 +10,8 @@ interface GalleryStripProps {
   heading?: string;
 }
 
-const fallbackImages: GalleryImage[] = [
-  { src: "/assets/scuba-diving-trincomalee.webp", alt: "Scuba diving in Trincomalee, Sri Lanka" },
-  { src: "/assets/coral-reef-trincomalee.webp", alt: "Coral reef dive site in Trincomalee" },
-  { src: "/assets/scuba-instructor-trincomalee.webp", alt: "PADI instructor guiding divers underwater" },
-  { src: "/assets/whale-watching-trincomalee.webp", alt: "Blue whale watching boat trip in Trincomalee" },
-];
-
 export default function GalleryStrip({ images, heading }: GalleryStripProps) {
-  const displayImages = images.length > 0 ? images : fallbackImages;
+  if (images.length === 0) return null;
 
   return (
     <section className="bg-charcoal-sea/5 py-14 px-6">
@@ -30,7 +23,7 @@ export default function GalleryStrip({ images, heading }: GalleryStripProps) {
           </div>
         )}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {displayImages.slice(0, 4).map((img, i) => (
+          {images.slice(0, 4).map((img, i) => (
             <div
               key={i}
               className={`relative overflow-hidden rounded-2xl bg-charcoal-sea/10 ${

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { getCourses } from "@/lib/api/courses";
 import { getExperiences } from "@/lib/api/experiences";
+import { getDiveSites } from "@/lib/api/dive-sites";
+import { getGalleryImages } from "@/lib/api/gallery";
 import HeroSection from "@/components/home/HeroSection";
 import StatsSection from "@/components/home/StatsSection";
 import FeaturedExperiencesSection from "@/components/home/FeaturedExperiencesSection";
@@ -84,12 +86,18 @@ const faqJsonLd = {
 };
 
 export default async function HomePage() {
-  const [allCourses, allExperiences] = await Promise.all([getCourses(), getExperiences()]);
+  const [allCourses, allExperiences, allDiveSites, galleryImages] = await Promise.all([
+    getCourses(),
+    getExperiences(),
+    getDiveSites(),
+    getGalleryImages().catch(() => []),
+  ]);
 
   const featuredCourses = allCourses.filter((c) => c.popular).slice(0, 3);
   const featuredExperiences = allExperiences.filter((e) =>
     ["try-diving", "fun-diving-2", "whale-watching"].includes(e.slug)
   );
+  const featuredDiveSites = allDiveSites.filter((s) => s.popular).slice(0, 3);
 
   return (
     <>
@@ -106,9 +114,9 @@ export default async function HomePage() {
       <FeaturedExperiencesSection experiences={featuredExperiences} />
       <FeaturedCoursesSection courses={featuredCourses} />
       <WhyChooseUsSection />
-      <DiveSitesSection />
+      <DiveSitesSection sites={featuredDiveSites} />
       <TestimonialsSection />
-      <GallerySection />
+      <GallerySection images={galleryImages} />
       <ContactCtaSection />
     </>
   );
