@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import BookingModal from "@/components/ui/BookingModal";
 
 interface CourseDetailClientProps {
   courseName: string;
@@ -25,11 +23,8 @@ export default function CourseDetailClient({
   metaTextClass,
   metaLabel,
 }: CourseDetailClientProps) {
-  const [modalOpen, setModalOpen] = useState(false);
-
   return (
-    <>
-      <div className="sticky top-24 bg-white rounded-2xl shadow-md p-7 border border-charcoal-sea/8">
+    <div className="sticky top-24 bg-white rounded-2xl shadow-md p-7 border border-charcoal-sea/8">
         <div className="mb-6">
           <p className="text-charcoal-sea/45 text-xs uppercase tracking-widest mb-1">Course price</p>
           <p className="text-charcoal-sea text-4xl font-bold leading-none">
@@ -59,12 +54,12 @@ export default function CourseDetailClient({
           </div>
         </div>
 
-        <button
-          onClick={() => setModalOpen(true)}
+        <Link
+          href={`/book?type=course&item=${encodeURIComponent(courseName)}`}
           className="block w-full text-center bg-charcoal-sea text-warm-white font-bold py-3.5 rounded-full hover:bg-shallow-water transition-colors text-sm mb-3"
         >
           Book This Course
-        </button>
+        </Link>
         <Link
           href="/contact"
           className="block w-full text-center border border-charcoal-sea/20 text-charcoal-sea/70 font-semibold py-3.5 rounded-full hover:border-charcoal-sea/40 hover:text-charcoal-sea transition-colors text-sm"
@@ -75,14 +70,6 @@ export default function CourseDetailClient({
         <p className="text-center text-xs text-charcoal-sea/35 mt-4 leading-relaxed">
           All equipment included · Small groups · PADI certified
         </p>
-      </div>
-
-      <BookingModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        preselectedItem={courseName}
-        preselectedType="course"
-      />
-    </>
+    </div>
   );
 }

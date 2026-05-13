@@ -10,7 +10,6 @@ import TestimonialStrip from "@/components/ui/TestimonialStrip";
 import RelatedGrid from "@/components/ui/RelatedGrid";
 import { courseFaqs } from "@/lib/data/course-faqs";
 import { testimonials } from "@/lib/data/testimonials";
-import { courses as allCourses } from "@/lib/data/courses";
 
 export async function generateStaticParams() {
   const courses = await getCourses();
@@ -60,7 +59,8 @@ export default async function CourseDetailPage({
   const meta = levelMeta[course.level];
   const pageFaqs = courseFaqs[course.slug] ?? [];
 
-  // Related courses: same level (exclude self), up to 3
+  // Related courses: same level first (exclude self), up to 3
+  const allCourses = await getCourses();
   const relatedCourses = allCourses
     .filter((c) => c.slug !== course.slug && c.level === course.level)
     .concat(allCourses.filter((c) => c.slug !== course.slug && c.level !== course.level))

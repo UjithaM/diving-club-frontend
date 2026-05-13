@@ -1,10 +1,15 @@
+import { apiFetch, apiList } from "./client";
 import type { DiveSite } from "@/lib/types";
-import { diveSites } from "@/lib/data/dive-sites";
 
 export async function getDiveSites(): Promise<DiveSite[]> {
-  return diveSites;
+  return apiList<DiveSite>("/dive-sites", ["dive-sites"]);
 }
 
 export async function getDiveSiteBySlug(slug: string): Promise<DiveSite | undefined> {
-  return diveSites.find((d) => d.slug === slug);
+  try {
+    const json = await apiFetch<{ data: DiveSite }>(`/dive-sites/${slug}`, ["dive-sites", `dive-site:${slug}`]);
+    return json.data;
+  } catch {
+    return undefined;
+  }
 }

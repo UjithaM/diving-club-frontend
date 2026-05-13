@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { getGalleryImages } from "@/lib/api/gallery";
 
 export const metadata: Metadata = {
   title: "Gallery — Diving Club Trincomalee",
@@ -14,30 +15,24 @@ export const metadata: Metadata = {
   },
 };
 
-const images = [
-  { src: "/assets/scuba-diving-trincomalee.webp", alt: "Scuba diver exploring coral reef at Swami Rock, Trincomalee", caption: "Swami Rock" },
-  { src: "/assets/coral-reef-trincomalee.webp", alt: "Healthy coral bommie at Coral Garden dive site, Trincomalee", caption: "Coral Garden" },
-  { src: "/assets/scuba-instructor-trincomalee.webp", alt: "PADI instructor guiding an Open Water student underwater in Trincomalee", caption: "Open Water training" },
-  { src: "/assets/whale-watching-trincomalee.webp", alt: "Blue whale surfacing off Trincomalee coast during whale watching trip", caption: "Blue whale watching" },
-  { src: "/assets/J-rockshan-with-open-water-students.webp", alt: "J Rockshan with two newly certified Open Water Diver students on the beach", caption: "Newly certified divers" },
-  { src: "/assets/scuba-diving-trincomalee.webp", alt: "School of tropical fish around coral at Pigeon Island National Park", caption: "Pigeon Island" },
-];
+export default async function GalleryPage() {
+  const apiImages = await getGalleryImages().catch(() => []);
+  const images = apiImages.map((img) => ({ src: img.url, alt: img.title, caption: img.title }));
 
-const galleryJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "ImageGallery",
-  name: "Diving Club Trincomalee — Gallery",
-  url: "https://divingclub.lk/gallery",
-  description: "Photos from scuba diving, PADI courses, whale watching, and water activities in Trincomalee, Sri Lanka.",
-  image: images.map((img) => ({
-    "@type": "ImageObject",
-    contentUrl: `https://divingclub.lk${img.src}`,
-    description: img.alt,
-    name: img.caption,
-  })),
-};
+  const galleryJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ImageGallery",
+    name: "Diving Club Trincomalee — Gallery",
+    url: "https://divingclub.lk/gallery",
+    description: "Photos from scuba diving, PADI courses, whale watching, and water activities in Trincomalee, Sri Lanka.",
+    image: images.map((img) => ({
+      "@type": "ImageObject",
+      contentUrl: img.src,
+      description: img.alt,
+      name: img.caption,
+    })),
+  };
 
-export default function GalleryPage() {
   return (
     <>
       <script
@@ -73,29 +68,33 @@ export default function GalleryPage() {
       {/* Gallery grid */}
       <section className="bg-warm-white py-16 px-6">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {images.map((img, i) => (
-              <figure
-                key={i}
-                className={`relative overflow-hidden rounded-2xl bg-charcoal-sea/10 group ${
-                  i === 0 ? "sm:col-span-2 lg:col-span-2 aspect-[16/9]" : "aspect-[4/3]"
-                }`}
-              >
-                <Image
-                  src={img.src}
-                  alt={img.alt}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  sizes={i === 0 ? "(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 66vw" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"}
-                  loading={i === 0 ? "eager" : "lazy"}
-                  priority={i === 0}
-                />
-                <figcaption className="absolute bottom-0 left-0 right-0 px-5 py-3 bg-gradient-to-t from-charcoal-sea/70 to-transparent">
-                  <span className="text-warm-white/90 text-sm font-medium">{img.caption}</span>
-                </figcaption>
-              </figure>
-            ))}
-          </div>
+          {images.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {images.map((img, i) => (
+                <figure
+                  key={i}
+                  className={`relative overflow-hidden rounded-2xl bg-charcoal-sea/10 group ${
+                    i === 0 ? "sm:col-span-2 lg:col-span-2 aspect-[16/9]" : "aspect-[4/3]"
+                  }`}
+                >
+                  <Image
+                    src={img.src}
+                    alt={img.alt}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    sizes={i === 0 ? "(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 66vw" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"}
+                    loading={i === 0 ? "eager" : "lazy"}
+                    priority={i === 0}
+                  />
+                  <figcaption className="absolute bottom-0 left-0 right-0 px-5 py-3 bg-gradient-to-t from-charcoal-sea/70 to-transparent">
+                    <span className="text-warm-white/90 text-sm font-medium">{img.caption}</span>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          ) : (
+            <p className="text-charcoal-sea/40 text-sm text-center py-16">Photos coming soon.</p>
+          )}
 
           <p className="text-charcoal-sea/40 text-sm text-center mt-10">
             More photos on our{" "}

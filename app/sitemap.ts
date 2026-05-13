@@ -1,11 +1,17 @@
 import type { MetadataRoute } from "next";
-import { courses } from "@/lib/data/courses";
-import { experiences } from "@/lib/data/experiences";
-import { diveSites } from "@/lib/data/dive-sites";
+import { getCourses } from "@/lib/api/courses";
+import { getExperiences } from "@/lib/api/experiences";
+import { getDiveSites } from "@/lib/api/dive-sites";
 
 const BASE = "https://divingclub.lk";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const [courses, experiences, diveSites] = await Promise.all([
+    getCourses(),
+    getExperiences(),
+    getDiveSites(),
+  ]);
+
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: BASE, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
     { url: `${BASE}/about`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { faqs } from "@/lib/data/faqs";
-import type { Faq } from "@/lib/types";
+import { getFaqs } from "@/lib/api/faqs";
+import type { ApiFaq } from "@/lib/types";
 
 export const metadata: Metadata = {
   title: "Frequently Asked Questions — Scuba Diving in Trincomalee",
@@ -15,46 +15,22 @@ export const metadata: Metadata = {
   },
 };
 
-const categories: { id: Faq["category"]; label: string; description: string }[] = [
-  {
-    id: "diving-basics",
-    label: "Diving Basics",
-    description: "New to scuba? Start here.",
-  },
-  {
-    id: "trincomalee",
-    label: "Diving in Trincomalee",
-    description: "Seasons, marine life, visibility, and what makes this place special.",
-  },
-  {
-    id: "booking-travel",
-    label: "Booking & Travel",
-    description: "How to get here, how to book, and what to expect when you arrive.",
-  },
-  {
-    id: "safety-eco",
-    label: "Safety & Eco",
-    description: "What we do to keep you safe and the reef intact.",
-  },
-];
-
 function CategorySection({
   category,
   items,
 }: {
-  category: (typeof categories)[0];
-  items: Faq[];
+  category: string;
+  items: ApiFaq[];
 }) {
   return (
     <section className="mb-14">
       <div className="flex items-center gap-3 mb-2">
         <span className="h-px w-6 bg-tropic-coral flex-shrink-0" aria-hidden="true" />
-        <h2 className="text-charcoal-sea font-display text-2xl font-extrabold">{category.label}</h2>
+        <h2 className="text-charcoal-sea font-display text-2xl font-extrabold">{category}</h2>
       </div>
-      <p className="text-charcoal-sea/50 text-sm mb-8 ml-9">{category.description}</p>
       <dl className="space-y-5 ml-0 sm:ml-9">
-        {items.map((faq, i) => (
-          <div key={i} className="border-b border-charcoal-sea/8 pb-5 last:border-0">
+        {items.map((faq) => (
+          <div key={faq.id} className="border-b border-charcoal-sea/8 pb-5 last:border-0">
             <dt className="text-charcoal-sea font-semibold text-base mb-2">{faq.question}</dt>
             <dd className="text-charcoal-sea/65 text-sm leading-relaxed">{faq.answer}</dd>
           </div>
@@ -64,7 +40,9 @@ function CategorySection({
   );
 }
 
-export default function FaqPage() {
+export default async function FaqPage() {
+  const faqs = await getFaqs();
+
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -77,6 +55,16 @@ export default function FaqPage() {
       },
     })),
   };
+
+  // Group FAQs by category, preserving sort_order within each group
+  const grouped = faqs.reduce<Record<string, ApiFaq[]>>((acc, faq) => {
+    const key = faq.category ?? "General";
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(faq);
+    return acc;
+  }, {});
+
+  const categories = Object.keys(grouped);
 
   return (
     <>
@@ -113,11 +101,9 @@ export default function FaqPage() {
       {/* FAQ content */}
       <div className="bg-warm-white py-16 px-6">
         <div className="max-w-3xl mx-auto">
-          {categories.map((cat) => {
-            const items = faqs.filter((f) => f.category === cat.id);
-            if (items.length === 0) return null;
-            return <CategorySection key={cat.id} category={cat} items={items} />;
-          })}
+          {categories.map((cat) => (
+            <CategorySection key={cat} category={cat} items={grouped[cat]} />
+          ))}
         </div>
       </div>
 

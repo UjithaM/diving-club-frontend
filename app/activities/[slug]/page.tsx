@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getExperiences, getExperienceBySlug } from "@/lib/api/experiences";
-import type { Experience } from "@/lib/types";
 import ActivityDetailClient from "@/components/activities/ActivityDetailClient";
 import FaqAccordion from "@/components/ui/FaqAccordion";
 import GalleryStrip from "@/components/ui/GalleryStrip";
@@ -10,7 +9,6 @@ import TestimonialStrip from "@/components/ui/TestimonialStrip";
 import RelatedGrid from "@/components/ui/RelatedGrid";
 import { activityFaqs } from "@/lib/data/activity-faqs";
 import { testimonials } from "@/lib/data/testimonials";
-import { experiences as allExperiences } from "@/lib/data/experiences";
 
 export async function generateStaticParams() {
   const experiences = await getExperiences();
@@ -41,10 +39,7 @@ export async function generateMetadata({
   };
 }
 
-const typeMeta: Record<
-  Experience["type"],
-  { label: string; accent: string; bgClass: string; textClass: string }
-> = {
+const typeMeta: Record<string, { label: string; accent: string; bgClass: string; textClass: string }> = {
   "try-diving":     { label: "Try Diving",     accent: "#2A9D8F", bgClass: "bg-shallow-water/15", textClass: "text-shallow-water" },
   "fun-diving":     { label: "Fun Diving",     accent: "#F4A261", bgClass: "bg-sunrise/15",       textClass: "text-sunrise"       },
   snorkeling:       { label: "Snorkeling",     accent: "#E76F51", bgClass: "bg-tropic-coral/15",  textClass: "text-tropic-coral"  },
@@ -53,6 +48,8 @@ const typeMeta: Record<
   "boat-tour":      { label: "Boat Tour",      accent: "#F4A261", bgClass: "bg-sunrise/15",       textClass: "text-sunrise"       },
   "sunset-tour":    { label: "Sunset Tour",    accent: "#E76F51", bgClass: "bg-tropic-coral/15",  textClass: "text-tropic-coral"  },
 };
+
+const defaultTypeMeta = { label: "Activity", accent: "#2A9D8F", bgClass: "bg-shallow-water/15", textClass: "text-shallow-water" };
 
 export default async function ActivityDetailPage({
   params,
@@ -63,21 +60,25 @@ export default async function ActivityDetailPage({
   const experience = await getExperienceBySlug(slug);
   if (!experience) notFound();
 
-  const meta = typeMeta[experience.type];
+  const meta = typeMeta[experience.type] ?? defaultTypeMeta;
   const pageFaqs = activityFaqs[experience.slug] ?? [];
 
   // Related activities (up to 3, exclude self)
+  const allExperiences = await getExperiences();
   const relatedActivities = allExperiences
     .filter((e) => e.slug !== experience.slug)
     .slice(0, 3)
-    .map((e) => ({
-      slug: e.slug,
-      name: e.name,
-      description: e.description.slice(0, 120),
-      badge: typeMeta[e.type].label,
-      badgeColor: typeMeta[e.type].accent,
-      href: `/activities/${e.slug}`,
-    }));
+    .map((e) => {
+      const eMeta = typeMeta[e.type] ?? defaultTypeMeta;
+      return {
+        slug: e.slug,
+        name: e.name,
+        description: e.description.slice(0, 120),
+        badge: eMeta.label,
+        badgeColor: eMeta.accent,
+        href: `/activities/${e.slug}`,
+      };
+    });
 
   // Pick 1–2 testimonials
   const activityTestimonials = testimonials

@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getDiveSites, getDiveSiteBySlug } from "@/lib/api/dive-sites";
 import { getCourseBySlug } from "@/lib/api/courses";
-import type { DiveSite } from "@/lib/types";
 import DiveSiteDetailClient from "@/components/dive-sites/DiveSiteDetailClient";
 import FaqAccordion from "@/components/ui/FaqAccordion";
 import GalleryStrip from "@/components/ui/GalleryStrip";
@@ -11,7 +10,6 @@ import TestimonialStrip from "@/components/ui/TestimonialStrip";
 import RelatedGrid from "@/components/ui/RelatedGrid";
 import { diveSiteFaqs } from "@/lib/data/dive-site-faqs";
 import { testimonials } from "@/lib/data/testimonials";
-import { diveSites } from "@/lib/data/dive-sites";
 
 export async function generateStaticParams() {
   const sites = await getDiveSites();
@@ -42,12 +40,18 @@ export async function generateMetadata({
   };
 }
 
-const difficultyMeta: Record<DiveSite["difficulty"], { accent: string; textClass: string; bgClass: string }> = {
+const difficultyMeta: Record<string, { accent: string; textClass: string; bgClass: string }> = {
+  beginner:     { accent: "#2A9D8F", textClass: "text-shallow-water", bgClass: "bg-shallow-water/15" },
   Beginner:     { accent: "#2A9D8F", textClass: "text-shallow-water", bgClass: "bg-shallow-water/15" },
+  intermediate: { accent: "#F4A261", textClass: "text-sunrise",       bgClass: "bg-sunrise/15"       },
   Intermediate: { accent: "#F4A261", textClass: "text-sunrise",       bgClass: "bg-sunrise/15"       },
+  advanced:     { accent: "#E76F51", textClass: "text-tropic-coral",  bgClass: "bg-tropic-coral/15"  },
   Advanced:     { accent: "#E76F51", textClass: "text-tropic-coral",  bgClass: "bg-tropic-coral/15"  },
+  technical:    { accent: "#264653", textClass: "text-charcoal-sea",  bgClass: "bg-charcoal-sea/10"  },
   Technical:    { accent: "#264653", textClass: "text-charcoal-sea",  bgClass: "bg-charcoal-sea/10"  },
 };
+
+const defaultDifficultyMeta = { accent: "#2A9D8F", textClass: "text-shallow-water", bgClass: "bg-shallow-water/15" };
 
 export default async function DiveSiteDetailPage({
   params,
@@ -58,11 +62,12 @@ export default async function DiveSiteDetailPage({
   const site = await getDiveSiteBySlug(slug);
   if (!site) notFound();
 
-  const meta = difficultyMeta[site.difficulty];
+  const meta = difficultyMeta[site.difficulty] ?? defaultDifficultyMeta;
   const pageFaqs = diveSiteFaqs[site.slug] ?? [];
 
   // Related dive sites (up to 3, exclude self)
-  const relatedSites = diveSites
+  const allDiveSites = await getDiveSites();
+  const relatedSites = allDiveSites
     .filter((s) => s.slug !== site.slug)
     .slice(0, 3)
     .map((s) => ({
@@ -70,7 +75,7 @@ export default async function DiveSiteDetailPage({
       name: s.name,
       description: s.description.slice(0, 120),
       badge: s.difficulty,
-      badgeColor: difficultyMeta[s.difficulty].accent,
+      badgeColor: (difficultyMeta[s.difficulty] ?? defaultDifficultyMeta).accent,
       href: `/dive-sites/${s.slug}`,
     }));
 
