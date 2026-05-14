@@ -86,7 +86,7 @@ export default async function DiveSiteDetailPage({
 
   const siteJsonLd = {
     "@context": "https://schema.org",
-    "@type": "TouristAttraction",
+    "@type": ["TouristAttraction", "SportsActivityLocation"],
     name: site.name,
     description: site.description.slice(0, 300),
     url: `https://divingclub.lk/dive-sites/${site.slug}`,
@@ -101,6 +101,13 @@ export default async function DiveSiteDetailPage({
       "@type": "LocationFeatureSpecification",
       name: h,
     })),
+    additionalProperty: [
+      { "@type": "PropertyValue", name: "Depth", value: site.depth },
+      { "@type": "PropertyValue", name: "Difficulty", value: site.difficulty },
+      { "@type": "PropertyValue", name: "Best Season", value: site.season },
+      { "@type": "PropertyValue", name: "Boat Transfer", value: site.boatTime },
+      { "@type": "PropertyValue", name: "Currents & Visibility", value: site.currentsVisibility },
+    ],
   };
 
   const pageFaqsJsonLd = pageFaqs.length > 0

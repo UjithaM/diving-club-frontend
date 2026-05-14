@@ -50,7 +50,7 @@ export const diveSiteFaqs: Record<string, PageFaq[]> = {
     },
     {
       question: "Is the coral at Coral Garden actually healthy?",
-      answer: "Better than most. The bay's water temperature and protected location have helped preserve the reef. We've dived it for 15 years and, while there's some bleaching in the very shallowest sections, the main bommies are in genuinely good health.",
+      answer: "Better than most. The bay's water temperature and protected location have helped preserve the reef. We've dived it for 15 years and, while there's some bleaching in the shallowest sections, the main bommies are in genuinely good health.",
     },
   ],
   "ss-british-sergeant-wreck": [

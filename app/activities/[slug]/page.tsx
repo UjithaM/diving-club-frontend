@@ -85,17 +85,42 @@ export default async function ActivityDetailPage({
     .filter((t) => t.course === "Discover Scuba Diving" || !t.course?.includes("Diver"))
     .slice(0, 2);
 
+  const isSeasonalEvent = experience.type === "whale-watching" || experience.type === "try-diving" || experience.type === "fun-diving";
+
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "TouristAttraction",
+    "@type": isSeasonalEvent ? ["TouristAttraction", "SportsEvent"] : "TouristAttraction",
     name: experience.name,
     description: experience.description.slice(0, 300),
     url: `https://divingclub.lk/activities/${experience.slug}`,
+    ...(isSeasonalEvent && {
+      location: {
+        "@type": "Place",
+        name: "Trincomalee Bay, Sri Lanka",
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: "Trincomalee",
+          addressCountry: "LK",
+        },
+      },
+      eventSchedule: {
+        "@type": "Schedule",
+        startDate: "2025-05-01",
+        endDate: "2025-10-31",
+        repeatFrequency: "P1D",
+      },
+      organizer: {
+        "@type": "LocalBusiness",
+        name: "Diving Club",
+        url: "https://divingclub.lk",
+      },
+    }),
     offers: {
       "@type": "Offer",
       price: experience.price,
       priceCurrency: experience.currency,
       availability: "https://schema.org/InStock",
+      validFrom: "2025-05-01",
     },
     provider: {
       "@type": "LocalBusiness",

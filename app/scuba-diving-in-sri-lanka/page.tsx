@@ -3,14 +3,14 @@ import Link from "next/link";
 import AnimatedSection from "@/components/ui/AnimatedSection";
 
 export const metadata: Metadata = {
-  title: "Scuba Diving in Sri Lanka — Complete Guide to Reefs, Wrecks & Seasons",
+  title: "Scuba Diving in Sri Lanka: Complete Guide to Reefs, Wrecks and Seasons",
   description:
     "Scuba diving in Sri Lanka: best dive destinations (Trincomalee, Unawatuna, Mirissa), seasons, marine life (blue whales, reef sharks, turtles), PADI courses, and practical travel tips.",
   alternates: { canonical: "https://divingclub.lk/scuba-diving-in-sri-lanka" },
   openGraph: {
-    title: "Scuba Diving in Sri Lanka — Reefs, Wrecks & Year-Round Adventures",
+    title: "Scuba Diving in Sri Lanka: Reefs, Wrecks and Year-Round Adventures",
     description:
-      "Everything you need to know about diving in Sri Lanka — the best destinations, when to go, what you'll see, and how to get certified. Written from 15 years on the water.",
+      "Everything you need to know about diving in Sri Lanka: the best destinations, when to go, what you'll see, and how to get certified. Written from 15 years on the water.",
     url: "https://divingclub.lk/scuba-diving-in-sri-lanka",
   },
 };
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 const pageJsonLd = {
   "@context": "https://schema.org",
   "@type": "Article",
-  headline: "Scuba Diving in Sri Lanka — Complete Guide",
+  headline: "Scuba Diving in Sri Lanka: Complete Guide",
   description: "A comprehensive guide to scuba diving in Sri Lanka, covering dive destinations, seasons, marine life, and PADI courses.",
   url: "https://divingclub.lk/scuba-diving-in-sri-lanka",
   author: {
@@ -68,7 +68,7 @@ export default function DivingInSriLanka() {
             Scuba Diving in Sri Lanka
           </h1>
           <p className="text-warm-white/60 text-lg leading-relaxed">
-            Sri Lanka gets overlooked for diving. Most divers flying through Asia think Maldives or Thailand — and both are great. But Sri Lanka has WWII wrecks, year-round warm water (south coast October–April, east coast May–October), blue whale watching, and reef quality that competes with anywhere in the region. And a fraction of the crowds.
+            Sri Lanka gets overlooked for diving. Most divers flying through Asia think Maldives or Thailand, and both are great. But Sri Lanka has WWII wrecks, year-round warm water (south coast October-April, east coast May-October), blue whale watching, and reef quality that competes with anywhere in the region. And a fraction of the crowds.
           </p>
         </div>
       </section>
@@ -83,39 +83,39 @@ export default function DivingInSriLanka() {
               A few things set Sri Lanka apart from the more popular Southeast Asian diving destinations.
             </p>
             <p className="text-charcoal-sea/70 leading-relaxed mb-4">
-              First, the marine diversity. The island sits at the crossroads of the Indian Ocean, with warm, nutrient-rich water on both coasts. You get tropical reef fish, turtles, reef sharks, mantas (seasonal), and — on the east coast — one of the best blue whale watching routes in the world. Blue whales. Not whale sharks. Actual blue whales, the largest animals on Earth, passing within a few kilometres of the coastline on annual migration.
+              First, the marine diversity. The island sits at the crossroads of the Indian Ocean, with warm, nutrient-rich water on both coasts. You get tropical reef fish, turtles, reef sharks, mantas (seasonal), and on the east coast one of the best blue whale watching routes in the world. Blue whales. Not whale sharks. Actual blue whales, the largest animals on Earth, passing within a few kilometres of the coastline on annual migration.
             </p>
             <p className="text-charcoal-sea/70 leading-relaxed mb-4">
-              Second, the wrecks. Sri Lanka has serious naval history. The east coast saw significant action in WWII — the Japanese air raid of 1942 sank several Royal Navy vessels in Trincomalee Bay, including HMS Hermes (aircraft carrier, 45–53 m) and HMS Vampire (destroyer). These are among the most historically significant wrecks in Asia, and they&apos;re diveable.
+              Second, the wrecks. Sri Lanka has serious naval history. The east coast saw significant action in WWII. The Japanese air raid of 1942 sank several Royal Navy vessels in Trincomalee Bay, including HMS Hermes (aircraft carrier, 45-53 m) and HMS Vampire (destroyer). These are among the most historically significant wrecks in Asia, and they&apos;re diveable.
             </p>
             <p className="text-charcoal-sea/70 leading-relaxed mb-4">
-              Third — and honestly most practically — Sri Lanka is not overcrowded. The dive sites don&apos;t have queues. You&apos;re not fighting for space on the reef. The marine life hasn&apos;t been harassed into hiding by thirty divers at a time. It&apos;s the kind of diving that&apos;s getting harder to find.
+              Third, and honestly most practically, Sri Lanka is not overcrowded. The dive sites don&apos;t have queues. You&apos;re not fighting for space on the reef. The marine life hasn&apos;t been harassed into hiding by thirty divers at a time. It&apos;s the kind of diving that&apos;s getting harder to find.
             </p>
           </AnimatedSection>
 
           <AnimatedSection className="mt-14">
             <h2 className="text-charcoal-sea font-display text-3xl font-extrabold mb-5">Best time to dive in Sri Lanka</h2>
             <p className="text-charcoal-sea/70 leading-relaxed mb-4">
-              Sri Lanka has two coastlines, and two monsoon seasons — which means diving is available somewhere on the island almost year-round.
+              Sri Lanka has two coastlines, and two monsoon seasons, which means diving is available somewhere on the island almost year-round.
             </p>
 
             <div className="space-y-6 mt-6">
               <div className="border-l-4 border-shallow-water pl-5">
                 <h3 className="text-charcoal-sea font-bold text-lg mb-2">East Coast (Trincomalee): May–October</h3>
                 <p className="text-charcoal-sea/70 text-sm leading-relaxed">
-                  The northeast monsoon (November–April) makes the east coast rough. May to October is the diving season — best conditions June to September. This is where we operate, from Sandy Cove in Trincomalee Bay. The WWII wrecks, Swami Rock, Pigeon Island National Park, and blue whale watching are all here.
+                  The northeast monsoon (November-April) makes the east coast rough. May to October is the diving season, best conditions June to September. This is where we operate, from Sandy Cove in Trincomalee Bay. The WWII wrecks, Swami Rock, Pigeon Island National Park, and blue whale watching are all here.
                 </p>
               </div>
               <div className="border-l-4 border-tropic-coral pl-5">
                 <h3 className="text-charcoal-sea font-bold text-lg mb-2">South Coast (Unawatuna, Mirissa, Hikkaduwa): October–April</h3>
                 <p className="text-charcoal-sea/70 text-sm leading-relaxed">
-                  The southwest monsoon reverses things — south coast diving is best from October through April. Unawatuna and Hikkaduwa have good reef diving. Mirissa is the main whale watching destination on the south coast (blue and sperm whales, October to April). Dive quality varies more than the east coast, but access from Colombo is easier.
+                  The southwest monsoon reverses things. South coast diving is best from October through April. Unawatuna and Hikkaduwa have good reef diving. Mirissa is the main whale watching destination on the south coast (blue and sperm whales, October to April). Dive quality varies more than the east coast, but access from Colombo is easier.
                 </p>
               </div>
             </div>
 
             <p className="text-charcoal-sea/70 leading-relaxed mt-6">
-              If you&apos;re planning a dedicated diving trip and want the best of what Sri Lanka offers — especially the wrecks and blue whales — the east coast in June or July is the call.
+              If you&apos;re planning a dedicated diving trip and want the best of what Sri Lanka offers, especially the wrecks and blue whales, the east coast in June or July is the call.
             </p>
           </AnimatedSection>
 
@@ -131,7 +131,7 @@ export default function DivingInSriLanka() {
                 { heading: "Blue whales", detail: "East coast late April–early May; south coast (Mirissa) October–April. One of the best whale watching locations in the world." },
                 { heading: "Spinner dolphins", detail: "Regular in Trincomalee Bay throughout the diving season. Often visible from the dive boats." },
                 { heading: "Napoleon wrasse", detail: "At Klathipa Deep on the east coast. Large, curious, unhurried." },
-                { heading: "Manta rays", detail: "Seasonal — more reliable in the Maldives, but sightings happen at deeper sites in Sri Lanka." },
+                { heading: "Manta rays", detail: "Seasonal, more reliable in the Maldives, but sightings happen at deeper sites in Sri Lanka." },
                 { heading: "Moray eels", detail: "Everywhere. Every dive, every site. Spotted, giant, and snowflake morays all represented." },
                 { heading: "Nudibranchs", detail: "Good diversity on the wrecks and rocky sites. Worth bringing a macro lens." },
               ].map((item) => (
@@ -148,13 +148,13 @@ export default function DivingInSriLanka() {
           <AnimatedSection className="mt-14">
             <h2 className="text-charcoal-sea font-display text-3xl font-extrabold mb-5">PADI courses in Sri Lanka</h2>
             <p className="text-charcoal-sea/70 leading-relaxed mb-4">
-              Most reputable dive operators in Sri Lanka are PADI affiliated — so your certification, wherever you do it, is internationally recognised. We offer 15 PADI courses in Trincomalee, from the beginner-friendly <Link href="/courses/discover-scuba-diving" className="text-tropic-coral hover:text-tropic-coral/80">Discover Scuba experience</Link> through to <Link href="/courses/divemaster" className="text-tropic-coral hover:text-tropic-coral/80">Divemaster</Link> training.
+              Most reputable dive operators in Sri Lanka are PADI affiliated, so your certification, wherever you do it, is internationally recognised. We offer 15 PADI courses in Trincomalee, from the beginner-friendly <Link href="/courses/discover-scuba-diving" className="text-tropic-coral hover:text-tropic-coral/80">Discover Scuba experience</Link> through to <Link href="/courses/divemaster" className="text-tropic-coral hover:text-tropic-coral/80">Divemaster</Link> training.
             </p>
             <p className="text-charcoal-sea/70 leading-relaxed mb-4">
-              The most popular course for tourists is <Link href="/courses/open-water-diver" className="text-tropic-coral hover:text-tropic-coral/80">PADI Open Water</Link> — four days, certifies you to 18 m, valid worldwide. Sri Lanka is a good place to do it because the conditions are generally forgiving for beginners: warm water, reasonable visibility, no strong currents on most training sites.
+              The most popular course for tourists is <Link href="/courses/open-water-diver" className="text-tropic-coral hover:text-tropic-coral/80">PADI Open Water</Link>: four days, certifies you to 18 m, valid worldwide. Sri Lanka is a good place to do it because the conditions are generally forgiving for beginners: warm water, reasonable visibility, no strong currents on most training sites.
             </p>
             <p className="text-charcoal-sea/70 leading-relaxed mb-4">
-              Specialty courses worth doing in Trincomalee specifically: <Link href="/courses/wreck-diving" className="text-tropic-coral hover:text-tropic-coral/80">Wreck Diving</Link> (obvious reasons — the WWII wrecks here are the reason to do this specialty in Sri Lanka rather than elsewhere), <Link href="/courses/deep-diving" className="text-tropic-coral hover:text-tropic-coral/80">Deep Diving</Link> (the Klathipa wall and access to deeper wreck sections), and <Link href="/courses/underwater-photography" className="text-tropic-coral hover:text-tropic-coral/80">Underwater Photography</Link> (the visual diversity and good light make this a genuinely productive photography destination).
+              Specialty courses worth doing in Trincomalee specifically: <Link href="/courses/wreck-diving" className="text-tropic-coral hover:text-tropic-coral/80">Wreck Diving</Link> (the WWII wrecks here are the reason to do this specialty in Sri Lanka rather than elsewhere), <Link href="/courses/deep-diving" className="text-tropic-coral hover:text-tropic-coral/80">Deep Diving</Link> (the Klathipa wall and access to deeper wreck sections), and <Link href="/courses/underwater-photography" className="text-tropic-coral hover:text-tropic-coral/80">Underwater Photography</Link> (the visual diversity and good light make this a genuinely productive photography destination).
             </p>
           </AnimatedSection>
 

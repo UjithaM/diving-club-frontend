@@ -9,7 +9,7 @@ export const experiences: Experience[] = [
     price: 65,
     currency: "USD",
     description:
-      "The ocean is calling — and you don't need a certification to answer. Our Try Diving experience gets you underwater in Trincomalee's warm, clear water with an instructor by your side the whole time. You'll see coral, fish, and a world most people only glimpse through a snorkel mask.",
+      "The ocean is calling, and you don't need a certification to answer. Our Try Diving experience gets you underwater in Trincomalee's warm, clear water with an instructor by your side the whole time. You'll see coral, fish, and a world most people only glimpse through a snorkel mask.",
     includes: [
       "Full scuba equipment (BCD, regulator, wetsuit, fins, mask)",
       "Pre-dive pool session to get comfortable",
@@ -25,7 +25,7 @@ export const experiences: Experience[] = [
   },
   {
     slug: "fun-diving-2",
-    name: "Fun Diving — 2 Dives",
+    name: "Fun Diving: 2 Dives",
     type: "fun-diving",
     duration: "Half day",
     price: 90,
@@ -47,13 +47,13 @@ export const experiences: Experience[] = [
   },
   {
     slug: "fun-diving-4",
-    name: "Fun Diving — 4 Dives",
+    name: "Fun Diving: 4 Dives",
     type: "fun-diving",
     duration: "Full day",
     price: 170,
     currency: "USD",
     description:
-      "A full day in the water is a full day well spent. Four dives across Trincomalee's best sites — reefs, drop-offs, and if conditions allow, one of the famous WWII wrecks resting in the bay. Pack your logbook and your sense of adventure.",
+      "A full day in the water is a full day well spent. Four dives across Trincomalee's best sites: reefs, drop-offs, and if conditions allow, one of the famous WWII wrecks resting in the bay. Pack your logbook and your sense of adventure.",
     includes: [
       "4 guided boat dives across multiple sites",
       "All scuba equipment",
@@ -75,7 +75,7 @@ export const experiences: Experience[] = [
     price: 35,
     currency: "USD",
     description:
-      "You don't have to go deep to see something magical. Trincomalee's shallow reefs are alive with colour — hawksbill turtles glide beneath the surface, parrotfish munch on coral, and reef sharks cruise lazily past. Our guided snorkel tour brings you face to face with all of it, no experience required.",
+      "You don't have to go deep to see something magical. Trincomalee's shallow reefs are alive with colour: hawksbill turtles glide beneath the surface, parrotfish munch on coral, and reef sharks cruise lazily past. Our guided snorkel tour brings you face to face with all of it, no experience required.",
     includes: [
       "Quality mask, snorkel, and fins",
       "Life jacket (optional)",
@@ -96,7 +96,7 @@ export const experiences: Experience[] = [
     price: 55,
     currency: "USD",
     description:
-      "Trincomalee sits on one of the finest whale-watching routes in Asia. Blue whales — the largest animals on Earth — pass through these waters on their migration, and spinner dolphins are almost a given. Our experienced boat crew know exactly where to look and when.",
+      "Trincomalee sits on one of the finest whale-watching routes in Asia. Blue whales, the largest animals on Earth, pass through these waters on their migration, and spinner dolphins are almost a given. Our experienced boat crew know exactly where to look and when.",
     includes: [
       "Comfortable boat with shaded seating",
       "Experienced local spotter and naturalist guide",
@@ -117,7 +117,7 @@ export const experiences: Experience[] = [
     price: 50,
     currency: "USD",
     description:
-      "If you want to cover some water and have a laugh doing it, the jet ski is your thing. We run along the coast from Sandy Cove — open bay on one side, the coastline on the other — and you can go as fast or as slow as you like. No licence required; we give you a full briefing and a guide follows on a second ski.\n\nThe bay is generally calm in the mornings, which is when we run most sessions. You can choose 30 minutes for a quick blast or a full hour if you want to explore more of the coastline. Pairs work well — one person drives, one holds on, swap halfway.",
+      "If you want to cover some water and have a laugh doing it, the jet ski is your thing. We run along the coast from Sandy Cove, open bay on one side, the coastline on the other, and you can go as fast or as slow as you like. No licence required. We give you a full briefing and a guide follows on a second ski.\n\nThe bay is generally calm in the mornings, which is when we run most sessions. You can choose 30 minutes for a quick blast or a full hour if you want to explore more of the coastline. Pairs work well: one person drives, one holds on, swap halfway.",
     includes: [
       "Jet ski hire for chosen duration",
       "Full briefing on controls and safety",
@@ -138,7 +138,7 @@ export const experiences: Experience[] = [
     price: 40,
     currency: "USD",
     description:
-      "The Trincomalee coastline is genuinely striking when you see it from the water. Sandy beaches backed by palms, old fort ruins in the distance, the headland where Koneswaram temple stands above the cliffs. On the water you get a perspective the road doesn't give you.\n\nWe head out from Sandy Cove along the coast, passing Pigeon Island, the old lighthouse, and a couple of secluded beach spots. The crew knows the bay well — they'll stop if dolphins show up, which happens more often than not. Not a race, not a packed tour. Just a couple of hours on the water.",
+      "The Trincomalee coastline is genuinely striking when you see it from the water. Sandy beaches backed by palms, old fort ruins in the distance, the headland where Koneswaram temple stands above the cliffs. On the water you get a perspective the road doesn't give you.\n\nWe head out from Sandy Cove along the coast, passing Pigeon Island, the old lighthouse, and a couple of secluded beach spots. The crew knows the bay well. They'll stop if dolphins show up, which happens more often than not. Not a race, not a packed tour. Just a couple of hours on the water.",
     includes: [
       "Private boat with crew",
       "2–3 hours of coastal exploration",
@@ -159,7 +159,7 @@ export const experiences: Experience[] = [
     price: 55,
     currency: "USD",
     description:
-      "The light in Trincomalee around sunset is something else. The bay catches the colours from the west while the headland silhouettes against the sky — it photographs incredibly, but honestly it looks better in person. We leave about 90 minutes before sunset, head out into the bay, watch the light change, and come back after dark.\n\nThis is the most popular option for guests who aren't diving but want to actually experience the water. It's relaxed, it's beautiful, and it pairs well with dinner in town after. We bring drinks. The pace is entirely unhurried.",
+      "The light in Trincomalee around sunset is something else. The bay catches the colours from the west while the headland silhouettes against the sky. It photographs well, but honestly it looks better in person. We leave about 90 minutes before sunset, head out into the bay, watch the light change, and come back after dark.\n\nThis is the most popular option for guests who aren't diving but want to actually experience the water. It's relaxed, it's beautiful, and it pairs well with dinner in town after. We bring drinks. The pace is entirely unhurried.",
     includes: [
       "Private sunset cruise for 2 hours",
       "Drinks on board",

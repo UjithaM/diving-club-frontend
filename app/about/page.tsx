@@ -6,10 +6,10 @@ import AnimatedSection from "@/components/ui/AnimatedSection";
 export const metadata: Metadata = {
   title: "About Diving Club Trincomalee",
   description:
-    "Meet J Rockshan — Sri Lanka's youngest PADI instructor — and the story behind Diving Club Trincomalee. 1,000+ certified divers, 15+ years, same ocean.",
+    "Meet J Rockshan, Sri Lanka's youngest PADI instructor, and the story behind Diving Club Trincomalee. 1,000+ certified divers, 15+ years, same ocean.",
   alternates: { canonical: "https://divingclub.lk/about" },
   openGraph: {
-    title: "About Diving Club Trincomalee — Our Story",
+    title: "About Diving Club Trincomalee: Our Story",
     description:
       "Meet J Rockshan, Sri Lanka's youngest PADI scuba instructor, and the story behind Diving Club Trincomalee. 1,000+ students certified since 2010.",
     url: "https://divingclub.lk/about",
@@ -60,7 +60,7 @@ const aboutPageJsonLd = {
   name: "About Diving Club Trincomalee",
   url: "https://divingclub.lk/about",
   description:
-    "The story of Diving Club Trincomalee, founded by J Rockshan — Sri Lanka's youngest PADI scuba instructor.",
+    "The story of Diving Club Trincomalee, founded by J Rockshan, Sri Lanka's youngest PADI scuba instructor.",
   mainEntity: {
     "@type": "LocalBusiness",
     "@id": "https://divingclub.lk",
@@ -88,7 +88,7 @@ const stats = [
 const values = [
   {
     label: "Safety First",
-    body: "Every dive brief, every equipment check, every call in the water — safety comes before anything else. That doesn't mean being boring; it means everyone gets home happy.",
+    body: "Every dive brief, every equipment check, every call in the water: safety comes before anything else. That doesn't mean being boring. It means everyone gets home happy.",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E76F51" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
@@ -107,7 +107,7 @@ const values = [
   },
   {
     label: "Small Groups",
-    body: "Maximum 5 divers per dive. We're not running a cattle operation — we're taking you diving. Your comfort, your pace, your experience.",
+    body: "Maximum 5 divers per dive. We're not running a cattle operation. We're taking you diving. Your comfort, your pace, your experience.",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E76F51" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
@@ -118,7 +118,7 @@ const values = [
   },
   {
     label: "All Ages Welcome",
-    body: "First-timers, nervous beginners, sixty-somethings trying scuba for the first time — everyone belongs here. The ocean doesn't care how old you are, and neither do we.",
+    body: "First-timers, nervous beginners, sixty-somethings trying scuba for the first time: everyone belongs here. The ocean doesn't care how old you are, and neither do we.",
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E76F51" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
         <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
@@ -165,7 +165,7 @@ export default function AboutPage() {
           </h1>
 
           <p className="text-warm-white/55 text-base leading-relaxed max-w-xl">
-            We&rsquo;re a small dive center tucked into Sandy Cove — the kind of place where your
+            We&rsquo;re a small dive center tucked into Sandy Cove, the kind of place where your
             instructor knows your name before the tank is even on your back.
           </p>
         </div>
@@ -212,7 +212,7 @@ export default function AboutPage() {
               <div className="space-y-4 text-charcoal-sea/70 text-base leading-relaxed">
                 <p>
                   J Rockshan became a PADI scuba instructor younger than anyone in Sri Lanka had
-                  before. Not because he rushed it — but because the ocean had already been his
+                  before. Not because he rushed it, but because the ocean had already been his
                   second home for years, and he couldn&rsquo;t imagine doing anything else.
                 </p>
                 <p>
@@ -224,7 +224,7 @@ export default function AboutPage() {
                   with it.
                 </p>
                 <p>
-                  He set up at Sandy Cove because the diving here is genuinely special — coral
+                  He set up at Sandy Cove because the diving here is genuinely special: coral
                   gardens, WWII wrecks, whale sharks passing through in season. And he wanted to
                   share all of it properly, with small groups and real attention.
                 </p>
@@ -252,7 +252,7 @@ export default function AboutPage() {
                     PADI Certified Instructor
                   </p>
                   <p className="text-charcoal-sea/45 text-xs">
-                    Sri Lanka&rsquo;s youngest — recognised in 186 countries
+                    Sri Lanka&rsquo;s youngest, recognised in 186 countries
                   </p>
                 </div>
               </div>
@@ -376,7 +376,7 @@ export default function AboutPage() {
             </h2>
 
             <p className="text-charcoal-sea/55 text-base leading-relaxed max-w-lg mx-auto mb-10">
-              Whether you want your PADI cert or just want to see what&rsquo;s down there — come
+              Whether you want your PADI cert or want to see what&rsquo;s down there, come
               find us at Sandy Cove. We&rsquo;re open every day.
             </p>
 

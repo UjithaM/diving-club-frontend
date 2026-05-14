@@ -41,18 +41,19 @@ export const metadata: Metadata = {
 
 const localBusinessJsonLd = {
   "@context": "https://schema.org",
-  "@type": "LocalBusiness",
+  "@type": ["LocalBusiness", "EducationalOrganization"],
   "@id": "https://divingclub.lk",
   name: "Diving Club",
   description:
     "PADI-certified diving center in Trincomalee, Sri Lanka offering scuba courses, fun diving, snorkeling, and whale watching.",
   url: "https://divingclub.lk",
-  telephone: "0743945010",
+  telephone: "+94743945010",
   address: {
     "@type": "PostalAddress",
     streetAddress: "74/9, Sandy Cove",
     postalCode: "31000",
     addressLocality: "Trincomalee",
+    addressRegion: "Eastern Province",
     addressCountry: "LK",
   },
   geo: {
@@ -62,6 +63,13 @@ const localBusinessJsonLd = {
   },
   openingHours: "Mo-Su 07:30-18:00",
   priceRange: "$$",
+  areaServed: ["Trincomalee", "Nilaveli", "Uppuveli"],
+  knowsAbout: ["Scuba Diving", "PADI Certification", "Wreck Diving", "Underwater Photography", "Marine Conservation"],
+  sameAs: [
+    "https://www.facebook.com/profile.php?id=100092324331693",
+    "https://www.instagram.com/diving_club_s30212/",
+    "https://www.padi.com/dive-center/sri-lanka/diving-club/",
+  ],
 };
 
 export default function RootLayout({

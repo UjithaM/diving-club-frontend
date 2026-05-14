@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { getCourses } from "@/lib/api/courses";
 import { getExperiences } from "@/lib/api/experiences";
 import { getDiveSites } from "@/lib/api/dive-sites";
+import { getBlogPosts } from "@/lib/data/blog-posts";
 
 const BASE = "https://divingclub.lk";
 
@@ -11,6 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     getExperiences(),
     getDiveSites(),
   ]);
+  const blogPosts = getBlogPosts();
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: BASE, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
@@ -48,5 +50,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.85,
   }));
 
-  return [...staticRoutes, ...courseRoutes, ...activityRoutes, ...diveSiteRoutes];
+  const blogRoutes: MetadataRoute.Sitemap = blogPosts.map((p) => ({
+    url: `${BASE}/blog/${p.slug}`,
+    lastModified: new Date(p.updatedAt),
+    changeFrequency: "monthly",
+    priority: 0.75,
+  }));
+
+  return [...staticRoutes, ...courseRoutes, ...activityRoutes, ...diveSiteRoutes, ...blogRoutes];
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getBlogPosts } from "@/lib/data/blog-posts";
 
 export const metadata: Metadata = {
   title: "Diving Blog — Tips, Stories & Guides from Trincomalee",
@@ -27,7 +28,29 @@ const blogIndexJsonLd = {
   },
 };
 
+const categoryLabels: Record<string, string> = {
+  "dive-sites": "Dive Sites",
+  beginner: "Beginner Guide",
+  "marine-life": "Marine Life",
+  courses: "PADI Courses",
+  planning: "Trip Planning",
+  destination: "Destination",
+};
+
+const categoryColors: Record<string, string> = {
+  "dive-sites": "#2A9D8F",
+  beginner: "#E76F51",
+  "marine-life": "#264653",
+  courses: "#F4A261",
+  planning: "#2A9D8F",
+  destination: "#E76F51",
+};
+
 export default function BlogIndexPage() {
+  const posts = getBlogPosts();
+  const featured = posts.filter((p) => p.featured).slice(0, 1)[0];
+  const rest = posts.filter((p) => !p.featured || p.slug !== featured?.slug);
+
   return (
     <>
       <script
@@ -60,28 +83,103 @@ export default function BlogIndexPage() {
         </div>
       </section>
 
-      {/* Coming soon placeholder */}
-      <section className="bg-warm-white py-24 px-6">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="w-12 h-px bg-tropic-coral mx-auto mb-8" />
-          <h2 className="text-charcoal-sea font-display text-3xl font-extrabold mb-5">
-            Posts coming soon
-          </h2>
-          <p className="text-charcoal-sea/60 text-base leading-relaxed max-w-lg mx-auto mb-10">
-            We&apos;re writing up guides on the best dive sites, when to come, what to expect on your first dive, and a few honest takes on the PADI certification path. Check back when the season starts.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+      {/* Featured post */}
+      {featured && (
+        <section className="bg-warm-white pt-16 pb-0 px-6">
+          <div className="max-w-3xl mx-auto">
             <Link
-              href="/faq"
-              className="inline-flex items-center gap-2 bg-charcoal-sea text-warm-white font-bold px-8 py-3.5 rounded-full hover:bg-shallow-water transition-colors text-sm"
+              href={`/blog/${featured.slug}`}
+              className="group block bg-charcoal-sea rounded-2xl overflow-hidden hover:ring-2 hover:ring-tropic-coral transition-all"
             >
-              Read our FAQ
+              <div className="p-8 lg:p-10">
+                <div className="flex items-center gap-3 mb-4">
+                  <span
+                    className="inline-block text-[10px] font-bold px-3 py-1 rounded-full text-white uppercase tracking-widest"
+                    style={{ background: categoryColors[featured.category] ?? "#2A9D8F" }}
+                  >
+                    {categoryLabels[featured.category] ?? featured.category}
+                  </span>
+                  <span className="text-warm-white/35 text-xs">{featured.readingTime} read</span>
+                </div>
+                <h2 className="text-warm-white font-display text-[clamp(1.5rem,3vw,2.25rem)] font-extrabold leading-tight mb-4 group-hover:text-tropic-coral transition-colors">
+                  {featured.title}
+                </h2>
+                <p className="text-warm-white/55 text-sm leading-relaxed max-w-2xl mb-6">
+                  {featured.excerpt}
+                </p>
+                <span className="text-tropic-coral text-sm font-semibold">
+                  Read the guide →
+                </span>
+              </div>
+            </Link>
+          </div>
+        </section>
+      )}
+
+      {/* Post grid */}
+      <section className="bg-warm-white py-16 px-6">
+        <div className="max-w-3xl mx-auto">
+          {rest.length > 0 && (
+            <div className="space-y-5">
+              {rest.map((post) => (
+                <Link
+                  key={post.slug}
+                  href={`/blog/${post.slug}`}
+                  className="group flex flex-col sm:flex-row sm:items-start gap-4 p-5 rounded-2xl bg-charcoal-sea/4 hover:bg-charcoal-sea/8 transition-colors"
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span
+                        className="inline-block text-[9px] font-bold px-2 py-0.5 rounded-full text-white uppercase tracking-widest"
+                        style={{ background: categoryColors[post.category] ?? "#2A9D8F" }}
+                      >
+                        {categoryLabels[post.category] ?? post.category}
+                      </span>
+                      <span className="text-charcoal-sea/35 text-xs">{post.readingTime} read</span>
+                    </div>
+                    <h2 className="text-charcoal-sea font-bold text-base leading-snug mb-1.5 group-hover:text-shallow-water transition-colors">
+                      {post.title}
+                    </h2>
+                    <p className="text-charcoal-sea/55 text-sm leading-relaxed line-clamp-2">
+                      {post.excerpt}
+                    </p>
+                  </div>
+                  <time
+                    dateTime={post.publishedAt}
+                    className="text-charcoal-sea/35 text-xs whitespace-nowrap sm:mt-1"
+                  >
+                    {new Date(post.publishedAt).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </time>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Dive-site CTA */}
+      <section className="bg-charcoal-sea py-16 px-6">
+        <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div>
+            <p className="text-warm-white font-bold text-lg mb-1">Ready to see it in person?</p>
+            <p className="text-warm-white/45 text-sm">Sandy Cove, Trincomalee — open May to October.</p>
+          </div>
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <Link
+              href="/activities/try-diving"
+              className="inline-flex items-center gap-2 bg-tropic-coral text-white font-bold px-6 py-3 rounded-full hover:bg-[#d4603f] transition-colors text-sm"
+            >
+              Try diving →
             </Link>
             <Link
-              href="/scuba-diving-in-trincomalee"
-              className="inline-flex items-center gap-2 text-charcoal-sea/50 font-semibold text-sm hover:text-charcoal-sea transition-colors"
+              href="/courses"
+              className="inline-flex items-center gap-2 text-warm-white/50 font-semibold text-sm hover:text-warm-white transition-colors"
             >
-              Trincomalee dive guide →
+              View PADI courses
             </Link>
           </div>
         </div>

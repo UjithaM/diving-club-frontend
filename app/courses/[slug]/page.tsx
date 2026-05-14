@@ -79,6 +79,8 @@ export default async function CourseDetailPage({
     .filter((t) => !t.course || t.course === course.name || t.course === "Fun Diving")
     .slice(0, 2);
 
+  const isCredentialCourse = course.level !== "beginner" || course.slug !== "discover-scuba-diving";
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Course",
@@ -86,15 +88,39 @@ export default async function CourseDetailPage({
     description: course.description,
     url: `https://divingclub.lk/courses/${course.slug}`,
     provider: {
-      "@type": "Organization",
+      "@type": ["Organization", "EducationalOrganization"],
       name: "Diving Club",
       url: "https://divingclub.lk",
+    },
+    ...(isCredentialCourse && {
+      educationalCredentialAwarded: `PADI ${course.name} Certification`,
+    }),
+    hasCourseInstance: {
+      "@type": "CourseInstance",
+      courseMode: "Blended",
+      location: {
+        "@type": "Place",
+        name: "Diving Club",
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: "74/9, Sandy Cove",
+          addressLocality: "Trincomalee",
+          addressCountry: "LK",
+        },
+      },
+      courseSchedule: {
+        "@type": "Schedule",
+        startDate: "2025-05-01",
+        endDate: "2025-10-31",
+        repeatFrequency: "P1W",
+      },
     },
     offers: {
       "@type": "Offer",
       price: course.price,
       priceCurrency: course.currency,
       availability: "https://schema.org/InStock",
+      validFrom: "2025-05-01",
     },
   };
 

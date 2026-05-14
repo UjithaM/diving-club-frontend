@@ -4,7 +4,7 @@ export const activityFaqs: Record<string, PageFaq[]> = {
   "try-diving": [
     {
       question: "Is this the same as the Open Water Diver course?",
-      answer: "No — the Try Diving experience is a single supervised dive with an instructor by your side the whole time. It counts as experience, not a certification. If you want a qualification you can use anywhere in the world, you'd want to look at the Open Water course. But if you just want to see what it's like without committing to four days, this is the right start.",
+      answer: "No. The Try Diving experience is a single supervised dive with an instructor by your side the whole time. It counts as experience, not a certification. If you want a qualification you can use anywhere in the world, look at the Open Water course. But if you just want to see what it's like without committing to four days, this is the right start.",
     },
     {
       question: "How long are we actually underwater?",
@@ -12,13 +12,13 @@ export const activityFaqs: Record<string, PageFaq[]> = {
     },
     {
       question: "What if I don't like it once I'm in the water?",
-      answer: "Signal to your instructor and we surface. No drama, no embarrassment. It genuinely doesn't happen very often — most people settle into it within the first five minutes — but if it does, you've still had a boat ride over Trincomalee Bay and seen a reef from the surface. Not the worst outcome.",
+      answer: "Signal to your instructor and we surface. No drama, no embarrassment. It genuinely doesn't happen often. Most people settle into it within the first five minutes. But if it does, you've still had a boat ride over Trincomalee Bay and seen a reef from the surface. Not the worst outcome.",
     },
   ],
   "fun-diving-2": [
     {
       question: "What sites do we dive on a two-dive day?",
-      answer: "It depends on conditions and the group. We'll usually aim for one reef dive and one wreck or wall dive — Swami Rock, White Rock, Navy Museum, and Coral Garden are all common choices. We brief you on the plan before we leave and can factor in any preferences.",
+      answer: "It depends on conditions and the group. We'll usually aim for one reef dive and one wreck or wall dive. Swami Rock, White Rock, Navy Museum, and Coral Garden are all common choices. We brief you on the plan before we leave and can factor in any preferences.",
     },
     {
       question: "How much surface interval between dives?",
@@ -28,7 +28,7 @@ export const activityFaqs: Record<string, PageFaq[]> = {
   "fun-diving-4": [
     {
       question: "Can we request specific sites for the full-day trip?",
-      answer: "Yes — tell us what you want to see and we'll build the day around it. Wreck divers might want to do both the SS British Sergeant and Swami Rock, for instance. We'll confirm the plan based on conditions.",
+      answer: "Yes. Tell us what you want to see and we'll build the day around it. Wreck divers might want to do both the SS British Sergeant and Swami Rock, for instance. We'll confirm the plan based on conditions.",
     },
     {
       question: "What do we eat on a full-day trip?",

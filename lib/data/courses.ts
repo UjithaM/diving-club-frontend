@@ -9,7 +9,7 @@ export const courses: Course[] = [
     price: 75,
     currency: "USD",
     description:
-      "Never dived before? This is your first breath underwater. We take care of everything — you just bring your curiosity. In a few hours you'll be exploring Trincomalee's coral gardens under the watchful eye of your instructor, no experience required.",
+      "Never dived before? This is your first breath underwater. We take care of everything. You just bring your curiosity. In a few hours you'll be exploring Trincomalee's coral gardens under the watchful eye of your instructor, no experience required.",
     whatYouLearn: [
       "Basic scuba equipment and how it works",
       "How to breathe underwater with confidence",
@@ -65,7 +65,7 @@ export const courses: Course[] = [
     price: 395,
     currency: "USD",
     description:
-      "The world's most popular scuba certification — and for good reason. Over four days in Trincomalee you'll build real skills in the pool, then put them to work on some of Sri Lanka's most beautiful reefs. By the end you'll be a certified diver free to explore oceans worldwide to 18 m.",
+      "The world's most popular scuba certification, and for good reason. Over four days in Trincomalee you'll build real skills in the pool, then put them to work on some of Sri Lanka's most beautiful reefs. By the end you'll be a certified diver free to explore oceans worldwide to 18 m.",
     whatYouLearn: [
       "Dive planning, dive tables, and dive computers",
       "Equipment assembly, care, and troubleshooting",
@@ -94,11 +94,11 @@ export const courses: Course[] = [
     price: 295,
     currency: "USD",
     description:
-      "Ready to go deeper and do more? The Advanced Open Water course builds on your Open Water skills across five adventure dives — including a deep dive to 30 m and an underwater navigation dive. Trincomalee's wrecks and outer reef walls are perfect for this one.",
+      "Ready to go deeper and do more? The Advanced Open Water course builds on your Open Water skills across five adventure dives, including a deep dive to 30 m and an underwater navigation dive. Trincomalee's wrecks and outer reef walls are perfect for this one.",
     whatYouLearn: [
       "Deep diving techniques and nitrogen narcosis awareness",
       "Underwater navigation using compass and natural references",
-      "Buoyancy mastery — hover, turn, and glide with precision",
+      "Buoyancy mastery: hover, turn, and glide with precision",
       "Two additional specialty adventure dives of your choice",
     ],
     includes: [
@@ -122,7 +122,7 @@ export const courses: Course[] = [
     price: 395,
     currency: "USD",
     description:
-      "The course that changes how you see diving. Rescue Diver training is challenging, eye-opening, and — according to most who take it — the most rewarding course they've ever done. You'll learn to prevent problems before they start, and respond confidently if something does go wrong.",
+      "The course that changes how you see diving. Rescue Diver training is challenging, eye-opening, and (according to most who take it) the most rewarding course they've ever done. You'll learn to prevent problems before they start, and respond confidently if something does go wrong.",
     whatYouLearn: [
       "Rescuing panicked and unresponsive divers",
       "Searching for and recovering missing divers",
@@ -151,7 +151,7 @@ export const courses: Course[] = [
     price: 150,
     currency: "USD",
     description:
-      "Learn to save a life — in or out of the water. The EFR course teaches you CPR, first aid, and emergency management skills you'll carry everywhere. It's a prerequisite for Rescue Diver, and one of the most practical skills any diver (or human) can have.",
+      "Learn to save a life, in or out of the water. The EFR course teaches you CPR, first aid, and emergency management skills you'll carry everywhere. It's a prerequisite for Rescue Diver, and one of the most practical skills any diver can have.",
     whatYouLearn: [
       "Primary care: CPR and cardiac arrest response",
       "Secondary care: wound care, shock treatment, spinal injury management",
@@ -205,7 +205,7 @@ export const courses: Course[] = [
     price: 225,
     currency: "USD",
     description:
-      "Trincomalee's reefs are photogenic beyond words — sea turtles, moray eels, lionfish, and vibrant coral. This course shows you how to capture them properly. You'll come home with images you're actually proud of, and the skills to keep improving every time you dive.",
+      "Trincomalee's reefs are photogenic beyond words: sea turtles, moray eels, lionfish, and vibrant coral. This course shows you how to capture them properly. You'll come home with images you're actually proud of, and the skills to keep improving every time you dive.",
     whatYouLearn: [
       "Camera settings for underwater conditions",
       "Composition and lighting techniques for marine subjects",
@@ -263,11 +263,11 @@ export const courses: Course[] = [
     price: 225,
     currency: "USD",
     description:
-      "Trincomalee is one of the best wreck diving destinations in Asia — and that's not marketing. The bay has genuine WWII history. HMS Hermes (a Royal Navy aircraft carrier) lies at 45–53 m. The SS British Sergeant sits at 18–24 m, accessible to recreational divers. Irarakandy, a shallow European steamship at 6–10 m, is good for Open Water-certified divers.\n\nThis specialty teaches you to dive wrecks properly — not just swim past them. You'll learn non-penetration diving techniques first (swim-arounds, photographic passes, the things you can do safely on air without specialist gear). Then we cover limited penetration: how to lay a guide reel, how to maintain visibility in silt, how to navigate inside a structure with a torch. Two training dives, real wrecks.\n\nIf wrecks are your thing and you've been diving Trincomalee without the specialty, honestly — book this. The sites here deserve more than a swim-by.",
+      "Trincomalee is one of the best wreck diving destinations in Asia, and that's not marketing. The bay has genuine WWII history. HMS Hermes (a Royal Navy aircraft carrier) lies at 45-53 m. The SS British Sergeant sits at 18-24 m, accessible to recreational divers. Irarakandy, a shallow European steamship at 6-10 m, is good for Open Water-certified divers.\n\nThis specialty teaches you to dive wrecks properly, not just swim past them. You'll learn non-penetration diving techniques first: swim-arounds, photographic passes, the things you can do safely on air without specialist gear. Then we cover limited penetration: how to lay a guide reel, how to maintain visibility in silt, how to navigate inside a structure with a torch. Two training dives, real wrecks.\n\nIf wrecks are your thing and you've been diving Trincomalee without the specialty, honestly, book this. The sites here deserve more than a swim-by.",
     whatYouLearn: [
       "Safe non-penetration wreck diving techniques",
       "Limited penetration with guide reel and torch",
-      "Buoyancy control around silt — avoiding the classic mistake",
+      "Buoyancy control around silt: avoiding the classic mistake",
       "Wreck navigation and mapping basics",
       "Hazard identification: sharp edges, entanglement risks, current at depth",
     ],
@@ -292,7 +292,7 @@ export const courses: Course[] = [
     price: 195,
     currency: "USD",
     description:
-      "The reef looks completely different at night. That's not a cliché — it's just true. Parrotfish wrap themselves in mucus cocoons and go to sleep wedged in coral. Moray eels leave their holes and hunt openly. Octopus cruise the sandy patches. And if you kill your torch for a minute and wave your hand through the water, bioluminescent plankton light up every movement in blue-green sparks.\n\nThe Night Diving specialty gives you the skills to manage yourself in the dark: torch techniques, communication with limited visibility, navigation at night (it's harder than it sounds), and handling the particular mental challenge of not being able to see more than a metre or two in any direction. Most divers feel a mix of nervousness and genuine wonder on their first night dive. By the second, the nervousness is mostly gone.\n\nWe run night dives at Swami Rock and Coral Garden — both sites we know extremely well, which matters a lot when you're diving in the dark.",
+      "The reef looks completely different at night. Parrotfish wrap themselves in mucus cocoons and go to sleep wedged in coral. Moray eels leave their holes and hunt openly. Octopus cruise the sandy patches. And if you kill your torch for a minute and wave your hand through the water, bioluminescent plankton light up every movement in blue-green sparks.\n\nThe Night Diving specialty gives you the skills to manage yourself in the dark: torch techniques, communication with limited visibility, navigation at night (it's harder than it sounds), and handling the particular mental challenge of not being able to see more than a metre or two in any direction. Most divers feel a mix of nervousness and genuine wonder on their first night dive. By the second, the nervousness is mostly gone.\n\nWe run night dives at Swami Rock and Coral Garden, both sites we know extremely well, which matters a lot when you're diving in the dark.",
     whatYouLearn: [
       "Torch handling and signalling techniques in low visibility",
       "Underwater navigation at night",
@@ -321,7 +321,7 @@ export const courses: Course[] = [
     price: 150,
     currency: "USD",
     description:
-      "Nitrox is diving with a higher percentage of oxygen than regular air — usually 32% or 36% instead of 21%. What that means practically: longer no-decompression limits at depth, and faster recovery between dives. On a two-dive day in Trincomalee where your second dive is a wreck at 20+ m, nitrox can add meaningful bottom time.\n\nIt's a short course — half a day of knowledge development, an equipment check, and one checkout dive. If you're already a certified Open Water diver, you can be nitrox-qualified by lunchtime. The main trade-off is a lower maximum depth limit (nitrox 32 means a max of 34 m), and the importance of not accidentally grabbing a regular-air tank. The course covers all of this.\n\nHonestly, if you're planning more than two or three dives in Trincomalee, nitrox is worth it. It's not complicated — it just requires a bit of knowledge to use safely.",
+      "Nitrox is diving with a higher percentage of oxygen than regular air, usually 32% or 36% instead of 21%. What that means practically: longer no-decompression limits at depth, and faster recovery between dives. On a two-dive day in Trincomalee where your second dive is a wreck at 20+ m, nitrox adds meaningful bottom time.\n\nIt's a short course: half a day of knowledge development, an equipment check, and one checkout dive. If you're already a certified Open Water diver, you'll be nitrox-qualified by lunchtime. The main trade-off is a lower maximum depth limit (nitrox 32 means a max of 34 m), and the importance of not accidentally grabbing a regular-air tank. The course covers all of this.\n\nHonestly, if you're planning more than two or three dives in Trincomalee, nitrox is worth it. It's not complicated. It just requires a bit of knowledge to use safely.",
     whatYouLearn: [
       "How enriched air affects no-decompression limits",
       "Analysing oxygen percentage in your tank",
@@ -350,11 +350,11 @@ export const courses: Course[] = [
     price: 175,
     currency: "USD",
     description:
-      "Finding your way back to the boat is a skill every diver should have — and most don't train it properly. The Underwater Navigator specialty changes that. You'll learn compass navigation, natural navigation (using reef topography, coral formations, and the direction of current to find your way), distance estimation, and how to search a pattern for something you've lost.\n\nIn Trincomalee, navigation has genuine practical value. Some of our sites — North Reef, Coral Garden — are large enough that a diver without compass skills can end up significantly off course. The specialty uses these sites directly, so the training is immediately applicable to the diving you'll actually do here.\n\nIt's not a glamorous specialty. There's no wow factor like wreck diving or photography. But divers who take it consistently report feeling more comfortable and confident underwater, which tends to make everything else better.",
+      "Finding your way back to the boat is a skill every diver should have, and most don't train it properly. The Underwater Navigator specialty changes that. You'll learn compass navigation, natural navigation (using reef topography, coral formations, and the direction of current to find your way), distance estimation, and how to search a pattern for something you've lost.\n\nIn Trincomalee, navigation has genuine practical value. Some of our sites, North Reef and Coral Garden, are large enough that a diver without compass skills ends up significantly off course. The specialty uses these sites directly, so the training is immediately applicable to the diving you'll actually do here.\n\nIt's not a glamorous specialty. There's no wow factor like wreck diving or photography. But divers who take it consistently report feeling more comfortable and confident underwater, which tends to make everything else better.",
     whatYouLearn: [
-      "Compass navigation — heading, bearing, and return navigation",
+      "Compass navigation: heading, bearing, and return navigation",
       "Natural navigation using reef, current, and light direction",
-      "Distance estimation — kick cycles and timing",
+      "Distance estimation: kick cycles and timing",
       "Search and recovery patterns",
       "Dive site mapping and planning",
     ],
@@ -379,12 +379,12 @@ export const courses: Course[] = [
     price: 175,
     currency: "USD",
     description:
-      "Buoyancy is the foundation of good diving. Everything else — photography, wreck diving, marine life interaction, gas consumption — gets easier when your buoyancy is genuinely dialled in. Most divers think their buoyancy is better than it actually is. An underwater video or a photography session usually tells a different story.\n\nThe Peak Performance Buoyancy specialty is basically a focused buoyancy workshop. Two days, four dives, with specific exercises designed to improve hovering, streamlining, finning technique, and position in the water. We look at weighting (most recreational divers are over-weighted), equipment configuration, breathing as a buoyancy tool, and how to read and respond to water density changes.\n\nIt's not a flashy course, but divers who take it almost universally report that subsequent dives feel easier and more enjoyable. Better buoyancy means better air consumption, less coral contact, calmer wildlife encounters, and sharper photos. It's genuinely worth the two days.",
+      "Buoyancy is the foundation of good diving. Everything else, photography, wreck diving, marine life interaction, gas consumption, gets easier when your buoyancy is genuinely dialled in. Most divers think their buoyancy is better than it actually is. An underwater video or a photography session usually tells a different story.\n\nThe Peak Performance Buoyancy specialty is a focused buoyancy workshop. Two days, four dives, with specific exercises designed to improve hovering, streamlining, finning technique, and position in the water. We look at weighting (most recreational divers are over-weighted), equipment configuration, breathing as a buoyancy tool, and how to read and respond to water density changes.\n\nIt's not a flashy course, but divers who take it almost universally report that subsequent dives feel easier and more enjoyable. Better buoyancy means better air consumption, less coral contact, calmer wildlife encounters, and sharper photos. It's genuinely worth the two days.",
     whatYouLearn: [
       "Optimising weight and equipment configuration",
       "Controlled hovering and position in the water",
       "Breathing as a primary buoyancy tool",
-      "Streamlining — reducing drag and exertion",
+      "Streamlining: reducing drag and exertion",
       "Precision movement around coral and marine life",
     ],
     includes: [
@@ -408,7 +408,7 @@ export const courses: Course[] = [
     price: 150,
     currency: "USD",
     description:
-      "We've been diving Trincomalee's reefs for 15 years. We've watched some of them change — bleaching events, anchor damage, sediment run-off. We've also watched them recover. The PADI AWARE Coral Reef Conservation specialty is partly educational and partly practical — you'll come away knowing how to read reef health, what the main threats are, and what you can actually do about them as a diver.\n\nThe course covers coral biology, reef ecology, and the human pressures on reefs globally and specifically in Sri Lanka. There are two dives: one reef health survey (you learn to identify and record coral conditions) and one where we practise the kind of buoyancy and positioning that makes the difference between a diver who damages coral and one who doesn't.\n\nIf you're diving Trincomalee and care about what happens to these reefs after you leave — and I'd argue every diver should — this is a good two days. It also counts toward PADI's Project AWARE certification if you're collecting those.",
+      "We've been diving Trincomalee's reefs for 15 years. We've watched some of them change: bleaching events, anchor damage, sediment run-off. We've also watched them recover. The PADI AWARE Coral Reef Conservation specialty is partly educational and partly practical. You'll come away knowing how to read reef health, what the main threats are, and what you can actually do about them as a diver.\n\nThe course covers coral biology, reef ecology, and the human pressures on reefs globally and specifically in Sri Lanka. There are two dives: one reef health survey (you learn to identify and record coral conditions) and one where we practise the kind of buoyancy and positioning that makes the difference between a diver who damages coral and one who doesn't.\n\nIf you're diving Trincomalee and care about what happens to these reefs after you leave, this is a good two days. It also counts toward PADI's Project AWARE certification if you're collecting those.",
     whatYouLearn: [
       "Coral biology and reef ecology basics",
       "Identifying healthy vs. stressed reef indicators",

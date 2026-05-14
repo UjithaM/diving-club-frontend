@@ -102,6 +102,31 @@ export interface Promotion {
   is_currently_active: boolean;
 }
 
+export interface BlogPostFaq {
+  question: string;
+  answer: string;
+}
+
+export interface BlogPost {
+  slug: string;
+  title: string;
+  excerpt: string;
+  publishedAt: string;
+  updatedAt: string;
+  author: string;
+  authorTitle: string;
+  category: "dive-sites" | "beginner" | "marine-life" | "courses" | "planning" | "destination";
+  primaryKeyword: string;
+  readingTime: string;
+  body: string[];
+  faqs: BlogPostFaq[];
+  relatedPosts: string[];
+  relatedCourses: string[];
+  relatedDiveSites: string[];
+  relatedActivities: string[];
+  featured: boolean;
+}
+
 export interface BookingConfirmation {
   reference: string;
   status: "pending" | "confirmed" | "cancelled" | "completed";
