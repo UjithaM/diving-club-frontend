@@ -48,6 +48,7 @@ const localBusinessJsonLd = {
     "PADI-certified diving center in Trincomalee, Sri Lanka offering scuba courses, fun diving, snorkeling, and whale watching.",
   url: "https://divingclub.lk",
   telephone: "+94743945010",
+  email: "info@divingclub.lk",
   address: {
     "@type": "PostalAddress",
     streetAddress: "74/9, Sandy Cove",

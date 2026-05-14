@@ -88,6 +88,14 @@ export default function Footer() {
                 WhatsApp us
               </a>
             </p>
+            <p>
+              <a
+                href="mailto:info@divingclub.lk"
+                className="text-sm text-warm-white/50 hover:text-warm-white transition-colors"
+              >
+                info@divingclub.lk
+              </a>
+            </p>
           </address>
         </div>
       </div>

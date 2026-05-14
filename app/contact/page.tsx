@@ -24,6 +24,7 @@ const jsonLd = {
     "@type": "LocalBusiness",
     name: "Diving Club",
     telephone: "0743945010",
+    email: "info@divingclub.lk",
     address: {
       "@type": "PostalAddress",
       streetAddress: "74/9, Sandy Cove",
@@ -97,6 +98,21 @@ export default function ContactPage() {
                   </div>
                 </a>
 
+                <a
+                  href="mailto:info@divingclub.lk"
+                  className="flex items-center gap-4 bg-white rounded-2xl p-5 border border-charcoal-sea/8 hover:border-shallow-water/40 hover:shadow-md transition-all group"
+                >
+                  <span className="w-11 h-11 rounded-full bg-shallow-water/10 flex items-center justify-center flex-shrink-0 group-hover:bg-shallow-water/20 transition-colors">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2A9D8F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                      <polyline points="22,6 12,13 2,6" />
+                    </svg>
+                  </span>
+                  <div>
+                    <p className="text-xs text-charcoal-sea/45 uppercase tracking-widest mb-0.5">Email us</p>
+                    <p className="text-charcoal-sea font-semibold text-base">info@divingclub.lk</p>
+                  </div>
+                </a>
               </div>
             </div>
 
