@@ -2,18 +2,19 @@
 
 import { useReducer, useState, useEffect, useRef } from "react";
 import PhoneInput from "@/components/ui/PhoneInput";
+import { isValidPhoneNumber } from "react-phone-number-input";
 import Link from "next/link";
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
 const certOptions = [
-  { value: "none", label: "No certification — complete beginner" },
+  { value: "none", label: "No certification (complete beginner)" },
   { value: "scuba-diver", label: "PADI Scuba Diver" },
   { value: "open-water", label: "PADI Open Water Diver" },
   { value: "advanced", label: "PADI Advanced Open Water" },
   { value: "rescue", label: "PADI Rescue Diver" },
   { value: "divemaster", label: "Divemaster or above" },
-  { value: "other", label: "Other certification — mention in notes" },
+  { value: "other", label: "Other certification (mention in notes)" },
 ];
 
 // ─── State ───────────────────────────────────────────────────────────────────
@@ -71,6 +72,12 @@ function certLabel(value: string) {
 
 function isValidEmail(v: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+}
+
+function getTomorrow() {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  return d.toISOString().split("T")[0];
 }
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
@@ -394,7 +401,7 @@ export default function BookingWizard({
     const errs: typeof errors = {};
     if (!draft.name.trim()) errs.name = "Full name is required.";
     if (!draft.email.trim() || !isValidEmail(draft.email)) errs.email = "A valid email is required.";
-    if (!draft.phone) errs.phone = "Phone / WhatsApp number is required.";
+    if (!draft.phone || !isValidPhoneNumber(draft.phone)) errs.phone = "Enter a valid international phone number.";
     if (!draft.date) errs.date = "Please choose a preferred date.";
     if (Object.keys(errs).length) { setErrors(errs); return; }
     goTo(3);
@@ -505,7 +512,7 @@ export default function BookingWizard({
           </div>
 
           <StickyNav
-            nextLabel="Next — Your details →"
+            nextLabel="Next: Your details →"
             onNext={step1Next}
             nextDisabled={!draft.item}
           />
@@ -566,7 +573,7 @@ export default function BookingWizard({
               </div>
               {errors.phone
                 ? <p className="text-tropic-coral text-xs mt-1.5">{errors.phone}</p>
-                : <p className="text-xs text-charcoal-sea/40 mt-1.5">Include country code — we reply on WhatsApp too</p>
+                : <p className="text-xs text-charcoal-sea/40 mt-1.5">Include country code. We reply on WhatsApp too.</p>
               }
             </div>
 
@@ -595,7 +602,7 @@ export default function BookingWizard({
                 type="date"
                 value={draft.date}
                 onChange={(e) => set("date", e.target.value)}
-                min={new Date().toISOString().split("T")[0]}
+                min={getTomorrow()}
                 className={`${inputClass} ${errors.date ? "border-tropic-coral ring-1 ring-tropic-coral" : ""}`}
               />
               {errors.date && <p className="text-tropic-coral text-xs mt-1.5">{errors.date}</p>}
@@ -617,7 +624,7 @@ export default function BookingWizard({
                     {n} {n === 1 ? "person" : "people"}
                   </option>
                 ))}
-                <option value="7+">7+ — contact us first</option>
+                <option value="7+">7+ (contact us first)</option>
               </select>
             </div>
 
@@ -641,7 +648,7 @@ export default function BookingWizard({
 
           <StickyNav
             onBack={() => goTo(1)}
-            nextLabel="Next — Review →"
+            nextLabel="Next: Review →"
             onNext={step2Next}
           />
         </StepPanel>
@@ -708,7 +715,7 @@ export default function BookingWizard({
           )}
 
           <p className="text-xs text-charcoal-sea/40 text-center mb-2">
-            No payment required now — we&apos;ll confirm by phone or email within 24 hours.
+            No payment required now. We&apos;ll confirm by phone or email within 24 hours.
           </p>
 
           <StickyNav

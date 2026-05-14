@@ -118,7 +118,7 @@ export default function HeroSection() {
             className="text-warm-white/55 text-base leading-relaxed max-w-[38ch] mb-8 lg:mb-10"
             style={mounted ? { animation: `hero-slide-up 0.8s 0.35s ${ease} both` } : { opacity: 0 }}
           >
-            PADI courses, guided reef dives, and whale watching — no experience necessary.
+            PADI courses, guided reef dives, and whale watching. No experience necessary.
             The Indian Ocean is waiting right outside our door.
           </p>
 

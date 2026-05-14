@@ -6,7 +6,7 @@ const items = [
   {
     num: "01",
     title: "PADI Certified",
-    body: "Every course follows official PADI standards. Your certification is recognised in 186 countries — dive anywhere in the world.",
+    body: "Every course follows official PADI standards. Your certification is recognised in 186 countries. Dive anywhere in the world.",
   },
   {
     num: "02",
@@ -21,7 +21,7 @@ const items = [
   {
     num: "04",
     title: "All Levels Welcome",
-    body: "First dive or your 500th — we have something for you. Try diving needs zero experience. Divemaster training takes you as far as you want to go.",
+    body: "First dive or your 500th, we have something for you. Try diving needs zero experience. Divemaster training takes you as far as you want to go.",
   },
 ];
 

@@ -22,7 +22,7 @@ export default function FeaturedCoursesSection({ courses }: { courses: Course[] 
               Earn Your PADI Certification
             </h2>
             <p className="text-warm-white/55 text-base leading-relaxed mt-3 max-w-lg">
-              From your very first breath underwater to leading dive expeditions — we&apos;ll get you there.
+              From your very first breath underwater to leading dive expeditions. We&apos;ll get you there.
             </p>
           </AnimatedSection>
           <AnimatedSection delay={0.1}>

@@ -21,7 +21,7 @@ export default function ContactCtaSection() {
 
           <p className="text-warm-white/50 text-lg leading-relaxed max-w-lg mx-auto mb-8 lg:mb-12">
             The water is warm, the viz is clear, and your instructor is waiting.
-            Join us any day of the week — no experience necessary.
+            Join us any day of the week. No experience necessary.
           </p>
 
           <Link

@@ -22,7 +22,7 @@ export default function FeaturedExperiencesSection({ experiences }: { experience
               Dive Right In
             </h2>
             <p className="text-charcoal-sea/55 text-base leading-relaxed mt-3 max-w-lg">
-              First-timers and experienced divers alike — there&apos;s something in these waters for everyone.
+              First-timers and experienced divers alike, there&apos;s something in these waters for everyone.
             </p>
           </AnimatedSection>
           <AnimatedSection delay={0.1}>
