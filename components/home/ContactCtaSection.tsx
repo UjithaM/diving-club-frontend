@@ -32,9 +32,11 @@ export default function ContactCtaSection() {
           </Link>
 
           <p className="text-warm-white/30 text-sm mt-6">
-            Or call us:{" "}
+            Or WhatsApp us:{" "}
             <a
-              href="tel:0743945010"
+              href="https://wa.me/94743945010"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-warm-white/50 hover:text-warm-white transition-colors underline underline-offset-2"
             >
               0743 945 010

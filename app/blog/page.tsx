@@ -3,12 +3,12 @@ import Link from "next/link";
 import { getBlogPosts } from "@/lib/data/blog-posts";
 
 export const metadata: Metadata = {
-  title: "Diving Blog — Tips, Stories & Guides from Trincomalee",
+  title: "Diving Blog: Tips, Stories & Guides from Trincomalee",
   description:
-    "Honest diving guides, species spotlights, gear reviews, and stories from the water — written by the team at Diving Club, Sandy Cove, Trincomalee.",
+    "Honest diving guides, species spotlights, gear reviews, and stories from the water, written by the team at Diving Club, Sandy Cove, Trincomalee.",
   alternates: { canonical: "https://divingclub.lk/blog" },
   openGraph: {
-    title: "Diving Club Blog — Trincomalee, Sri Lanka",
+    title: "Diving Club Blog | Trincomalee, Sri Lanka",
     description:
       "Dive guides, marine life spotlights, and trip stories from one of Sri Lanka's best dive centres. No fluff, no stock photos.",
     url: "https://divingclub.lk/blog",
@@ -166,7 +166,7 @@ export default function BlogIndexPage() {
         <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
           <div>
             <p className="text-warm-white font-bold text-lg mb-1">Ready to see it in person?</p>
-            <p className="text-warm-white/45 text-sm">Sandy Cove, Trincomalee — open May to October.</p>
+            <p className="text-warm-white/45 text-sm">Sandy Cove, Trincomalee. Open May to October.</p>
           </div>
           <div className="flex flex-col sm:flex-row items-center gap-3">
             <Link

@@ -396,9 +396,11 @@ export default function AboutPage() {
             </div>
 
             <p className="text-charcoal-sea/30 text-sm mt-7">
-              Or just call:{" "}
+              Or WhatsApp us:{" "}
               <a
-                href="tel:0743945010"
+                href="https://wa.me/94743945010"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-charcoal-sea/50 hover:text-charcoal-sea transition-colors underline underline-offset-2"
               >
                 0743 945 010

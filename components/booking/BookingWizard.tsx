@@ -702,8 +702,8 @@ export default function BookingWizard({
 
           {status === "error" && (
             <p className="text-tropic-coral text-sm bg-tropic-coral/10 border border-tropic-coral/20 rounded-xl px-4 py-3 mb-4">
-              Something went wrong. Please try again or call us on{" "}
-              <a href="tel:0743945010" className="font-semibold underline">0743 945 010</a>.
+              Something went wrong. Please try again or WhatsApp us on{" "}
+              <a href="https://wa.me/94743945010" target="_blank" rel="noopener noreferrer" className="font-semibold underline">0743 945 010</a>.
             </p>
           )}
 

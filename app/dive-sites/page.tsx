@@ -6,12 +6,12 @@ import DiveSiteGrid from "@/components/dive-sites/DiveSiteGrid";
 export const metadata: Metadata = {
   title: "Dive Sites in Trincomalee, Sri Lanka",
   description:
-    "Explore 12 world-class dive sites in Trincomalee — from Swami Rock's Hindu statues and hawksbill turtles to the HMS Hermes aircraft carrier wreck. Reefs, walls, and WWII wrecks.",
+    "Explore 12 world-class dive sites in Trincomalee: from Swami Rock's Hindu statues and hawksbill turtles to the HMS Hermes aircraft carrier wreck. Reefs, walls, and WWII wrecks.",
   alternates: { canonical: "https://divingclub.lk/dive-sites" },
   openGraph: {
-    title: "Dive Sites in Trincomalee — Reefs, Wrecks & Marine Life",
+    title: "Dive Sites in Trincomalee: Reefs, Wrecks & Marine Life",
     description:
-      "12 dive sites around Trincomalee Bay — Swami Rock, Pigeon Island, HMS Hermes wreck, SS British Sergeant, Coral Garden, and more. All levels, May–October season.",
+      "12 dive sites around Trincomalee Bay: Swami Rock, Pigeon Island, HMS Hermes wreck, SS British Sergeant, Coral Garden, and more. All levels, May–October season.",
     url: "https://divingclub.lk/dive-sites",
   },
 };
@@ -22,7 +22,7 @@ export default async function DiveSitesPage() {
   const itemListJsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: "Dive Sites in Trincomalee, Sri Lanka — Diving Club",
+    name: "Dive Sites in Trincomalee, Sri Lanka | Diving Club",
     numberOfItems: sites.length,
     itemListElement: sites.map((site, i) => ({
       "@type": "ListItem",
@@ -68,7 +68,7 @@ export default async function DiveSitesPage() {
             Dive Sites
           </h1>
           <p className="text-warm-white/55 text-base leading-relaxed max-w-xl mb-10">
-            WWII wrecks. Coral gardens. Reef walls with Hindu deity statues at depth. Blacktip sharks at a national park. Trincomalee has genuinely extraordinary diving — here&apos;s what&apos;s waiting.
+            WWII wrecks. Coral gardens. Reef walls with Hindu deity statues at depth. Blacktip sharks at a national park. Trincomalee has genuinely extraordinary diving. Here&apos;s what&apos;s waiting.
           </p>
 
           <div className="flex flex-wrap gap-8 pt-6 border-t border-warm-white/10">
@@ -101,15 +101,17 @@ export default async function DiveSitesPage() {
             We&apos;ll pick the right site for you
           </h2>
           <p className="text-warm-white/50 text-base leading-relaxed max-w-lg mx-auto mb-10">
-            Tell us your certification level and what kind of diving you&apos;re after — wrecks, coral, big fish, photography — and we&apos;ll build the day around it.
+            Tell us your certification level and what kind of diving you&apos;re after (wrecks, coral, big fish, photography) and we&apos;ll build the day around it.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
-              href="tel:0743945010"
+              href="https://wa.me/94743945010"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2.5 bg-tropic-coral text-white font-bold px-8 py-3.5 rounded-full hover:bg-[#d4603f] transition-colors text-sm"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
               </svg>
               0743 945 010
             </a>

@@ -3,7 +3,7 @@ import Link from "next/link";
 import ContactForm from "@/components/contact/ContactForm";
 
 export const metadata: Metadata = {
-  title: "Contact Us — Diving Club Trincomalee",
+  title: "Contact Us | Diving Club Trincomalee",
   description:
     "Get in touch with Diving Club Trincomalee. Call, WhatsApp, or send a message to book a dive, ask about courses, or plan your visit to Sri Lanka's best dive destination.",
   alternates: { canonical: "https://divingclub.lk/contact" },
@@ -63,7 +63,7 @@ export default function ContactPage() {
             Get in Touch
           </h1>
           <p className="text-warm-white/55 text-base leading-relaxed max-w-xl">
-            Got a question? Want to book? Just give us a call or drop a message — we&apos;re always happy to help.
+            Got a question? Want to book? Just give us a call or drop a message. We&apos;re always happy to help.
           </p>
         </div>
       </section>
@@ -81,21 +81,6 @@ export default function ContactPage() {
 
               <div className="space-y-4">
                 <a
-                  href="tel:0743945010"
-                  className="flex items-center gap-4 bg-white rounded-2xl p-5 border border-charcoal-sea/8 hover:border-tropic-coral/40 hover:shadow-md transition-all group"
-                >
-                  <span className="w-11 h-11 rounded-full bg-tropic-coral/10 flex items-center justify-center flex-shrink-0 group-hover:bg-tropic-coral/20 transition-colors">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E76F51" strokeWidth="2" strokeLinecap="round">
-                      <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                    </svg>
-                  </span>
-                  <div>
-                    <p className="text-xs text-charcoal-sea/45 uppercase tracking-widest mb-0.5">Call us</p>
-                    <p className="text-charcoal-sea font-black text-2xl">0743 945 010</p>
-                  </div>
-                </a>
-
-                <a
                   href="https://wa.me/94743945010"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -107,10 +92,11 @@ export default function ContactPage() {
                     </svg>
                   </span>
                   <div>
-                    <p className="text-xs text-charcoal-sea/45 uppercase tracking-widest mb-0.5">WhatsApp</p>
-                    <p className="text-charcoal-sea font-black text-2xl">+94 743 945 010</p>
+                    <p className="text-xs text-charcoal-sea/45 uppercase tracking-widest mb-0.5">WhatsApp us</p>
+                    <p className="text-charcoal-sea font-black text-2xl">0743 945 010</p>
                   </div>
                 </a>
+
               </div>
             </div>
 

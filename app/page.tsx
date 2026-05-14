@@ -37,7 +37,7 @@ export const metadata: Metadata = {
 const touristAttractionJsonLd = {
   "@context": "https://schema.org",
   "@type": "TouristAttraction",
-  name: "Trincomalee Dive Sites — Coral Garden, Powder Blue Bay, Wreck of the Hermes",
+  name: "Trincomalee Dive Sites: Coral Garden, Powder Blue Bay, Wreck of the Hermes",
   description:
     "World-class scuba diving sites in Trincomalee, Sri Lanka including coral reefs, drop-offs, and WWII wrecks.",
   touristType: ["Scuba Divers", "Snorkelers", "Marine Life Enthusiasts"],

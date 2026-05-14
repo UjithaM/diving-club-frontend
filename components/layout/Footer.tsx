@@ -76,7 +76,7 @@ export default function Footer() {
           <address className="not-italic space-y-3">
             <p className="text-sm text-warm-white/50 leading-relaxed">74/9, Sandy Cove<br />31000, Trincomalee<br />Sri Lanka</p>
             <p>
-              <a href="tel:0743945010" className="text-sm text-warm-white/50 hover:text-warm-white transition-colors">0743 945 010</a>
+              <a href="https://wa.me/94743945010" target="_blank" rel="noopener noreferrer" className="text-sm text-warm-white/50 hover:text-warm-white transition-colors">0743 945 010</a>
             </p>
             <p>
               <a

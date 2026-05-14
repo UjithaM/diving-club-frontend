@@ -3,14 +3,14 @@ import Link from "next/link";
 import BookingWizard from "@/components/booking/BookingWizard";
 
 export const metadata: Metadata = {
-  title: "Book a Dive — Diving Club Trincomalee",
+  title: "Book a Dive | Diving Club Trincomalee",
   description:
-    "Book a PADI course or water activity with Diving Club Trincomalee. Reserve your spot online — no payment needed now. We confirm within 24 hours.",
+    "Book a PADI course or water activity with Diving Club Trincomalee. Reserve your spot online, no payment needed now. We confirm within 24 hours.",
   alternates: { canonical: "https://divingclub.lk/book" },
   openGraph: {
-    title: "Book a Dive — Diving Club Trincomalee",
+    title: "Book a Dive | Diving Club Trincomalee",
     description:
-      "Reserve your PADI course, fun dive, snorkeling tour, or whale watching trip in Trincomalee. Quick online booking form — we confirm within 24 hours.",
+      "Reserve your PADI course, fun dive, snorkeling tour, or whale watching trip in Trincomalee. Quick online booking form, we confirm within 24 hours.",
     url: "https://divingclub.lk/book",
   },
 };
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "ReservationPage",
-  name: "Book a Dive — Diving Club Trincomalee",
+  name: "Book a Dive | Diving Club Trincomalee",
   url: "https://divingclub.lk/book",
   provider: {
     "@type": "LocalBusiness",
@@ -61,7 +61,7 @@ export default async function BookPage({
             Book a Dive
           </h1>
           <p className="text-warm-white/55 text-base leading-relaxed">
-            Fill in the form and we&apos;ll confirm your booking within 24 hours. No payment needed — just pick a date.
+            Fill in the form and we&apos;ll confirm your booking within 24 hours. No payment needed. Just pick a date.
           </p>
         </div>
       </section>
@@ -87,8 +87,8 @@ export default async function BookPage({
               Browse activities
             </Link>
             <span className="text-charcoal-sea/20">·</span>
-            <a href="tel:0743945010" className="text-shallow-water font-semibold hover:underline">
-              Call us
+            <a href="https://wa.me/94743945010" target="_blank" rel="noopener noreferrer" className="text-shallow-water font-semibold hover:underline">
+              WhatsApp us
             </a>
           </div>
         </div>
