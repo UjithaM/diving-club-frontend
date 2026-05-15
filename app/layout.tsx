@@ -5,6 +5,8 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import WhatsAppFab from "@/components/ui/WhatsAppFab";
 import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
+import type { LocalBusiness, WithContext } from "schema-dts";
+import { safeJsonLd } from "@/lib/jsonld";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -39,9 +41,9 @@ export const metadata: Metadata = {
   },
 };
 
-const localBusinessJsonLd = {
+const localBusinessJsonLd: WithContext<LocalBusiness> = {
   "@context": "https://schema.org",
-  "@type": ["LocalBusiness", "EducationalOrganization"],
+  "@type": "LocalBusiness",
   "@id": "https://divingclub.lk",
   name: "Diving Club",
   description:
@@ -97,7 +99,7 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col">
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(localBusinessJsonLd) }}
         />
         <SmoothScrollProvider>
           <Header />

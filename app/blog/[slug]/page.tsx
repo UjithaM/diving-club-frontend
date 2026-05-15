@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getBlogPosts, getBlogPostBySlug } from "@/lib/data/blog-posts";
+import type { Article, FAQPage, WithContext } from "schema-dts";
+import { safeJsonLd } from "@/lib/jsonld";
 
 export async function generateStaticParams() {
   return getBlogPosts().map((p) => ({ slug: p.slug }));
@@ -68,7 +70,7 @@ export default async function BlogPostPage({
     .filter(Boolean)
     .slice(0, 3);
 
-  const articleJsonLd = {
+  const articleJsonLd: WithContext<Article> = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: post.title,
@@ -98,7 +100,7 @@ export default async function BlogPostPage({
     keywords: post.primaryKeyword,
   };
 
-  const faqJsonLd =
+  const faqJsonLd: WithContext<FAQPage> | null =
     post.faqs.length > 0
       ? {
           "@context": "https://schema.org",
@@ -115,12 +117,12 @@ export default async function BlogPostPage({
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(articleJsonLd) }}
       />
       {faqJsonLd && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }}
         />
       )}
 

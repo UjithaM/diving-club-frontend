@@ -10,6 +10,8 @@ import TestimonialStrip from "@/components/ui/TestimonialStrip";
 import RelatedGrid from "@/components/ui/RelatedGrid";
 import { courseFaqs } from "@/lib/data/course-faqs";
 import { testimonials } from "@/lib/data/testimonials";
+import type { Course as SchemaCourse, FAQPage, WithContext } from "schema-dts";
+import { safeJsonLd } from "@/lib/jsonld";
 
 export async function generateStaticParams() {
   const courses = await getCourses();
@@ -122,7 +124,7 @@ export default async function CourseDetailPage({
 
   const isCredentialCourse = course.level !== "beginner" || course.slug !== "discover-scuba-diving";
 
-  const jsonLd = {
+  const jsonLd: WithContext<SchemaCourse> = {
     "@context": "https://schema.org",
     "@type": "Course",
     name: course.name,
@@ -130,7 +132,7 @@ export default async function CourseDetailPage({
     url: `https://divingclub.lk/courses/${course.slug}`,
     keywords: `PADI courses Trincomalee, scuba diving Sri Lanka, ${course.name.toLowerCase()} Trincomalee`,
     provider: {
-      "@type": ["Organization", "EducationalOrganization"],
+      "@type": "Organization",
       name: "Diving Club",
       url: "https://divingclub.lk",
     },
@@ -167,7 +169,7 @@ export default async function CourseDetailPage({
     },
   };
 
-  const faqJsonLd = pageFaqs.length > 0
+  const faqJsonLd: WithContext<FAQPage> | null = pageFaqs.length > 0
     ? {
         "@context": "https://schema.org",
         "@type": "FAQPage",
@@ -183,12 +185,12 @@ export default async function CourseDetailPage({
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
       {faqJsonLd && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }}
         />
       )}
 

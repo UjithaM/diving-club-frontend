@@ -3,6 +3,8 @@ import { getCourses } from "@/lib/api/courses";
 import { getExperiences } from "@/lib/api/experiences";
 import { getDiveSites } from "@/lib/api/dive-sites";
 import { getGalleryImages } from "@/lib/api/gallery";
+import type { FAQPage, TouristAttraction, WithContext } from "schema-dts";
+import { safeJsonLd } from "@/lib/jsonld";
 import HeroSection from "@/components/home/HeroSection";
 import StatsSection from "@/components/home/StatsSection";
 import FeaturedExperiencesSection from "@/components/home/FeaturedExperiencesSection";
@@ -34,7 +36,7 @@ export const metadata: Metadata = {
   },
 };
 
-const touristAttractionJsonLd = {
+const touristAttractionJsonLd: WithContext<TouristAttraction> = {
   "@context": "https://schema.org",
   "@type": "TouristAttraction",
   name: "Trincomalee Dive Sites: Coral Garden, Powder Blue Bay, Wreck of the Hermes",
@@ -48,13 +50,9 @@ const touristAttractionJsonLd = {
   },
   isAccessibleForFree: false,
   availableLanguage: ["English"],
-  provider: {
-    "@type": "LocalBusiness",
-    "@id": "https://divingclub.lk",
-  },
 };
 
-const faqJsonLd = {
+const faqJsonLd: WithContext<FAQPage> = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   mainEntity: [
@@ -103,11 +101,11 @@ export default async function HomePage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(touristAttractionJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(touristAttractionJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }}
       />
       <HeroSection />
       <StatsSection />

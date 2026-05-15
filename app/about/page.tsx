@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import AnimatedSection from "@/components/ui/AnimatedSection";
+import type { AboutPage, Person, WithContext } from "schema-dts";
+import { safeJsonLd } from "@/lib/jsonld";
 
 export const metadata: Metadata = {
   title: "About Diving Club | PADI Dive Centre, Trincomalee",
@@ -24,7 +26,7 @@ export const metadata: Metadata = {
   },
 };
 
-const personJsonLd = {
+const personJsonLd: WithContext<Person> = {
   "@context": "https://schema.org",
   "@type": "Person",
   name: "J Rockshan",
@@ -54,7 +56,7 @@ const personJsonLd = {
   },
 };
 
-const aboutPageJsonLd = {
+const aboutPageJsonLd: WithContext<AboutPage> = {
   "@context": "https://schema.org",
   "@type": "AboutPage",
   name: "About Diving Club Trincomalee",
@@ -132,11 +134,11 @@ export default function AboutPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(personJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutPageJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(aboutPageJsonLd) }}
       />
 
       {/* ── 1. HERO ──────────────────────────────────────── */}

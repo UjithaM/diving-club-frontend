@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getExperiences } from "@/lib/api/experiences";
 import ActivitiesGrid from "@/components/activities/ActivitiesGrid";
+import type { ItemList, WithContext } from "schema-dts";
+import { safeJsonLd } from "@/lib/jsonld";
 
 export const metadata: Metadata = {
   title: "Water Activities in Trincomalee: Try Diving, Fun Diving, Snorkeling & Whale Watching",
@@ -19,7 +21,7 @@ export const metadata: Metadata = {
 export default async function ActivitiesPage() {
   const experiences = await getExperiences();
 
-  const itemListJsonLd = {
+  const itemListJsonLd: WithContext<ItemList> = {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: "Water Activities | Diving Club Trincomalee",
@@ -46,7 +48,7 @@ export default async function ActivitiesPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(itemListJsonLd) }}
       />
 
       {/* Page hero */}

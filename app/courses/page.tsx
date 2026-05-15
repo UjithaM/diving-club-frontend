@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getCourses } from "@/lib/api/courses";
 import CourseGrid from "@/components/courses/CourseGrid";
+import type { ItemList, WithContext } from "schema-dts";
+import { safeJsonLd } from "@/lib/jsonld";
 
 export const metadata: Metadata = {
   title: "PADI Courses Trincomalee, Sri Lanka | Diving Club",
@@ -19,7 +21,7 @@ export const metadata: Metadata = {
 export default async function CoursesPage() {
   const courses = await getCourses();
 
-  const itemListJsonLd = {
+  const itemListJsonLd: WithContext<ItemList> = {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: "PADI Scuba Diving Courses | Diving Club Trincomalee",
@@ -51,7 +53,7 @@ export default async function CoursesPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(itemListJsonLd) }}
       />
 
       {/* Page hero */}

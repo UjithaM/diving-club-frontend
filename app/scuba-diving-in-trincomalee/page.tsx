@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import AnimatedSection from "@/components/ui/AnimatedSection";
+import type { TouristDestination, BreadcrumbList, WithContext } from "schema-dts";
+import { safeJsonLd } from "@/lib/jsonld";
 
 export const metadata: Metadata = {
   title: "Scuba Diving in Trincomalee | Complete Guide | Diving Club",
@@ -15,7 +17,7 @@ export const metadata: Metadata = {
   },
 };
 
-const pageJsonLd = {
+const pageJsonLd: WithContext<TouristDestination> = {
   "@context": "https://schema.org",
   "@type": "TouristDestination",
   name: "Trincomalee, Sri Lanka",
@@ -30,7 +32,7 @@ const pageJsonLd = {
   },
 };
 
-const breadcrumbJsonLd = {
+const breadcrumbJsonLd: WithContext<BreadcrumbList> = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   itemListElement: [
@@ -42,8 +44,8 @@ const breadcrumbJsonLd = {
 export default function DivingTrincolmalee() {
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(pageJsonLd) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(pageJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }} />
 
       {/* Hero */}
       <section className="bg-charcoal-sea py-16 lg:py-24 px-6">

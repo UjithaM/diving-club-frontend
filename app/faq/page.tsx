@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getFaqs } from "@/lib/api/faqs";
 import type { ApiFaq } from "@/lib/types";
+import type { FAQPage, WithContext } from "schema-dts";
+import { safeJsonLd } from "@/lib/jsonld";
 
 export const metadata: Metadata = {
   title: "Scuba Diving FAQ | Trincomalee | Diving Club",
@@ -43,7 +45,7 @@ function CategorySection({
 export default async function FaqPage() {
   const faqs = await getFaqs();
 
-  const faqJsonLd = {
+  const faqJsonLd: WithContext<FAQPage> = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     mainEntity: faqs.map((faq) => ({
@@ -70,7 +72,7 @@ export default async function FaqPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }}
       />
 
       {/* Hero */}

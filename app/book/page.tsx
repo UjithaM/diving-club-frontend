@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import BookingWizard from "@/components/booking/BookingWizard";
+import type { WebPage, WithContext } from "schema-dts";
+import { safeJsonLd } from "@/lib/jsonld";
 
 export const metadata: Metadata = {
   title: "Book a Dive | Diving Club",
@@ -15,16 +17,11 @@ export const metadata: Metadata = {
   },
 };
 
-const jsonLd = {
+const jsonLd: WithContext<WebPage> = {
   "@context": "https://schema.org",
-  "@type": "ReservationPage",
+  "@type": "WebPage",
   name: "Book a Dive | Diving Club Trincomalee",
   url: "https://divingclub.lk/book",
-  provider: {
-    "@type": "LocalBusiness",
-    name: "Diving Club",
-    url: "https://divingclub.lk",
-  },
 };
 
 export default async function BookPage({
@@ -38,7 +35,7 @@ export default async function BookPage({
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
 
       {/* Hero */}

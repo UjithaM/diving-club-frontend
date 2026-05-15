@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getDiveSites } from "@/lib/api/dive-sites";
 import DiveSiteGrid from "@/components/dive-sites/DiveSiteGrid";
+import type { ItemList, WithContext } from "schema-dts";
+import { safeJsonLd } from "@/lib/jsonld";
 
 export const metadata: Metadata = {
   title: "Dive Sites in Trincomalee, Sri Lanka",
@@ -19,7 +21,7 @@ export const metadata: Metadata = {
 export default async function DiveSitesPage() {
   const sites = await getDiveSites();
 
-  const itemListJsonLd = {
+  const itemListJsonLd: WithContext<ItemList> = {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: "Dive Sites in Trincomalee, Sri Lanka | Diving Club",
@@ -45,7 +47,7 @@ export default async function DiveSitesPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(itemListJsonLd) }}
       />
 
       {/* Hero */}

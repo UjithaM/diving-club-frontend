@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import ContactForm from "@/components/contact/ContactForm";
+import type { ContactPage as SchemaContactPage, WithContext } from "schema-dts";
+import { safeJsonLd } from "@/lib/jsonld";
 
 export const metadata: Metadata = {
   title: "Contact Diving Club | Trincomalee, Sri Lanka",
@@ -15,7 +17,7 @@ export const metadata: Metadata = {
   },
 };
 
-const jsonLd = {
+const jsonLd: WithContext<SchemaContactPage> = {
   "@context": "https://schema.org",
   "@type": "ContactPage",
   name: "Contact Diving Club Trincomalee",
@@ -41,7 +43,7 @@ export default function ContactPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
 
       {/* Hero */}

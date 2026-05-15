@@ -10,6 +10,8 @@ import TestimonialStrip from "@/components/ui/TestimonialStrip";
 import RelatedGrid from "@/components/ui/RelatedGrid";
 import { diveSiteFaqs } from "@/lib/data/dive-site-faqs";
 import { testimonials } from "@/lib/data/testimonials";
+import type { TouristAttraction, FAQPage, WithContext } from "schema-dts";
+import { safeJsonLd } from "@/lib/jsonld";
 
 export async function generateStaticParams() {
   const sites = await getDiveSites();
@@ -114,9 +116,9 @@ export default async function DiveSiteDetailPage({
     await Promise.all(site.relatedCourses.map((slug) => getCourseBySlug(slug)))
   ).filter(Boolean);
 
-  const siteJsonLd = {
+  const siteJsonLd: WithContext<TouristAttraction> = {
     "@context": "https://schema.org",
-    "@type": ["TouristAttraction", "SportsActivityLocation"],
+    "@type": "TouristAttraction",
     name: site.name,
     description: site.description.slice(0, 300),
     url: `https://divingclub.lk/dive-sites/${site.slug}`,
@@ -140,7 +142,7 @@ export default async function DiveSiteDetailPage({
     ],
   };
 
-  const pageFaqsJsonLd = pageFaqs.length > 0
+  const pageFaqsJsonLd: WithContext<FAQPage> | null = pageFaqs.length > 0
     ? {
         "@context": "https://schema.org",
         "@type": "FAQPage",
@@ -161,12 +163,12 @@ export default async function DiveSiteDetailPage({
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(siteJsonLd) }}
       />
       {pageFaqsJsonLd && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(pageFaqsJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(pageFaqsJsonLd) }}
         />
       )}
 

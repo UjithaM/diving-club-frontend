@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { getGalleryImages } from "@/lib/api/gallery";
+import type { ImageGallery, WithContext } from "schema-dts";
+import { safeJsonLd } from "@/lib/jsonld";
 
 export const metadata: Metadata = {
   title: "Gallery | Diving Club",
@@ -19,7 +21,7 @@ export default async function GalleryPage() {
   const apiImages = await getGalleryImages().catch(() => []);
   const images = apiImages.map((img) => ({ src: img.url, alt: img.title, caption: img.title }));
 
-  const galleryJsonLd = {
+  const galleryJsonLd: WithContext<ImageGallery> = {
     "@context": "https://schema.org",
     "@type": "ImageGallery",
     name: "Diving Club Trincomalee | Gallery",
@@ -37,7 +39,7 @@ export default async function GalleryPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(galleryJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(galleryJsonLd) }}
       />
 
       {/* Hero */}

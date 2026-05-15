@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getBlogPosts } from "@/lib/data/blog-posts";
+import type { Blog, WithContext } from "schema-dts";
+import { safeJsonLd } from "@/lib/jsonld";
 
 export const metadata: Metadata = {
   title: "Diving Blog: Tips, Stories & Guides from Trincomalee",
@@ -15,7 +17,7 @@ export const metadata: Metadata = {
   },
 };
 
-const blogIndexJsonLd = {
+const blogIndexJsonLd: WithContext<Blog> = {
   "@context": "https://schema.org",
   "@type": "Blog",
   name: "Diving Club Blog",
@@ -55,7 +57,7 @@ export default function BlogIndexPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogIndexJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(blogIndexJsonLd) }}
       />
 
       {/* Hero */}

@@ -9,6 +9,8 @@ import TestimonialStrip from "@/components/ui/TestimonialStrip";
 import RelatedGrid from "@/components/ui/RelatedGrid";
 import { activityFaqs } from "@/lib/data/activity-faqs";
 import { testimonials } from "@/lib/data/testimonials";
+import type { TouristAttraction, FAQPage, WithContext } from "schema-dts";
+import { safeJsonLd } from "@/lib/jsonld";
 
 export async function generateStaticParams() {
   const experiences = await getExperiences();
@@ -122,9 +124,9 @@ export default async function ActivityDetailPage({
 
   const isSeasonalEvent = experience.type === "whale-watching" || experience.type === "try-diving" || experience.type === "fun-diving";
 
-  const jsonLd = {
+  const jsonLd: WithContext<TouristAttraction> = {
     "@context": "https://schema.org",
-    "@type": isSeasonalEvent ? ["TouristAttraction", "SportsEvent"] : "TouristAttraction",
+    "@type": "TouristAttraction",
     name: experience.name,
     description: experience.description.slice(0, 300),
     url: `https://divingclub.lk/activities/${experience.slug}`,
@@ -138,33 +140,10 @@ export default async function ActivityDetailPage({
           addressCountry: "LK",
         },
       },
-      eventSchedule: {
-        "@type": "Schedule",
-        startDate: "2025-05-01",
-        endDate: "2025-10-31",
-        repeatFrequency: "P1D",
-      },
-      organizer: {
-        "@type": "LocalBusiness",
-        name: "Diving Club",
-        url: "https://divingclub.lk",
-      },
     }),
-    offers: {
-      "@type": "Offer",
-      price: experience.price,
-      priceCurrency: experience.currency,
-      availability: "https://schema.org/InStock",
-      validFrom: "2025-05-01",
-    },
-    provider: {
-      "@type": "LocalBusiness",
-      name: "Diving Club",
-      url: "https://divingclub.lk",
-    },
   };
 
-  const faqJsonLd = pageFaqs.length > 0
+  const faqJsonLd: WithContext<FAQPage> | null = pageFaqs.length > 0
     ? {
         "@context": "https://schema.org",
         "@type": "FAQPage",
@@ -180,12 +159,12 @@ export default async function ActivityDetailPage({
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
       {faqJsonLd && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }}
         />
       )}
 
