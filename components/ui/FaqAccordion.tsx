@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import type { PageFaq } from "@/lib/types";
-import type { FAQPage, WithContext } from "schema-dts";
-import { safeJsonLd } from "@/lib/jsonld";
 
 interface FaqAccordionProps {
   faqs: PageFaq[];
@@ -13,25 +11,8 @@ interface FaqAccordionProps {
 export default function FaqAccordion({ faqs, heading = "Frequently asked questions" }: FaqAccordionProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-  const faqJsonLd: WithContext<FAQPage> = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqs.map((faq) => ({
-      "@type": "Question",
-      name: faq.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: faq.answer,
-      },
-    })),
-  };
-
   return (
     <section className="bg-warm-white py-16 px-6">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }}
-      />
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center gap-3 mb-8">
           <span className="h-px w-6 bg-tropic-coral" aria-hidden="true" />
