@@ -16,6 +16,22 @@ export async function generateStaticParams() {
   return sites.map((s) => ({ slug: s.slug }));
 }
 
+const diveSiteTitles: Record<string, string> = {
+  "hms-hermes-wreck": "HMS Hermes Wreck Dive Trincomalee | WWII Shipwreck | Diving Club",
+  "pigeon-island": "Pigeon Island Scuba Diving, Trincomalee | Reef Sharks | Diving Club",
+  "swami-rock": "Swami Rock Dive Site Trincomalee | Hindu Statues at Depth | Diving Club",
+};
+
+const diveSiteDescriptions: Record<string, string> = {
+  "hms-hermes-wreck": "Dive the HMS Hermes — a WWII Royal Navy aircraft carrier resting upside-down at 45–53m off Trincomalee. One of the world's largest diveable wrecks.",
+};
+
+const diveSiteH1s: Record<string, string> = {
+  "hms-hermes-wreck": "HMS Hermes Wreck Dive — Trincomalee",
+  "pigeon-island": "Pigeon Island Diving — Trincomalee",
+  "swami-rock": "Swami Rock Dive Site — Trincomalee",
+};
+
 export async function generateMetadata({
   params,
 }: {
@@ -25,8 +41,8 @@ export async function generateMetadata({
   const site = await getDiveSiteBySlug(slug);
   if (!site) return {};
 
-  const title = `${site.name} Dive Site | Trincomalee, Sri Lanka`;
-  const description = site.description.slice(0, 155).trimEnd() + "…";
+  const title = diveSiteTitles[slug] ?? `${site.name} Dive Site | Trincomalee, Sri Lanka | Diving Club`;
+  const description = diveSiteDescriptions[slug] ?? site.description.slice(0, 155).trimEnd();
 
   return {
     title,
@@ -36,6 +52,20 @@ export async function generateMetadata({
       title,
       description,
       url: `https://divingclub.lk/dive-sites/${site.slug}`,
+      images: [
+        {
+          url: "/images/og-home.jpg",
+          width: 1200,
+          height: 630,
+          alt: `${site.name} scuba dive site in Trincomalee, Sri Lanka`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/images/og-home.jpg"],
     },
   };
 }
@@ -159,7 +189,7 @@ export default async function DiveSiteDetailPage({
           </span>
 
           <h1 className="text-warm-white text-4xl sm:text-5xl font-bold mb-5 leading-tight max-w-2xl">
-            {site.name}
+            {diveSiteH1s[site.slug] ?? `${site.name} — Trincomalee`}
           </h1>
 
           <div className="flex flex-wrap gap-2 mb-8">

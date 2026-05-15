@@ -3,12 +3,12 @@ import Link from "next/link";
 import BookingWizard from "@/components/booking/BookingWizard";
 
 export const metadata: Metadata = {
-  title: "Book a Dive | Diving Club Trincomalee",
+  title: "Book a Dive | Diving Club",
   description:
-    "Book a PADI course or water activity with Diving Club Trincomalee. Reserve your spot online, no payment needed now. We confirm within 24 hours.",
+    "Book a PADI course or water activity in Trincomalee with Diving Club. Reserve your spot online, no payment needed now. We confirm within 24 hours.",
   alternates: { canonical: "https://divingclub.lk/book" },
   openGraph: {
-    title: "Book a Dive | Diving Club Trincomalee",
+    title: "Book a Dive | Diving Club, Trincomalee",
     description:
       "Reserve your PADI course, fun dive, snorkeling tour, or whale watching trip in Trincomalee. Quick online booking form, we confirm within 24 hours.",
     url: "https://divingclub.lk/book",

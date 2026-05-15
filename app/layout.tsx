@@ -22,15 +22,15 @@ const jakarta = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: "Diving Club Trincomalee | PADI Courses & Dive Experiences",
-    template: "%s | Diving Club Trincomalee",
+    default: "Scuba Diving Trincomalee | PADI Courses & Dive Experiences | Diving Club",
+    template: "%s | Diving Club",
   },
   description:
-    "PADI-certified diving center in Trincomalee, Sri Lanka. Open Water courses, fun diving, snorkeling, and whale watching in one of Asia's most beautiful dive destinations.",
+    "PADI certified diving center in Trincomalee, Sri Lanka. Open Water courses, fun diving, snorkeling, and whale watching in one of Asia's most beautiful dive destinations.",
   metadataBase: new URL("https://divingclub.lk"),
   alternates: { canonical: "/" },
   openGraph: {
-    siteName: "Diving Club Trincomalee",
+    siteName: "Diving Club",
     type: "website",
     locale: "en_US",
   },
@@ -45,7 +45,7 @@ const localBusinessJsonLd = {
   "@id": "https://divingclub.lk",
   name: "Diving Club",
   description:
-    "PADI-certified diving center in Trincomalee, Sri Lanka offering scuba courses, fun diving, snorkeling, and whale watching.",
+    "PADI certified dive centre in Trincomalee, Sri Lanka. Scuba diving courses, fun diving, snorkeling, and whale watching since 2010.",
   url: "https://divingclub.lk",
   telephone: "+94743945010",
   email: "info@divingclub.lk",
@@ -59,17 +59,28 @@ const localBusinessJsonLd = {
   },
   geo: {
     "@type": "GeoCoordinates",
-    latitude: 8.5874,
-    longitude: 81.2152,
+    latitude: 8.5609377,
+    longitude: 81.2422479,
   },
-  openingHours: "Mo-Su 07:30-18:00",
+  hasMap: "https://www.google.com/maps/place/Diving+Club/@8.5609627,81.2431568,341m/data=!3m1!1e3!4m6!3m5!1s0x3afbbdb47010bccd:0xade22adddd90b6c!8m2!3d8.5609377!4d81.2422479",
+  openingHours: "Mo-Su 07:00-18:00",
   priceRange: "$$",
+  currenciesAccepted: "USD",
+  paymentAccepted: "Cash, Credit Card",
   areaServed: ["Trincomalee", "Nilaveli", "Uppuveli"],
   knowsAbout: ["Scuba Diving", "PADI Certification", "Wreck Diving", "Underwater Photography", "Marine Conservation"],
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: "5",
+    reviewCount: "50",
+    bestRating: "5",
+    worstRating: "1",
+  },
   sameAs: [
     "https://www.facebook.com/profile.php?id=100092324331693",
     "https://www.instagram.com/diving_club_s30212/",
     "https://www.padi.com/dive-center/sri-lanka/diving-club/",
+    "https://wa.me/94743945010",
   ],
 };
 

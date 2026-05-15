@@ -4,14 +4,14 @@ import Link from "next/link";
 import AnimatedSection from "@/components/ui/AnimatedSection";
 
 export const metadata: Metadata = {
-  title: "About Diving Club Trincomalee",
+  title: "About Diving Club | PADI Dive Centre, Trincomalee",
   description:
-    "Meet J Rockshan, Sri Lanka's youngest PADI instructor, and the story behind Diving Club Trincomalee. 1,000+ certified divers, 15+ years, same ocean.",
+    "Meet J Rockshan, Sri Lanka's youngest PADI instructor, and the story behind Diving Club. 1,000+ certified divers, 15+ years on Trincomalee's reefs.",
   alternates: { canonical: "https://divingclub.lk/about" },
   openGraph: {
-    title: "About Diving Club Trincomalee: Our Story",
+    title: "About Diving Club: Our Story",
     description:
-      "Meet J Rockshan, Sri Lanka's youngest PADI scuba instructor, and the story behind Diving Club Trincomalee. 1,000+ students certified since 2010.",
+      "Meet J Rockshan, Sri Lanka's youngest PADI scuba instructor, and the story behind Diving Club. 1,000+ students certified since 2010 in Trincomalee.",
     url: "https://divingclub.lk/about",
     images: [
       {

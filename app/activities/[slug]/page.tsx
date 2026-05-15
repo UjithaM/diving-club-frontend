@@ -15,6 +15,27 @@ export async function generateStaticParams() {
   return experiences.map((e) => ({ slug: e.slug }));
 }
 
+const activityTitles: Record<string, string> = {
+  "try-diving": "Try Scuba Diving Trincomalee | No Experience Needed | Diving Club",
+  "fun-diving-2": "Fun Diving Trincomalee | 2-Dive Package | Diving Club",
+  "fun-diving-4": "Fun Diving Trincomalee | 4-Dive Package | Diving Club",
+  "whale-watching": "Whale Watching Trincomalee | Blue Whales & Dolphins | Diving Club",
+  "snorkeling-tour": "Snorkeling Tour Trincomalee | Coral Reefs & Marine Life | Diving Club",
+};
+
+const activityDescriptions: Record<string, string> = {
+  "try-diving": "Try diving in Trincomalee — no certification needed. Breathe underwater on a coral reef with an instructor beside you the whole time. From $65.",
+  "whale-watching": "Whale watching in Trincomalee. Blue whales, spinner dolphins, and one of Asia's best migration routes. 3-hour boat trips from $55.",
+};
+
+const activityH1s: Record<string, string> = {
+  "try-diving": "Try Scuba Diving in Trincomalee",
+  "whale-watching": "Whale Watching in Trincomalee",
+  "fun-diving-2": "Fun Diving in Trincomalee",
+  "fun-diving-4": "Fun Diving in Trincomalee",
+  "snorkeling-tour": "Snorkeling in Trincomalee",
+};
+
 export async function generateMetadata({
   params,
 }: {
@@ -24,8 +45,8 @@ export async function generateMetadata({
   const experience = await getExperienceBySlug(slug);
   if (!experience) return {};
 
-  const title = `${experience.name} in Trincomalee, Sri Lanka | Diving Club`;
-  const description = `${experience.description.slice(0, 150).trimEnd()}…`;
+  const title = activityTitles[slug] ?? `${experience.name} in Trincomalee | Diving Club`;
+  const description = activityDescriptions[slug] ?? experience.description.slice(0, 150).trimEnd();
 
   return {
     title,
@@ -35,6 +56,20 @@ export async function generateMetadata({
       title,
       description,
       url: `https://divingclub.lk/activities/${experience.slug}`,
+      images: [
+        {
+          url: "/images/og-home.jpg",
+          width: 1200,
+          height: 630,
+          alt: `${experience.name} in Trincomalee, Sri Lanka`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/images/og-home.jpg"],
     },
   };
 }
@@ -173,7 +208,7 @@ export default async function ActivityDetailPage({
           </span>
 
           <h1 className="text-warm-white text-4xl sm:text-5xl font-bold mb-5 leading-tight max-w-2xl">
-            {experience.name}
+            {activityH1s[experience.slug] ?? `${experience.name} in Trincomalee`}
           </h1>
 
           <div className="flex flex-wrap gap-2 mb-8">

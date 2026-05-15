@@ -4,12 +4,12 @@ import Link from "next/link";
 import { getGalleryImages } from "@/lib/api/gallery";
 
 export const metadata: Metadata = {
-  title: "Gallery | Diving Club Trincomalee",
+  title: "Gallery | Diving Club",
   description:
     "Photos from our dive sites, courses, and activities in Trincomalee, Sri Lanka. Swami Rock, Pigeon Island, whale watching, Open Water training, and more.",
   alternates: { canonical: "https://divingclub.lk/gallery" },
   openGraph: {
-    title: "Diving Club Trincomalee | Gallery",
+    title: "Gallery | Diving Club, Trincomalee",
     description: "Underwater and above-water photography from Trincomalee's best dive sites, PADI courses, whale watching, and water activities.",
     url: "https://divingclub.lk/gallery",
   },

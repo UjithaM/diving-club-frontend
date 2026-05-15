@@ -3,14 +3,14 @@ import Link from "next/link";
 import AnimatedSection from "@/components/ui/AnimatedSection";
 
 export const metadata: Metadata = {
-  title: "Scuba Diving in Sri Lanka: Complete Guide to Reefs, Wrecks and Seasons",
+  title: "Scuba Diving in Sri Lanka | Reefs, Wrecks & Seasons | Diving Club",
   description:
-    "Scuba diving in Sri Lanka: best dive destinations (Trincomalee, Unawatuna, Mirissa), seasons, marine life (blue whales, reef sharks, turtles), PADI courses, and practical travel tips.",
+    "Scuba diving in Sri Lanka: best destinations, seasons, PADI courses, and what you'll see. From Trincomalee wrecks to southern reef dives.",
   alternates: { canonical: "https://divingclub.lk/scuba-diving-in-sri-lanka" },
   openGraph: {
-    title: "Scuba Diving in Sri Lanka: Reefs, Wrecks and Year-Round Adventures",
+    title: "Scuba Diving in Sri Lanka | Reefs, Wrecks & Seasons | Diving Club",
     description:
-      "Everything you need to know about diving in Sri Lanka: the best destinations, when to go, what you'll see, and how to get certified. Written from 15 years on the water.",
+      "Scuba diving in Sri Lanka: best destinations, seasons, PADI courses, and what you'll see. From Trincomalee wrecks to southern reef dives.",
     url: "https://divingclub.lk/scuba-diving-in-sri-lanka",
   },
 };

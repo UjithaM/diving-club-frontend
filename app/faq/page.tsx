@@ -4,12 +4,12 @@ import { getFaqs } from "@/lib/api/faqs";
 import type { ApiFaq } from "@/lib/types";
 
 export const metadata: Metadata = {
-  title: "Frequently Asked Questions: Scuba Diving in Trincomalee",
+  title: "Scuba Diving FAQ | Trincomalee | Diving Club",
   description:
     "Honest answers to the questions we get asked most: diving basics, Trincomalee seasons, marine life, booking, safety, and eco practices. No fluff.",
   alternates: { canonical: "https://divingclub.lk/faq" },
   openGraph: {
-    title: "Diving Club FAQ: Trincomalee, Sri Lanka",
+    title: "Scuba Diving FAQ | Trincomalee | Diving Club",
     description: "Answers to the most common questions about scuba diving in Trincomalee, from 'can I dive if I can't swim?' to 'when should I book?'",
     url: "https://divingclub.lk/faq",
   },
@@ -90,7 +90,7 @@ export default async function FaqPage() {
           </div>
 
           <h1 className="text-warm-white font-display text-[clamp(2.5rem,6vw,5rem)] font-extrabold leading-tight mb-5">
-            Questions
+            Scuba Diving FAQ
           </h1>
           <p className="text-warm-white/55 text-base leading-relaxed max-w-xl">
             We get asked a lot of the same questions. Here are the answers, straight, no padding. If something&apos;s not here, just WhatsApp us on <a href="https://wa.me/94743945010" target="_blank" rel="noopener noreferrer" className="text-warm-white/80 hover:text-warm-white transition-colors">0743 945 010</a>.

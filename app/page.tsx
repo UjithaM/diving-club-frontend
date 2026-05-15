@@ -14,14 +14,14 @@ import GallerySection from "@/components/home/GallerySection";
 import ContactCtaSection from "@/components/home/ContactCtaSection";
 
 export const metadata: Metadata = {
-  title: "Diving Club Trincomalee | PADI Courses & Dive Experiences in Sri Lanka",
+  title: "Scuba Diving Trincomalee | PADI Courses & Dive Experiences | Diving Club",
   description:
-    "Dive Trincomalee's coral reefs, WWII wrecks, and whale-watching waters with a PADI-certified team. Open Water courses from $395. Try diving from $65. Small groups, all equipment included.",
+    "Scuba diving in Trincomalee with a PADI-certified team. Open Water from $395, try diving from $65. Small groups, all equipment included.",
   alternates: { canonical: "https://divingclub.lk" },
   openGraph: {
-    title: "Diving Club Trincomalee | Dive Sri Lanka's Best Waters",
+    title: "Scuba Diving Trincomalee | PADI Courses & Dive Experiences | Diving Club",
     description:
-      "PADI courses, fun diving, snorkeling, and whale watching in Trincomalee. Small groups, local guides, all equipment included.",
+      "Scuba diving in Trincomalee with a PADI-certified team. Open Water from $395, try diving from $65. Small groups, all equipment included.",
     url: "https://divingclub.lk",
     images: [
       {

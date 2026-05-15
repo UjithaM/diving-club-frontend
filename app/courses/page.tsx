@@ -4,12 +4,12 @@ import { getCourses } from "@/lib/api/courses";
 import CourseGrid from "@/components/courses/CourseGrid";
 
 export const metadata: Metadata = {
-  title: "PADI Dive Courses",
+  title: "PADI Courses Trincomalee, Sri Lanka | Diving Club",
   description:
     "Nine PADI-certified scuba courses in Trincomalee, Sri Lanka. From Discover Scuba to Divemaster. All levels welcome. Small groups, all equipment included. From $75.",
   alternates: { canonical: "https://divingclub.lk/courses" },
   openGraph: {
-    title: "PADI Dive Courses in Trincomalee, Sri Lanka",
+    title: "PADI Courses Trincomalee, Sri Lanka | Diving Club",
     description:
       "Nine PADI courses: Discover Scuba, Open Water, Advanced, Rescue Diver, Divemaster and more. Small groups, local guides, all gear included.",
     url: "https://divingclub.lk/courses",
@@ -72,7 +72,7 @@ export default async function CoursesPage() {
           </div>
 
           <h1 className="text-warm-white font-display text-[clamp(2.5rem,6vw,5rem)] font-extrabold leading-tight mb-5">
-            Dive Courses
+            PADI Courses in Trincomalee
           </h1>
           <p className="text-warm-white/55 text-base leading-relaxed max-w-xl mb-10">
             From your very first breath underwater to your Divemaster certification. All of it here, in

@@ -65,7 +65,7 @@ export default async function DiveSitesPage() {
           </div>
 
           <h1 className="text-warm-white font-display text-[clamp(2.5rem,6vw,5rem)] font-extrabold leading-tight mb-5">
-            Dive Sites
+            Dive Sites in Trincomalee
           </h1>
           <p className="text-warm-white/55 text-base leading-relaxed max-w-xl mb-10">
             WWII wrecks. Coral gardens. Reef walls with Hindu deity statues at depth. Blacktip sharks at a national park. Trincomalee has genuinely extraordinary diving. Here&apos;s what&apos;s waiting.

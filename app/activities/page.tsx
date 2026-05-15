@@ -67,7 +67,7 @@ export default async function ActivitiesPage() {
           </div>
 
           <h1 className="text-warm-white font-display text-[clamp(2.5rem,6vw,5rem)] font-extrabold leading-tight mb-5">
-            Activities
+            Water Activities in Trincomalee
           </h1>
           <p className="text-warm-white/55 text-base leading-relaxed max-w-xl mb-10">
             Whether you&apos;ve never seen a tank before or you&apos;re logging your hundredth dive, there&apos;s

@@ -3,14 +3,14 @@ import Link from "next/link";
 import AnimatedSection from "@/components/ui/AnimatedSection";
 
 export const metadata: Metadata = {
-  title: "Scuba Diving in Trincomalee, Sri Lanka: Complete Guide",
+  title: "Scuba Diving in Trincomalee | Complete Guide | Diving Club",
   description:
-    "Scuba diving in Trincomalee: best season (May–October), top dive sites (Swami Rock, Pigeon Island, HMS Hermes), marine life, PADI courses, and how to book. From Diving Club, Sandy Cove.",
+    "Complete guide to scuba diving in Trincomalee: best season, top dive sites, PADI courses, marine life, and local tips from 15 years on the water.",
   alternates: { canonical: "https://divingclub.lk/scuba-diving-in-trincomalee" },
   openGraph: {
-    title: "Scuba Diving in Trincomalee, Sri Lanka",
+    title: "Scuba Diving in Trincomalee | Complete Guide | Diving Club",
     description:
-      "Your complete guide to diving in Trincomalee: seasons, dive sites, courses, marine life, and where to stay. Written by divers who've been here 15 years.",
+      "Complete guide to scuba diving in Trincomalee: best season, top dive sites, PADI courses, marine life, and local tips from 15 years on the water.",
     url: "https://divingclub.lk/scuba-diving-in-trincomalee",
   },
 };

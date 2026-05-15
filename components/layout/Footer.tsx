@@ -102,7 +102,7 @@ export default function Footer() {
 
       <div className="border-t border-white/8">
         <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-[11px] text-warm-white/25">© {new Date().getFullYear()} Diving Club Trincomalee. All rights reserved.</p>
+          <p className="text-[11px] text-warm-white/25">© {new Date().getFullYear()} Diving Club. All rights reserved.</p>
           <p className="text-[10px] tracking-widest text-warm-white/20 uppercase">PADI Certified · Est. 2010 · Trincomalee</p>
         </div>
       </div>

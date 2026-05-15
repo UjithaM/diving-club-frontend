@@ -16,6 +16,33 @@ export async function generateStaticParams() {
   return courses.map((c) => ({ slug: c.slug }));
 }
 
+const courseTitles: Record<string, string> = {
+  "discover-scuba-diving": "Discover Scuba Diving Trincomalee | Try Diving from $75 | Diving Club",
+  "open-water-diver": "PADI Open Water Course Trincomalee | Certification from $395 | Diving Club",
+  "advanced-open-water": "PADI Advanced Open Water Trincomalee | Dive to 30m | Diving Club",
+  "rescue-diver": "PADI Rescue Diver Course Trincomalee | Diving Club",
+  "divemaster": "PADI Divemaster Trincomalee, Sri Lanka | Diving Club",
+  "deep-diving": "Deep Diving Specialty Course Trincomalee | Diving Club",
+  "underwater-photography": "Underwater Photography Course Trincomalee | Diving Club",
+};
+
+const courseDescriptions: Record<string, string> = {
+  "discover-scuba-diving": "Try scuba diving in Trincomalee with no experience needed. Our Discover Scuba course gets you underwater on coral reefs in one day. From $75.",
+  "open-water-diver": "Get PADI Open Water certified in Trincomalee, Sri Lanka. 4 days, real reef dives, worldwide certification. From $395. Small groups, all gear included.",
+  "advanced-open-water": "Take your PADI Advanced Open Water course in Trincomalee. Dive to 30m, explore WWII wrecks and outer reef walls. From $295. Book today.",
+  "divemaster": "Train as a PADI Divemaster in Trincomalee, Sri Lanka. Intern with our team on 12 dive sites including WWII wrecks and protected reefs.",
+};
+
+const courseH1s: Record<string, string> = {
+  "open-water-diver": "PADI Open Water Diver Course in Trincomalee",
+  "advanced-open-water": "PADI Advanced Open Water Course in Trincomalee",
+  "discover-scuba-diving": "Discover Scuba Diving in Trincomalee",
+  "rescue-diver": "PADI Rescue Diver Course in Trincomalee",
+  "divemaster": "PADI Divemaster in Trincomalee",
+  "deep-diving": "Deep Diving Specialty Course in Trincomalee",
+  "underwater-photography": "Underwater Photography Course in Trincomalee",
+};
+
 export async function generateMetadata({
   params,
 }: {
@@ -25,8 +52,8 @@ export async function generateMetadata({
   const course = await getCourseBySlug(slug);
   if (!course) return {};
 
-  const title = `${course.name} in Trincomalee, Sri Lanka | Diving Club`;
-  const description = `${course.description.slice(0, 150).trimEnd()}…`;
+  const title = courseTitles[slug] ?? `${course.name} in Trincomalee | Diving Club`;
+  const description = courseDescriptions[slug] ?? course.description.slice(0, 150).trimEnd();
 
   return {
     title,
@@ -36,6 +63,20 @@ export async function generateMetadata({
       title,
       description,
       url: `https://divingclub.lk/courses/${course.slug}`,
+      images: [
+        {
+          url: "/images/og-home.jpg",
+          width: 1200,
+          height: 630,
+          alt: `${course.name} — PADI scuba diving course in Trincomalee, Sri Lanka`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/images/og-home.jpg"],
     },
   };
 }
@@ -87,6 +128,7 @@ export default async function CourseDetailPage({
     name: course.name,
     description: course.description,
     url: `https://divingclub.lk/courses/${course.slug}`,
+    keywords: `PADI courses Trincomalee, scuba diving Sri Lanka, ${course.name.toLowerCase()} Trincomalee`,
     provider: {
       "@type": ["Organization", "EducationalOrganization"],
       name: "Diving Club",
@@ -110,8 +152,8 @@ export default async function CourseDetailPage({
       },
       courseSchedule: {
         "@type": "Schedule",
-        startDate: "2025-05-01",
-        endDate: "2025-10-31",
+        startDate: "2026-05-01",
+        endDate: "2026-10-31",
         repeatFrequency: "P1W",
       },
     },
@@ -120,7 +162,8 @@ export default async function CourseDetailPage({
       price: course.price,
       priceCurrency: course.currency,
       availability: "https://schema.org/InStock",
-      validFrom: "2025-05-01",
+      url: `https://divingclub.lk/courses/${course.slug}`,
+      validFrom: "2026-05-01",
     },
   };
 
@@ -168,7 +211,7 @@ export default async function CourseDetailPage({
           </span>
 
           <h1 className="text-warm-white text-4xl sm:text-5xl font-bold mb-5 leading-tight max-w-2xl">
-            {course.name}
+            {courseH1s[course.slug] ?? `${course.name} in Trincomalee`}
           </h1>
 
           <div className="flex flex-wrap gap-2 mb-8">

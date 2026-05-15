@@ -3,12 +3,12 @@ import Link from "next/link";
 import ContactForm from "@/components/contact/ContactForm";
 
 export const metadata: Metadata = {
-  title: "Contact Us | Diving Club Trincomalee",
+  title: "Contact Diving Club | Trincomalee, Sri Lanka",
   description:
-    "Get in touch with Diving Club Trincomalee. Call, WhatsApp, or send a message to book a dive, ask about courses, or plan your visit to Sri Lanka's best dive destination.",
+    "Get in touch with Diving Club in Trincomalee. Call, WhatsApp, or send a message to book a dive, ask about courses, or plan your visit.",
   alternates: { canonical: "https://divingclub.lk/contact" },
   openGraph: {
-    title: "Contact Diving Club Trincomalee",
+    title: "Contact Diving Club | Trincomalee, Sri Lanka",
     description:
       "Call, WhatsApp, or message us to book a dive or ask any question. We're open 7 days a week in Trincomalee, Sri Lanka.",
     url: "https://divingclub.lk/contact",
