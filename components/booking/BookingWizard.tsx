@@ -85,8 +85,8 @@ function getTomorrow() {
 
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
-function StepIndicator({ step }: { step: number }) {
-  const labels = ["What", "Details", "Review", "Pay"];
+function StepIndicator({ step, hasPayment }: { step: number; hasPayment: boolean }) {
+  const labels = hasPayment ? ["What", "Details", "Review", "Pay"] : ["What", "Details", "Review"];
 
   return (
     <div className="mb-8">
@@ -95,7 +95,7 @@ function StepIndicator({ step }: { step: number }) {
         <div
           className="absolute inset-y-0 left-0 bg-tropic-coral rounded-full"
           style={{
-            width: `${((step - 1) / 3) * 100}%`,
+            width: `${((step - 1) / (labels.length - 1)) * 100}%`,
             transition: `width 400ms ${ease}`,
           }}
         />
@@ -355,7 +355,7 @@ export default function BookingWizard({
   const [step, setStep] = useState(hasPreselection ? 2 : 1);
   const [dir, setDir] = useState<"forward" | "backward">("forward");
   const [errors, setErrors] = useState<Partial<Record<keyof BookingDraft, string>>>({});
-  const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const topRef = useRef<HTMLDivElement>(null);
 
   const [courseOptions, setCourseOptions] = useState<string[]>([]);
@@ -426,7 +426,12 @@ export default function BookingWizard({
     goTo(3);
   }
 
-  // Step 3 → POST booking → advance to step 4 (payment)
+  const hasAnyGateway = Boolean(
+    paymentOptions?.gateways?.paypal?.enabled ||
+    paymentOptions?.gateways?.bank_transfer?.enabled
+  );
+
+  // Step 3 → POST booking → advance to step 4 (payment) or show success
   async function step3Submit() {
     setStatus("submitting");
     try {
@@ -448,15 +453,28 @@ export default function BookingWizard({
       });
       if (!res.ok) throw new Error();
       const data = await res.json();
-      if (!data.reference) throw new Error("No reference returned");
-      setBookingRef(data.reference);
-      if (data.total_price != null) setTotalPrice(data.total_price);
-      if (data.currency) setCurrency(data.currency);
+      if (data.reference) {
+        setBookingRef(data.reference);
+        if (data.total_price != null) setTotalPrice(data.total_price);
+        if (data.currency) setCurrency(data.currency);
+      }
       setStatus("idle");
-      goTo(4);
+      if (hasAnyGateway && data.reference) {
+        goTo(4);
+      } else {
+        setStatus("success");
+      }
     } catch {
       setStatus("error");
     }
+  }
+
+  if (status === "success") {
+    return (
+      <div className="max-w-lg mx-auto px-6 py-12">
+        <SuccessScreen draft={draft} />
+      </div>
+    );
   }
 
   const tabs: { value: BookingType; label: string }[] = [
@@ -467,7 +485,7 @@ export default function BookingWizard({
 
   return (
     <div ref={topRef} className="max-w-lg mx-auto px-6 py-10 pb-4 scroll-mt-20">
-      <StepIndicator step={step} />
+      <StepIndicator step={step} hasPayment={hasAnyGateway} />
 
       {step === 1 && (
         <StepPanel dir={dir}>
@@ -733,7 +751,7 @@ export default function BookingWizard({
 
           <StickyNav
             onBack={() => goTo(2)}
-            nextLabel="Continue to Payment →"
+            nextLabel={hasAnyGateway ? "Continue to Payment →" : "Send Booking Request →"}
             onNext={step3Submit}
             submitting={status === "submitting"}
           />
