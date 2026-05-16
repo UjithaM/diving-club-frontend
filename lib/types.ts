@@ -138,3 +138,27 @@ export interface BookingConfirmation {
   total_price: number;
   currency: string;
 }
+
+export interface PaymentGatewayPayPal {
+  id: number;
+  enabled: boolean;
+  client_id: string;
+  mode: string;
+}
+
+export interface PaymentGatewayBankTransfer {
+  id: number;
+  enabled: boolean;
+  bank_name: string;
+  account_name: string;
+  account_number: string;
+  iban: string;
+}
+
+export interface PaymentOptions {
+  gateways: {
+    paypal?: PaymentGatewayPayPal;
+    bank_transfer?: PaymentGatewayBankTransfer;
+  };
+  deposit: { enabled: boolean; percentage: number };
+}

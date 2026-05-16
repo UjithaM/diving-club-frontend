@@ -7,7 +7,7 @@ import { safeJsonLd } from "@/lib/jsonld";
 export const metadata: Metadata = {
   title: "Book a Dive | Diving Club",
   description:
-    "Book a PADI course or water activity in Trincomalee with Diving Club. Reserve your spot online, no payment needed now. We confirm within 24 hours.",
+    "Book a PADI course or water activity in Trincomalee with Diving Club. Reserve your spot online and pay securely via PayPal or bank transfer.",
   alternates: { canonical: "https://divingclub.lk/book" },
   openGraph: {
     title: "Book a Dive | Diving Club, Trincomalee",
@@ -50,7 +50,7 @@ export default async function BookPage({
           <div className="flex items-center gap-3 mb-5">
             <span className="h-px w-6 bg-tropic-coral" />
             <span className="text-tropic-coral text-[11px] font-semibold tracking-[0.22em] uppercase">
-              Reserve your spot · No payment now
+              Reserve your spot · Secure online payment
             </span>
           </div>
 
@@ -58,7 +58,7 @@ export default async function BookPage({
             Book a Dive
           </h1>
           <p className="text-warm-white/55 text-base leading-relaxed">
-            Fill in the form and we&apos;ll confirm your booking within 24 hours. No payment needed. Just pick a date.
+            Fill in the form, choose your payment method, and lock in your spot. We confirm within 24 hours.
           </p>
         </div>
       </section>

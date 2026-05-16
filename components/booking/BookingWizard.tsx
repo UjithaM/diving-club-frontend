@@ -1,9 +1,12 @@
 "use client";
 
 import { useReducer, useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import PhoneInput from "@/components/ui/PhoneInput";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import Link from "next/link";
+import type { PaymentOptions } from "@/lib/types";
+import PaymentStep from "@/components/booking/PaymentStep";
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
@@ -21,7 +24,7 @@ const certOptions = [
 
 type BookingType = "course" | "activity" | "dive-site";
 
-interface BookingDraft {
+export interface BookingDraft {
   bookingType: BookingType;
   item: string;
   name: string;
@@ -83,7 +86,7 @@ function getTomorrow() {
 // ─── Sub-components ──────────────────────────────────────────────────────────
 
 function StepIndicator({ step }: { step: number }) {
-  const labels = ["What", "Details", "Review"];
+  const labels = ["What", "Details", "Review", "Pay"];
 
   return (
     <div className="mb-8">
@@ -92,7 +95,7 @@ function StepIndicator({ step }: { step: number }) {
         <div
           className="absolute inset-y-0 left-0 bg-tropic-coral rounded-full"
           style={{
-            width: `${((step - 1) / 2) * 100}%`,
+            width: `${((step - 1) / 3) * 100}%`,
             transition: `width 400ms ${ease}`,
           }}
         />
@@ -348,16 +351,24 @@ export default function BookingWizard({
     notes: "",
   });
 
-  const [step, setStep] = useState(1);
+  const hasPreselection = Boolean(initialType && initialItem);
+  const [step, setStep] = useState(hasPreselection ? 2 : 1);
   const [dir, setDir] = useState<"forward" | "backward">("forward");
   const [errors, setErrors] = useState<Partial<Record<keyof BookingDraft, string>>>({});
-  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
   const topRef = useRef<HTMLDivElement>(null);
 
   const [courseOptions, setCourseOptions] = useState<string[]>([]);
   const [activityOptions, setActivityOptions] = useState<string[]>([]);
   const [diveSiteOptions, setDiveSiteOptions] = useState<string[]>([]);
   const [optionsLoading, setOptionsLoading] = useState(true);
+
+  const [bookingRef, setBookingRef] = useState<string | null>(null);
+  const [totalPrice, setTotalPrice] = useState<number | null>(null);
+  const [currency, setCurrency] = useState<string>("USD");
+  const [paymentOptions, setPaymentOptions] = useState<PaymentOptions | null>(null);
+  const [paymentOptionsError, setPaymentOptionsError] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const base = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000/api";
@@ -372,6 +383,14 @@ export default function BookingWizard({
         setDiveSiteOptions((d.data ?? []).map((x: { name: string }) => x.name));
       })
       .finally(() => setOptionsLoading(false));
+
+    fetch(`${base}/payment-options`)
+      .then((r) => {
+        if (!r.ok) throw new Error("payment-options failed");
+        return r.json();
+      })
+      .then((opts) => setPaymentOptions(opts as PaymentOptions))
+      .catch(() => setPaymentOptionsError(true));
   }, []);
 
   useEffect(() => {
@@ -407,8 +426,8 @@ export default function BookingWizard({
     goTo(3);
   }
 
-  // Step 3 → submit
-  async function submit() {
+  // Step 3 → POST booking → advance to step 4 (payment)
+  async function step3Submit() {
     setStatus("submitting");
     try {
       const res = await fetch("/api/booking", {
@@ -428,18 +447,16 @@ export default function BookingWizard({
         }),
       });
       if (!res.ok) throw new Error();
-      setStatus("success");
+      const data = await res.json();
+      if (!data.reference) throw new Error("No reference returned");
+      setBookingRef(data.reference);
+      if (data.total_price != null) setTotalPrice(data.total_price);
+      if (data.currency) setCurrency(data.currency);
+      setStatus("idle");
+      goTo(4);
     } catch {
       setStatus("error");
     }
-  }
-
-  if (status === "success") {
-    return (
-      <div className="max-w-lg mx-auto px-6 py-12">
-        <SuccessScreen draft={draft} />
-      </div>
-    );
   }
 
   const tabs: { value: BookingType; label: string }[] = [
@@ -656,7 +673,7 @@ export default function BookingWizard({
 
       {step === 3 && (
         <StepPanel dir={dir}>
-          <h2 className="text-charcoal-sea text-xl font-bold mb-1">Review & send</h2>
+          <h2 className="text-charcoal-sea text-xl font-bold mb-1">Review your booking</h2>
           <p className="text-charcoal-sea/55 text-sm mb-6 leading-relaxed">
             Check everything looks right, add any notes, then hit send.
           </p>
@@ -714,16 +731,43 @@ export default function BookingWizard({
             </p>
           )}
 
-          <p className="text-xs text-charcoal-sea/40 text-center mb-2">
-            No payment required now. We&apos;ll confirm by phone or email within 24 hours.
-          </p>
-
           <StickyNav
             onBack={() => goTo(2)}
-            nextLabel="Send Booking Request →"
-            onNext={submit}
+            nextLabel="Continue to Payment →"
+            onNext={step3Submit}
             submitting={status === "submitting"}
           />
+        </StepPanel>
+      )}
+
+      {step === 4 && bookingRef && paymentOptions && (
+        <StepPanel dir={dir}>
+          <PaymentStep
+            bookingRef={bookingRef}
+            totalPrice={totalPrice}
+            currency={currency}
+            paymentOptions={paymentOptions}
+            onBack={() => goTo(3)}
+            onSuccess={(ref) => router.push(`/booking/confirmation?ref=${ref}`)}
+          />
+        </StepPanel>
+      )}
+
+      {step === 4 && (!bookingRef || !paymentOptions) && (
+        <StepPanel dir={dir}>
+          <div className="py-12 text-center">
+            {paymentOptionsError ? (
+              <p className="text-tropic-coral text-sm">
+                Could not load payment options. Please{" "}
+                <a href="https://wa.me/94743945010" className="font-semibold underline">
+                  WhatsApp us
+                </a>{" "}
+                to complete your booking.
+              </p>
+            ) : (
+              <p className="text-charcoal-sea/50 text-sm">Loading payment options…</p>
+            )}
+          </div>
         </StepPanel>
       )}
     </div>

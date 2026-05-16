@@ -59,19 +59,21 @@ interface DropdownProps {
 
 function DesktopDropdown({ label, href, baseHref, items, scrolled }: DropdownProps) {
   const [open, setOpen] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  function enter() {
-    clearTimeout(timerRef.current);
-    setOpen(true);
-  }
-
-  function leave() {
-    timerRef.current = setTimeout(() => setOpen(false), 80);
-  }
+  useEffect(() => {
+    if (!open) return;
+    function handleClickOutside(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
 
   return (
-    <div className="relative" onMouseEnter={enter} onMouseLeave={leave}>
+    <div className="relative" ref={containerRef}>
       <button
         className={`flex items-center gap-1 text-[13px] font-medium tracking-wide transition-colors ${
           scrolled
@@ -86,7 +88,7 @@ function DesktopDropdown({ label, href, baseHref, items, scrolled }: DropdownPro
         <ChevronDown className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
       </button>
 
-      <div className="absolute top-full left-0 w-60 pt-2">
+      <div className="absolute top-full left-0 w-60 pt-2 z-50">
         <div
           className={`rounded-xl overflow-hidden border border-charcoal-sea/10 shadow-xl bg-warm-white transition-all duration-200 ${
             open
