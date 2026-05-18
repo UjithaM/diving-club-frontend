@@ -96,6 +96,9 @@ export default function RootLayout({
       lang="en"
       className={`${fraunces.variable} ${jakarta.variable} antialiased`}
     >
+      <head>
+        <script src="https://analytics.ahrefs.com/analytics.js" data-key="JUJD0Ce1iIv72G6QYuIKdg" async />
+      </head>
       <body className="min-h-screen flex flex-col">
         <script
           type="application/ld+json"
