@@ -3,6 +3,7 @@ import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import SiteChrome from "@/components/layout/SiteChrome";
 import WhatsAppFab from "@/components/ui/WhatsAppFab";
 import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
 import type { LocalBusiness, WithContext } from "schema-dts";
@@ -98,17 +99,42 @@ export default function RootLayout({
     >
       <head>
         <script src="https://analytics.ahrefs.com/analytics.js" data-key="JUJD0Ce1iIv72G6QYuIKdg" async />
+        {/* Google Tag Manager — inline, not @next/third-parties: that component defers GTM
+            until after hydration, which is too late for the /dive and /padi bridge pages. */}
+        {/* eslint-disable-next-line @next/next/next-script-for-ga */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-MGSS98BV');`,
+          }}
+        />
       </head>
       <body className="min-h-screen flex flex-col">
+        {/* Google Tag Manager (noscript) */}
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-MGSS98BV"
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          />
+        </noscript>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: safeJsonLd(localBusinessJsonLd) }}
         />
         <SmoothScrollProvider>
-          <Header />
+          <SiteChrome>
+            <Header />
+          </SiteChrome>
           <main className="flex-1">{children}</main>
-          <Footer />
-          <WhatsAppFab />
+          <SiteChrome>
+            <Footer />
+            <WhatsAppFab />
+          </SiteChrome>
         </SmoothScrollProvider>
       </body>
     </html>
