@@ -3,10 +3,14 @@
 declare global {
   interface Window {
     dataLayer?: Record<string, unknown>[];
+    gtag?: (...args: unknown[]) => void;
   }
 }
 
 const WHATSAPP_NUMBER = "94743945010";
+
+// Google Ads "WhatsApp click" conversion action (Contact category).
+const CONVERSION_SEND_TO = "AW-18356209738/OOyDCM3yktgcEMqQ9rBE";
 
 interface WhatsAppCtaProps {
   /** Prefill text, un-encoded. */
@@ -30,8 +34,10 @@ export default function WhatsAppCta({
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      // Opens a new tab, so the page never unloads and the push always lands.
+      // Opens a new tab, so the page never unloads and both calls always land —
+      // no event_callback or navigation delay needed.
       onClick={() => {
+        window.gtag?.("event", "conversion", { send_to: CONVERSION_SEND_TO });
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({ event: "whatsapp_click", source });
       }}
