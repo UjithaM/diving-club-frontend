@@ -111,6 +111,17 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 })(window,document,'script','dataLayer','GTM-MGSS98BV');`,
           }}
         />
+        {/* Google tag (gtag.js) — Google Ads AW-18356209738 */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18356209738" />
+        {/* eslint-disable-next-line @next/next/next-script-for-ga */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'AW-18356209738');`,
+          }}
+        />
       </head>
       <body className="min-h-screen flex flex-col">
         {/* Google Tag Manager (noscript) */}
