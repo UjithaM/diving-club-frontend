@@ -4,37 +4,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 
-const courseItems = [
-  { slug: "discover-scuba-diving", name: "Discover Scuba Diving" },
-  { slug: "scuba-diver", name: "Scuba Diver" },
-  { slug: "open-water-diver", name: "Open Water Diver" },
-  { slug: "advanced-open-water", name: "Advanced Open Water Diver" },
-  { slug: "rescue-diver", name: "Rescue Diver" },
-  { slug: "emergency-first-response", name: "Emergency First Response" },
-  { slug: "deep-diving", name: "Deep Diving Specialty" },
-  { slug: "underwater-photography", name: "Underwater Photography" },
-  { slug: "divemaster", name: "Divemaster" },
-];
-
-const experienceItems = [
-  { slug: "try-diving", name: "Try Diving" },
-  { slug: "fun-diving-2", name: "Fun Diving — 2 Dives" },
-  { slug: "fun-diving-4", name: "Fun Diving — 4 Dives" },
-  { slug: "snorkeling-tour", name: "Snorkeling Tour" },
-  { slug: "whale-watching", name: "Whale & Dolphin Watching" },
-  { slug: "jet-ski", name: "Jet Ski" },
-  { slug: "boat-tours", name: "Boat Tours" },
-  { slug: "sunset-tours", name: "Sunset Tours" },
-];
-
-const diveSiteItems = [
-  { slug: "swami-rock", name: "Swami Rock" },
-  { slug: "pigeon-island", name: "Pigeon Island" },
-  { slug: "hms-hermes-wreck", name: "HMS Hermes Wreck" },
-  { slug: "ss-british-sergeant-wreck", name: "SS British Sergeant" },
-  { slug: "coral-garden", name: "Coral Garden" },
-  { slug: "klathipa-deep", name: "Klathipa Deep" },
-];
+export interface NavItem {
+  slug: string;
+  name: string;
+}
 
 function ChevronDown({ className }: { className?: string }) {
   return (
@@ -53,7 +26,7 @@ interface DropdownProps {
   label: string;
   href: string;
   baseHref: string;
-  items: { slug: string; name: string }[];
+  items: NavItem[];
   scrolled: boolean;
 }
 
@@ -124,7 +97,13 @@ function DesktopDropdown({ label, href, baseHref, items, scrolled }: DropdownPro
   );
 }
 
-export default function Header() {
+interface HeaderProps {
+  courseItems: NavItem[];
+  experienceItems: NavItem[];
+  diveSiteItems: NavItem[];
+}
+
+export default function Header({ courseItems, experienceItems, diveSiteItems }: HeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileSection, setMobileSection] = useState<string | null>(null);
   const [hidden, setHidden] = useState(false);

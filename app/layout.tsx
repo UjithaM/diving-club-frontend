@@ -8,6 +8,16 @@ import WhatsAppFab from "@/components/ui/WhatsAppFab";
 import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
 import type { LocalBusiness, WithContext } from "schema-dts";
 import { safeJsonLd } from "@/lib/jsonld";
+import { getCourses } from "@/lib/api/courses";
+import { getExperiences } from "@/lib/api/experiences";
+import { getDiveSites } from "@/lib/api/dive-sites";
+import type { NavItem } from "@/components/layout/Header";
+
+// The nav dropdowns are w-60 with no scroll, so cap them — each has a "View All" link.
+const NAV_MAX = 8;
+
+const toNav = (list: { slug: string; name: string }[]): NavItem[] =>
+  list.slice(0, NAV_MAX).map(({ slug, name }) => ({ slug, name }));
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -87,11 +97,19 @@ const localBusinessJsonLd: WithContext<LocalBusiness> = {
   ],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // ISR-cached and tagged, so /api/revalidate already keeps the nav in step with admin.
+  // Empty on failure — a nav without dropdown items beats a site-wide 500.
+  const [courses, experiences, diveSites] = await Promise.all([
+    getCourses().catch(() => []),
+    getExperiences().catch(() => []),
+    getDiveSites().catch(() => []),
+  ]);
+
   return (
     <html
       lang="en"
@@ -139,7 +157,11 @@ gtag('config', 'AW-18356209738');`,
         />
         <SmoothScrollProvider>
           <SiteChrome>
-            <Header />
+            <Header
+              courseItems={toNav(courses)}
+              experienceItems={toNav(experiences)}
+              diveSiteItems={toNav(diveSites)}
+            />
           </SiteChrome>
           <main className="flex-1">{children}</main>
           <SiteChrome>
