@@ -2,6 +2,7 @@ import Image from "next/image";
 import AnimatedSection from "@/components/ui/AnimatedSection";
 import FaqAccordion from "@/components/ui/FaqAccordion";
 import WhatsAppCta from "./WhatsAppCta";
+import AdBookingForm from "./AdBookingForm";
 import type { PageFaq } from "@/lib/types";
 
 const PHONE_DISPLAY = "074 394 5010";
@@ -21,6 +22,11 @@ interface AdLandingPageProps {
   /** GTM event label: "dive" | "padi". */
   source: string;
   closingHeading: string;
+  /** Booking form: what the dropdown is offering. */
+  bookingFor: "course" | "activity";
+  /** Booking form: item names, fetched by the page. Empty is fine — "Not sure yet" always shows. */
+  items: string[];
+  bookingHeading: string;
 }
 
 export default function AdLandingPage({
@@ -35,6 +41,9 @@ export default function AdLandingPage({
   message,
   source,
   closingHeading,
+  bookingFor,
+  items,
+  bookingHeading,
 }: AdLandingPageProps) {
   return (
     <>
@@ -75,6 +84,46 @@ export default function AdLandingPage({
               Call {PHONE_DISPLAY}
             </a>
           </p>
+        </div>
+      </section>
+
+      {/* Booking */}
+      <section id="book" className="bg-charcoal-sea/5 py-16 px-6">
+        <div className="max-w-xl mx-auto">
+          <AnimatedSection>
+            <div className="flex items-center gap-3 mb-5">
+              <span className="h-px w-6 bg-tropic-coral" aria-hidden="true" />
+              <span className="text-tropic-coral text-[11px] font-semibold tracking-[0.22em] uppercase">
+                Reserve your spot
+              </span>
+            </div>
+            <h2 className="text-charcoal-sea font-display text-3xl font-extrabold leading-tight mb-3">
+              {bookingHeading}
+            </h2>
+            <p className="text-charcoal-sea/70 leading-relaxed mb-8">
+              Tell us what you&apos;re after and when you&apos;re around. We&apos;ll come back to you
+              on WhatsApp within 24 hours to confirm.
+            </p>
+          </AnimatedSection>
+
+          <AdBookingForm bookingFor={bookingFor} items={items} source={source} message={message} />
+
+          <div className="flex items-center gap-4 my-8" aria-hidden="true">
+            <span className="h-px flex-1 bg-charcoal-sea/15" />
+            <span className="text-charcoal-sea/40 text-xs uppercase tracking-[0.2em]">or</span>
+            <span className="h-px flex-1 bg-charcoal-sea/15" />
+          </div>
+
+          <div className="text-center">
+            <p className="text-charcoal-sea/70 leading-relaxed mb-5">
+              Still deciding, or got a question first? Ask us anything — no booking needed.
+            </p>
+            <WhatsAppCta
+              message={message}
+              source={source}
+              label="Any questions? Message us on WhatsApp"
+            />
+          </div>
         </div>
       </section>
 

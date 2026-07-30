@@ -3,12 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import AnimatedSection from "@/components/ui/AnimatedSection";
-import type { DiveSite } from "@/lib/types";
+import type { HomeDiveSite } from "@/lib/types";
 
 const directions = ["left", "right", "left"] as const;
 const tints = ["bg-tropic-coral/20", "bg-blue-500/15", "bg-tropic-coral/20"];
 
-export default function DiveSitesSection({ sites }: { sites: DiveSite[] }) {
+export default function DiveSitesSection({ sites }: { sites: HomeDiveSite[] }) {
   if (sites.length === 0) return null;
 
   return (

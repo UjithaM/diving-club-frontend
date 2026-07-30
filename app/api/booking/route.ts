@@ -5,13 +5,14 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000/
 export async function POST(req: Request) {
   const body = await req.json();
 
-  const { name, email, phone, date, bookingFor, item } = body;
+  const { name, email, phone, country_code, date, bookingFor, item } = body;
 
   const missing: Record<string, string> = {};
   if (!name?.trim()) missing.name = "Required";
   if (!email?.trim()) missing.email = "Required";
   else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) missing.email = "Invalid email address";
   if (!phone?.trim()) missing.phone = "Required";
+  if (!country_code?.trim()) missing.country_code = "Required";
   if (!date) missing.date = "Required";
   else if (new Date(date) < new Date(new Date().toDateString())) missing.date = "Must be a future date";
   if (!bookingFor) missing.bookingFor = "Required";

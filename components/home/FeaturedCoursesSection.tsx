@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import type { Course } from "@/lib/types";
+import type { HomeCourse } from "@/lib/types";
 import CourseCard from "@/components/ui/CourseCard";
 import AnimatedSection from "@/components/ui/AnimatedSection";
 
-export default function FeaturedCoursesSection({ courses }: { courses: Course[] }) {
+export default function FeaturedCoursesSection({ courses }: { courses: HomeCourse[] }) {
   return (
     <section className="bg-charcoal-sea py-16 lg:py-28 px-6">
       <div className="max-w-6xl mx-auto">

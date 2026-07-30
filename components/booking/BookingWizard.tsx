@@ -4,6 +4,7 @@ import { useReducer, useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import PhoneInput from "@/components/ui/PhoneInput";
 import { isValidPhoneNumber } from "react-phone-number-input";
+import { splitPhone } from "@/lib/phone";
 import Link from "next/link";
 import type { PaymentOptions } from "@/lib/types";
 import PaymentStep from "@/components/booking/PaymentStep";
@@ -228,11 +229,11 @@ function SuccessScreen({ draft }: { draft: BookingDraft }) {
       </div>
 
       <h2 className="text-charcoal-sea font-display text-2xl font-bold mb-2">
-        Booking request sent!
+        Request received — you&apos;re not booked yet
       </h2>
       <p className="text-charcoal-sea/60 text-sm leading-relaxed mb-8 max-w-xs mx-auto">
-        We&apos;ll WhatsApp you within 24 hours to confirm your booking. Keep an
-        eye on {draft.phone}.
+        Our team will WhatsApp you on {draft.phone} within 24 hours to confirm your
+        dates and send the advance payment details. Nothing is charged until then.
       </p>
 
       {/* Summary */}
@@ -441,7 +442,7 @@ export default function BookingWizard({
         body: JSON.stringify({
           name: draft.name,
           email: draft.email,
-          phone: draft.phone,
+          ...splitPhone(draft.phone),
           nationality: draft.nationality,
           date: draft.date,
           people: draft.people,

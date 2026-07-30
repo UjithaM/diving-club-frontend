@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import PhoneInput from "@/components/ui/PhoneInput";
+import { splitPhone } from "@/lib/phone";
 
 const inputClass =
   "w-full border border-charcoal-sea/20 rounded-xl px-4 py-2.5 text-charcoal-sea placeholder:text-charcoal-sea/40 focus:outline-none focus:ring-2 focus:ring-shallow-water text-sm bg-white";
@@ -23,7 +24,8 @@ export default function ContactForm() {
     const data = {
       name: getValue("name"),
       email: getValue("email"),
-      phone,
+      // country_code is only required alongside a phone number
+      ...(phone ? splitPhone(phone) : {}),
       subject: getValue("subject"),
       message: getValue("message"),
     };

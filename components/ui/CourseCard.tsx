@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { Course } from "@/lib/types";
+import type { Course, HomeCourse } from "@/lib/types";
 
 const levelLabels: Record<Course["level"], string> = {
   beginner: "Beginner",
@@ -23,7 +23,7 @@ const levelAccents: Record<Course["level"], string> = {
   professional: "text-warm-white/60",
 };
 
-export default function CourseCard({ course }: { course: Course }) {
+export default function CourseCard({ course }: { course: HomeCourse }) {
   return (
     <article className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden flex flex-col hover:-translate-y-1 hover:border-white/25 transition-all duration-200 cursor-pointer">
       {/* Image header */}

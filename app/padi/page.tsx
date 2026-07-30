@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import AdLandingPage from "@/components/ads/AdLandingPage";
+import { getCourses } from "@/lib/api/courses";
 
 export const metadata: Metadata = {
   title: "PADI Courses in Trincomalee | Diving Club",
@@ -8,11 +9,16 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function PadiPage() {
+export default async function PadiPage() {
+  const courses = await getCourses().catch(() => []);
+
   return (
     <AdLandingPage
       source="padi"
       message="Hi! Can you tell me about PADI courses?"
+      bookingFor="course"
+      items={courses.map((c) => c.name)}
+      bookingHeading="Start your PADI course"
       eyebrow="PADI centre · Trincomalee · since 2010"
       heading="Get PADI certified in Trincomalee"
       subheading="Open Water in four days, in 28°C water, on reefs with turtles and WWII wrecks. Your card is recognised at every dive centre in the world, for life."

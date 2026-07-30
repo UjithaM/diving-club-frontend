@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { Experience } from "@/lib/types";
+import type { HomeActivity } from "@/lib/types";
 
 const typeLabels: Record<string, string> = {
   "try-diving":     "Try Diving",
@@ -22,7 +22,7 @@ const typeTints: Record<string, string> = {
   "sunset-tour":    "bg-tropic-coral/10",
 };
 
-export default function ExperienceCard({ experience }: { experience: Experience }) {
+export default function ExperienceCard({ experience }: { experience: HomeActivity }) {
   const tint = typeTints[experience.type] ?? "bg-shallow-water/10";
   const label = typeLabels[experience.type] ?? experience.type;
 

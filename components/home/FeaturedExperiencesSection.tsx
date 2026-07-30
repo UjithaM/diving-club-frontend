@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import type { Experience } from "@/lib/types";
+import type { HomeActivity } from "@/lib/types";
 import ExperienceCard from "@/components/ui/ExperienceCard";
 import AnimatedSection from "@/components/ui/AnimatedSection";
 
-export default function FeaturedExperiencesSection({ experiences }: { experiences: Experience[] }) {
+export default function FeaturedExperiencesSection({ experiences }: { experiences: HomeActivity[] }) {
   return (
     <section className="bg-warm-white py-16 lg:py-28 px-6">
       <div className="max-w-6xl mx-auto">

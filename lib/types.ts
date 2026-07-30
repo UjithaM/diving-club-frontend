@@ -53,6 +53,49 @@ export interface DiveSite {
   popular: boolean;
 }
 
+// GET /api/home returns trimmed versions of the three types above, with a nullable
+// image. The full types are supersets, so the cards accept either.
+
+export type HomeCourse = Pick<
+  Course,
+  | "slug"
+  | "name"
+  | "description"
+  | "level"
+  | "duration"
+  | "price"
+  | "currency"
+  | "originalPrice"
+  | "popular"
+  | "featured"
+> & { image: string | null };
+
+export type HomeActivity = Pick<
+  Experience,
+  | "slug"
+  | "name"
+  | "description"
+  | "type"
+  | "duration"
+  | "price"
+  | "currency"
+  | "originalPrice"
+  | "popular"
+  | "featured"
+  | "divesIncluded"
+> & { image: string | null };
+
+export type HomeDiveSite = Pick<
+  DiveSite,
+  "slug" | "name" | "description" | "depth" | "difficulty" | "boatTime" | "popular"
+> & { image: string | null };
+
+export interface HomeData {
+  courses: HomeCourse[];
+  activities: HomeActivity[];
+  diveSites: HomeDiveSite[];
+}
+
 export interface Faq {
   question: string;
   answer: string;

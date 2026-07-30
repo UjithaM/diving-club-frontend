@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-import { getCourses } from "@/lib/api/courses";
-import { getExperiences } from "@/lib/api/experiences";
-import { getDiveSites } from "@/lib/api/dive-sites";
+import { getHome } from "@/lib/api/home";
 import { getGalleryImages } from "@/lib/api/gallery";
 import type { FAQPage, TouristAttraction, WithContext } from "schema-dts";
 import { safeJsonLd } from "@/lib/jsonld";
@@ -84,18 +82,15 @@ const faqJsonLd: WithContext<FAQPage> = {
 };
 
 export default async function HomePage() {
-  const [allCourses, allExperiences, allDiveSites, galleryImages] = await Promise.all([
-    getCourses(),
-    getExperiences(),
-    getDiveSites(),
+  const [home, galleryImages] = await Promise.all([
+    getHome(),
     getGalleryImages().catch(() => []),
   ]);
 
-  const featuredCourses = allCourses.filter((c) => c.popular).slice(0, 3);
-  const featuredExperiences = allExperiences.filter((e) =>
-    ["try-diving", "fun-diving-2", "whale-watching"].includes(e.slug)
-  );
-  const featuredDiveSites = allDiveSites.filter((s) => s.popular).slice(0, 3);
+  // /api/home already orders these featured → popular → sort_order.
+  const featuredCourses = home.courses.slice(0, 3);
+  const featuredExperiences = home.activities.slice(0, 3);
+  const featuredDiveSites = home.diveSites.slice(0, 3);
 
   return (
     <>

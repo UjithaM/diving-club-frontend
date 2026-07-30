@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import AdLandingPage from "@/components/ads/AdLandingPage";
+import { getExperiences } from "@/lib/api/experiences";
 
 export const metadata: Metadata = {
   title: "Go Diving in Trincomalee | Diving Club",
@@ -8,11 +9,16 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function DivePage() {
+export default async function DivePage() {
+  const activities = await getExperiences().catch(() => []);
+
   return (
     <AdLandingPage
       source="dive"
       message="Hi! Can I book a dive?"
+      bookingFor="activity"
+      items={activities.map((a) => a.name)}
+      bookingHeading="Book your dive"
       eyebrow="PADI centre · Trincomalee · since 2010"
       heading="Go diving in Trincomalee"
       subheading="Turtles on nearly every dive, WWII wrecks in the bay, and water warm enough that nobody wants a wetsuit. Never dived before? That's most of the people who message us."
