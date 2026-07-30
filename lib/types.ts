@@ -53,6 +53,12 @@ export interface DiveSite {
   popular: boolean;
 }
 
+/** What a booking form needs to describe and price something. Course and Experience both satisfy this. */
+export type BookableItem = Pick<
+  Course,
+  "slug" | "name" | "duration" | "price" | "currency" | "originalPrice" | "includes" | "minAge"
+>;
+
 // GET /api/home returns trimmed versions of the three types above, with a nullable
 // image. The full types are supersets, so the cards accept either.
 

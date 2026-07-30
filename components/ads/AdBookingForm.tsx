@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import PhoneInput from "@/components/ui/PhoneInput";
 import { splitPhone } from "@/lib/phone";
+import type { BookableItem } from "@/lib/types";
 import WhatsAppCta from "./WhatsAppCta";
 
 const inputClass =
@@ -10,20 +12,93 @@ const inputClass =
 
 const labelClass = "block text-sm font-medium text-charcoal-sea mb-1.5";
 
+/** Price, duration and inclusions, straight from the API. Sells the item and confirms the choice. */
+function ItemSummary({ item }: { item: BookableItem }) {
+  const saving = item.originalPrice && item.originalPrice > item.price
+    ? item.originalPrice - item.price
+    : 0;
+
+  return (
+    <div className="bg-charcoal-sea rounded-2xl p-6">
+      <p className="text-warm-white font-bold text-lg leading-snug mb-4">{item.name}</p>
+
+      <div className="flex items-end gap-3 flex-wrap mb-2">
+        <span className="text-tropic-coral text-4xl font-extrabold leading-none">
+          ${item.price}
+        </span>
+        <span className="text-warm-white/40 text-sm mb-1">{item.currency} per person</span>
+        {saving > 0 && (
+          <>
+            <span className="text-warm-white/40 text-lg line-through mb-0.5">
+              ${item.originalPrice}
+            </span>
+            <span className="bg-tropic-coral text-white text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full mb-1">
+              Save ${saving}
+            </span>
+          </>
+        )}
+      </div>
+
+      <p className="text-warm-white/50 text-sm">
+        {item.duration}
+        {item.minAge ? ` · Ages ${item.minAge}+` : ""}
+      </p>
+
+      {item.includes?.length ? (
+        <ul className="mt-5 pt-5 border-t border-white/10 space-y-2">
+          {item.includes.map((line) => (
+            <li key={line} className="flex gap-2.5 text-warm-white/75 text-sm leading-relaxed">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 20 20"
+                fill="none"
+                aria-hidden="true"
+                className="flex-shrink-0 mt-0.5"
+              >
+                <path
+                  d="M4 10.5l4 4 8-9"
+                  stroke="#2A9D8F"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              {line}
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </div>
+  );
+}
+
 interface AdBookingFormProps {
   bookingFor: "course" | "activity";
-  /** Names pulled from the API by the page. May be empty if the API is down. */
-  items: string[];
+  /** Dropdown options. Empty when the page books one fixed thing. */
+  items: BookableItem[];
+  /** When set, this item is locked in — no dropdown, nothing to choose. */
+  fixedItem?: BookableItem;
   /** GTM event label: "dive" | "padi". */
   source: string;
   /** WhatsApp prefill text, un-encoded. */
   message: string;
 }
 
-export default function AdBookingForm({ bookingFor, items, source, message }: AdBookingFormProps) {
+export default function AdBookingForm({
+  bookingFor,
+  items,
+  fixedItem,
+  source,
+  message,
+}: AdBookingFormProps) {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [phone, setPhone] = useState("");
+  const [itemName, setItemName] = useState(fixedItem?.name ?? "");
   const [reference, setReference] = useState<string | null>(null);
+
+  // "Not sure yet" matches nothing, so no card shows — which is right.
+  const selected = fixedItem ?? items.find((i) => i.name === itemName);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -44,7 +119,7 @@ export default function AdBookingForm({ bookingFor, items, source, message }: Ad
           date: getValue("date"),
           people: getValue("people"),
           bookingFor,
-          item: getValue("item"),
+          item: itemName,
         }),
       });
       if (!res.ok) throw new Error();
@@ -89,6 +164,15 @@ export default function AdBookingForm({ bookingFor, items, source, message }: Ad
         )}
 
         <WhatsAppCta message={message} source={source} label="Message us on WhatsApp" />
+
+        <div className="mt-6">
+          <Link
+            href="/"
+            className="text-sm text-charcoal-sea/50 hover:text-charcoal-sea transition-colors"
+          >
+            ← Back to Diving Club
+          </Link>
+        </div>
       </div>
     );
   }
@@ -96,22 +180,42 @@ export default function AdBookingForm({ bookingFor, items, source, message }: Ad
   return (
     <form onSubmit={handleSubmit} className="bg-white border border-charcoal-sea/10 rounded-2xl p-6 sm:p-8 space-y-5">
       {/* What */}
-      <div>
-        <label htmlFor="item" className={labelClass}>
-          Which {bookingFor}? <span className="text-tropic-coral">*</span>
-        </label>
-        <select id="item" name="item" required defaultValue="" className={inputClass}>
-          <option value="" disabled>
-            Pick one…
-          </option>
-          {items.map((item) => (
-            <option key={item} value={item}>
-              {item}
+      {fixedItem ? (
+        <div>
+          <p className={labelClass}>You&apos;re booking</p>
+          <ItemSummary item={fixedItem} />
+        </div>
+      ) : (
+        <div>
+          <label htmlFor="item" className={labelClass}>
+            Which {bookingFor}? <span className="text-tropic-coral">*</span>
+          </label>
+          <select
+            id="item"
+            name="item"
+            required
+            value={itemName}
+            onChange={(e) => setItemName(e.target.value)}
+            className={inputClass}
+          >
+            <option value="" disabled>
+              Pick one…
             </option>
-          ))}
-          <option value="Not sure yet">Not sure yet — help me choose</option>
-        </select>
-      </div>
+            {items.map((item) => (
+              <option key={item.slug} value={item.name}>
+                {item.name}
+              </option>
+            ))}
+            <option value="Not sure yet">Not sure yet — help me choose</option>
+          </select>
+
+          {selected && (
+            <div className="mt-4">
+              <ItemSummary item={selected} />
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Name + Email */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -190,7 +294,7 @@ export default function AdBookingForm({ bookingFor, items, source, message }: Ad
         disabled={status === "submitting"}
         className="w-full bg-tropic-coral text-white font-bold py-3.5 rounded-full hover:bg-sunrise transition-colors disabled:opacity-60 text-base"
       >
-        {status === "submitting" ? "Sending…" : "Request your spot"}
+        {status === "submitting" ? "Sending…" : "Book Now"}
       </button>
 
       <p className="text-xs text-charcoal-sea/45 text-center">

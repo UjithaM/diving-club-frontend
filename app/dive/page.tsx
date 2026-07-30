@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import AdLandingPage from "@/components/ads/AdLandingPage";
-import { getExperiences } from "@/lib/api/experiences";
+import { getCourseBySlug } from "@/lib/api/courses";
 
 export const metadata: Metadata = {
   title: "Go Diving in Trincomalee | Diving Club",
@@ -10,15 +10,17 @@ export const metadata: Metadata = {
 };
 
 export default async function DivePage() {
-  const activities = await getExperiences().catch(() => []);
+  // One course, already chosen for the visitor. Returns undefined if the API is down.
+  const course = await getCourseBySlug("discover-scuba-diving");
 
   return (
     <AdLandingPage
       source="dive"
       message="Hi! Can I book a dive?"
-      bookingFor="activity"
-      items={activities.map((a) => a.name)}
-      bookingHeading="Book your dive"
+      bookingFor="course"
+      items={[]}
+      fixedItem={course}
+      bookingHeading="Your first dive, all in"
       eyebrow="PADI centre · Trincomalee · since 2010"
       heading="Go diving in Trincomalee"
       subheading="Turtles on nearly every dive, WWII wrecks in the bay, and water warm enough that nobody wants a wetsuit. Never dived before? That's most of the people who message us."
@@ -44,8 +46,8 @@ export default async function DivePage() {
       ]}
       steps={[
         {
-          title: "Message us on WhatsApp",
-          body: "Tell us roughly when you're in Trincomalee and how many of you there are. If you've dived before, mention your level.",
+          title: "Fill in the form above",
+          body: "Takes about a minute — just tell us when you're in Trincomalee and how many of you there are. Prefer to type it out? WhatsApp us instead.",
         },
         {
           title: "We confirm a time",

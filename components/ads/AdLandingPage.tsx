@@ -3,7 +3,7 @@ import AnimatedSection from "@/components/ui/AnimatedSection";
 import FaqAccordion from "@/components/ui/FaqAccordion";
 import WhatsAppCta from "./WhatsAppCta";
 import AdBookingForm from "./AdBookingForm";
-import type { PageFaq } from "@/lib/types";
+import type { BookableItem, PageFaq } from "@/lib/types";
 
 const PHONE_DISPLAY = "074 394 5010";
 const PHONE_HREF = "tel:+94743945010";
@@ -24,8 +24,10 @@ interface AdLandingPageProps {
   closingHeading: string;
   /** Booking form: what the dropdown is offering. */
   bookingFor: "course" | "activity";
-  /** Booking form: item names, fetched by the page. Empty is fine — "Not sure yet" always shows. */
-  items: string[];
+  /** Booking form: dropdown options, fetched by the page. Empty when fixedItem is set. */
+  items: BookableItem[];
+  /** Booking form: locks the page to one item — no dropdown. */
+  fixedItem?: BookableItem;
   bookingHeading: string;
 }
 
@@ -43,6 +45,7 @@ export default function AdLandingPage({
   closingHeading,
   bookingFor,
   items,
+  fixedItem,
   bookingHeading,
 }: AdLandingPageProps) {
   return (
@@ -76,10 +79,15 @@ export default function AdLandingPage({
           </h1>
           <p className="text-warm-white/70 text-lg leading-relaxed mb-9 max-w-xl">{subheading}</p>
 
-          <WhatsAppCta message={message} source={source} />
+          <a
+            href="#book"
+            className="inline-flex items-center justify-center gap-3 bg-tropic-coral text-white font-semibold px-8 py-4 rounded-full hover:bg-sunrise transition-colors text-base"
+          >
+            Book your spot
+          </a>
 
           <p className="text-warm-white/50 text-sm mt-5">
-            No WhatsApp?{" "}
+            Prefer to talk?{" "}
             <a href={PHONE_HREF} className="text-warm-white font-semibold hover:text-tropic-coral transition-colors">
               Call {PHONE_DISPLAY}
             </a>
@@ -88,7 +96,7 @@ export default function AdLandingPage({
       </section>
 
       {/* Booking */}
-      <section id="book" className="bg-charcoal-sea/5 py-16 px-6">
+      <section id="book" className="bg-charcoal-sea/5 py-16 px-6 scroll-mt-24">
         <div className="max-w-xl mx-auto">
           <AnimatedSection>
             <div className="flex items-center gap-3 mb-5">
@@ -106,7 +114,13 @@ export default function AdLandingPage({
             </p>
           </AnimatedSection>
 
-          <AdBookingForm bookingFor={bookingFor} items={items} source={source} message={message} />
+          <AdBookingForm
+            bookingFor={bookingFor}
+            items={items}
+            fixedItem={fixedItem}
+            source={source}
+            message={message}
+          />
 
           <div className="flex items-center gap-4 my-8" aria-hidden="true">
             <span className="h-px flex-1 bg-charcoal-sea/15" />

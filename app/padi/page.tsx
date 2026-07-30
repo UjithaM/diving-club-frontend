@@ -17,7 +17,7 @@ export default async function PadiPage() {
       source="padi"
       message="Hi! Can you tell me about PADI courses?"
       bookingFor="course"
-      items={courses.map((c) => c.name)}
+      items={courses}
       bookingHeading="Start your PADI course"
       eyebrow="PADI centre · Trincomalee · since 2010"
       heading="Get PADI certified in Trincomalee"
@@ -44,8 +44,8 @@ export default async function PadiPage() {
       ]}
       steps={[
         {
-          title: "Message us on WhatsApp",
-          body: "Tell us which course you're after, or just say you're not sure. We'll ask a couple of questions and point you at the right one.",
+          title: "Fill in the form above",
+          body: "Pick the course you're after, or choose \"not sure yet\" and we'll point you at the right one. Takes about a minute. You can WhatsApp us instead if you'd rather ask first.",
         },
         {
           title: "We book your dates",
