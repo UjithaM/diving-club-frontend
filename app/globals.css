@@ -105,6 +105,31 @@ h1, h2, h3, h4, h5 {
   .gallery-grid > *:first-child { grid-row: span 2; }
 }
 
+/* Form controls — two iOS Safari fixes, applied globally so every form gets them.
+   Both are element-level browser behaviours, not per-component styling. */
+
+/* iOS zooms the viewport when a focused field's font-size is under 16px, which
+   breaks the layout mid-typing. Our inputs are text-sm (14px), so force 16px on
+   small screens. !important because Tailwind's .text-sm utility outranks an
+   element selector. Desktop keeps 14px. */
+@media (max-width: 767px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* iOS gives date/time inputs an intrinsic width that ignores width:100%, so they
+   overflow their container and push the page sideways. */
+input[type="date"],
+input[type="time"] {
+  -webkit-appearance: none;
+  appearance: none;
+  min-width: 0;
+  -webkit-min-logical-width: calc(100% - 2px);
+}
+
 /* react-phone-number-input overrides */
 .phone-input-wrapper .PhoneInput {
   display: flex;
