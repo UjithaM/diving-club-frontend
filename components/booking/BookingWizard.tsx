@@ -191,8 +191,11 @@ function StickyNav({
 function SuccessScreen({ draft }: { draft: BookingDraft }) {
   const [entered, setEntered] = useState(false);
   const [checkDrawn, setCheckDrawn] = useState(false);
+  const topRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Success is an early return, so the step-change scroll never fires for it.
+    topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     requestAnimationFrame(() => {
       setEntered(true);
       setTimeout(() => setCheckDrawn(true), 200);
@@ -205,12 +208,13 @@ function SuccessScreen({ draft }: { draft: BookingDraft }) {
 
   return (
     <div
+      ref={topRef}
       style={{
         opacity: entered ? 1 : 0,
         transform: entered ? "translateY(0)" : "translateY(24px)",
         transition: `opacity 400ms ${ease}, transform 400ms ${ease}`,
       }}
-      className="text-center py-8"
+      className="text-center py-8 scroll-mt-24"
     >
       {/* Animated checkmark */}
       <div className="w-20 h-20 rounded-full bg-shallow-water/10 border-2 border-shallow-water flex items-center justify-center mx-auto mb-6">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import PhoneInput from "@/components/ui/PhoneInput";
 import { splitPhone } from "@/lib/phone";
@@ -96,6 +96,13 @@ export default function AdBookingForm({
   const [phone, setPhone] = useState("");
   const [itemName, setItemName] = useState(fixedItem?.name ?? "");
   const [reference, setReference] = useState<string | null>(null);
+  const topRef = useRef<HTMLDivElement>(null);
+
+  // The success message is shorter than the form it replaces, so without this the
+  // visitor is left staring at whitespace below it.
+  useEffect(() => {
+    if (status === "success") topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [status]);
 
   // "Not sure yet" matches nothing, so no card shows — which is right.
   const selected = fixedItem ?? items.find((i) => i.name === itemName);
@@ -136,7 +143,10 @@ export default function AdBookingForm({
 
   if (status === "success") {
     return (
-      <div className="bg-white border border-shallow-water/30 rounded-2xl p-8 text-center">
+      <div
+        ref={topRef}
+        className="bg-white border border-shallow-water/30 rounded-2xl p-8 text-center scroll-mt-24"
+      >
         <div className="w-14 h-14 rounded-full bg-shallow-water/10 border-2 border-shallow-water flex items-center justify-center mx-auto mb-5">
           <svg width="28" height="28" viewBox="0 0 40 40" fill="none" aria-hidden="true">
             <path
