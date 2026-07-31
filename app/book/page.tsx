@@ -4,18 +4,30 @@ import BookingWizard from "@/components/booking/BookingWizard";
 import type { WebPage, WithContext } from "schema-dts";
 import { safeJsonLd } from "@/lib/jsonld";
 
-export const metadata: Metadata = {
-  title: "Book a Dive | Diving Club",
-  description:
-    "Book a PADI course or water activity in Trincomalee with Diving Club. Reserve your spot online and pay securely via PayPal or bank transfer.",
-  alternates: { canonical: "https://divingclub.lk/book" },
-  openGraph: {
-    title: "Book a Dive | Diving Club, Trincomalee",
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ type?: string; item?: string }>;
+}): Promise<Metadata> {
+  const { type, item } = await searchParams;
+
+  return {
+    title: "Book a Dive | Diving Club",
     description:
-      "Reserve your PADI course, fun dive, snorkeling tour, or whale watching trip in Trincomalee. Quick online booking form, we confirm within 24 hours.",
-    url: "https://divingclub.lk/book",
-  },
-};
+      "Book a PADI course or water activity in Trincomalee with Diving Club. Reserve your spot online and pay securely via PayPal or bank transfer.",
+    alternates: { canonical: "https://divingclub.lk/book" },
+    // The course/activity/dive-site CTAs link here with ?type=&item= prefilled. Those are
+    // pure duplicates of /book, so say so explicitly instead of leaning on the canonical
+    // alone. follow:true keeps the internal links passing equity.
+    ...((type || item) && { robots: { index: false, follow: true } }),
+    openGraph: {
+      title: "Book a Dive | Diving Club, Trincomalee",
+      description:
+        "Reserve your PADI course, fun dive, snorkeling tour, or whale watching trip in Trincomalee. Quick online booking form, we confirm within 24 hours.",
+      url: "https://divingclub.lk/book",
+    },
+  };
+}
 
 const jsonLd: WithContext<WebPage> = {
   "@context": "https://schema.org",
@@ -65,10 +77,8 @@ export default async function BookPage({
 
       {/* Wizard */}
       <section className="bg-warm-white min-h-[60vh] py-4">
-        <BookingWizard
-          initialType={type}
-          initialItem={item ? decodeURIComponent(item) : undefined}
-        />
+        {/* searchParams arrives already decoded — decoding again threw URIError on any item containing '%' */}
+        <BookingWizard initialType={type} initialItem={item} />
       </section>
 
       {/* Bottom help strip */}

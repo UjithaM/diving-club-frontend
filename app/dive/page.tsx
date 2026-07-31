@@ -2,16 +2,25 @@ import type { Metadata } from "next";
 import AdLandingPage from "@/components/ads/AdLandingPage";
 import { getCourseBySlug } from "@/lib/api/courses";
 
-export const metadata: Metadata = {
-  title: "Go Diving in Trincomalee | Diving Club",
-  description:
-    "Book a dive in Trincomalee with a PADI centre that's been running these reefs since 2010. Message us on WhatsApp and we'll sort out the rest.",
-  robots: { index: false, follow: false },
-};
+const COURSE_SLUG = "discover-scuba-diving";
+
+/** " from $40", or "" if the API is down — never a hardcoded price. */
+const fromPrice = (course?: { price: number }) => (course ? ` from $${course.price}` : "");
+
+export async function generateMetadata(): Promise<Metadata> {
+  const course = await getCourseBySlug(COURSE_SLUG);
+  return {
+    // No "| Diving Club" — the root layout's title.template already appends it.
+    title: `Try Scuba Diving in Trincomalee${fromPrice(course)}`,
+    description: `Try scuba diving in Trincomalee${fromPrice(course)} — no experience needed and all gear included. One day on the reef with a PADI instructor. Book in a minute.`,
+    robots: { index: false, follow: false },
+  };
+}
 
 export default async function DivePage() {
   // One course, already chosen for the visitor. Returns undefined if the API is down.
-  const course = await getCourseBySlug("discover-scuba-diving");
+  // Same call as generateMetadata — Next's Data Cache dedupes it to one request.
+  const course = await getCourseBySlug(COURSE_SLUG);
 
   return (
     <AdLandingPage
@@ -22,7 +31,7 @@ export default async function DivePage() {
       fixedItem={course}
       bookingHeading="Your first dive, all in"
       eyebrow="PADI centre · Trincomalee · since 2010"
-      heading="Go diving in Trincomalee"
+      heading={`Go diving in Trincomalee${fromPrice(course)}`}
       subheading="Turtles on nearly every dive, WWII wrecks in the bay, and water warm enough that nobody wants a wetsuit. Never dived before? That's most of the people who message us."
       image="/assets/couple-scuba-diving-trincomalee.webp"
       imageAlt="Two divers swimming over a coral reef in Trincomalee, Sri Lanka"
