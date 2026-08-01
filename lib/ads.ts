@@ -13,9 +13,10 @@ const ADS_ID = "AW-18356209738";
  * the Ads UI; trackConversion still fires the GTM event, just not the conversion.
  */
 export const CONVERSIONS = {
+  /** "WhatsApp click" — Contact category. */
   whatsapp: `${ADS_ID}/OOyDCM3yktgcEMqQ9rBE`,
-  // TODO: Google Ads → Goals → Conversions → New action (Submit lead form) → paste the send_to.
-  form: "",
+  /** "Booking form submitted" — Submit lead form category. Sends value + transaction_id. */
+  form: `${ADS_ID}/wS7xCI3FrtocEMqQ9rBE`,
 };
 
 /** Email + phone for enhanced conversions for leads. */

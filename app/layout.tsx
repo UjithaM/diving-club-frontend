@@ -131,10 +131,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18356209738" />
         <script
           dangerouslySetInnerHTML={{
+            // allow_enhanced_conversions: the booking form sends email + phone via
+            // gtag('set','user_data',…) before its conversion. The account-level toggle
+            // alone doesn't always cover a manually-configured tag, and this flag is a
+            // no-op when it does. See docs/google-ads-conversion-tracking.md.
             __html: `window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
-gtag('config', 'AW-18356209738');`,
+gtag('config', 'AW-18356209738', { allow_enhanced_conversions: true });`,
           }}
         />
       </head>
