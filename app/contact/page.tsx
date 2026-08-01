@@ -34,7 +34,7 @@ const jsonLd: WithContext<SchemaContactPage> = {
       addressLocality: "Trincomalee",
       addressCountry: "LK",
     },
-    openingHours: "Mo-Su 07:30-18:00",
+    openingHours: "Mo-Su 07:00-18:00",
   },
 };
 
@@ -146,7 +146,7 @@ export default function ContactPage() {
                   </span>
                   <div className="text-sm">
                     <p className="text-charcoal-sea font-semibold">Opening hours</p>
-                    <p className="text-charcoal-sea/60">Every day, 07:30 – 18:00</p>
+                    <p className="text-charcoal-sea/60">Every day, 07:00 – 18:00</p>
                   </div>
                 </div>
               </div>

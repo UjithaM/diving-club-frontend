@@ -3,10 +3,11 @@ import AnimatedSection from "@/components/ui/AnimatedSection";
 import FaqAccordion from "@/components/ui/FaqAccordion";
 import WhatsAppCta from "./WhatsAppCta";
 import AdBookingForm from "./AdBookingForm";
+import BookCta from "./BookCta";
+import GoogleReviews, { ELFSIGHT_HERO, ELFSIGHT_REVIEWS } from "./GoogleReviews";
 import type { BookableItem, PageFaq } from "@/lib/types";
 
 const PHONE_DISPLAY = "074 394 5010";
-const PHONE_HREF = "tel:+94743945010";
 
 interface AdLandingPageProps {
   eyebrow: string;
@@ -19,6 +20,8 @@ interface AdLandingPageProps {
   faqs: PageFaq[];
   /** WhatsApp prefill text, un-encoded. */
   message: string;
+  /** WhatsApp prefill for the same-day strip above the form. */
+  urgentMessage?: string;
   /** GTM event label: "dive" | "padi". */
   source: string;
   closingHeading: string;
@@ -41,6 +44,7 @@ export default function AdLandingPage({
   steps,
   faqs,
   message,
+  urgentMessage = "Hi! Are you running dives today or tomorrow? I'd like to join.",
   source,
   closingHeading,
   bookingFor,
@@ -79,19 +83,34 @@ export default function AdLandingPage({
           </h1>
           <p className="text-warm-white/70 text-lg leading-relaxed mb-9 max-w-xl">{subheading}</p>
 
-          <a
-            href="#book"
-            className="inline-flex items-center justify-center gap-3 bg-tropic-coral text-white font-semibold px-8 py-4 rounded-full hover:bg-sunrise transition-colors text-base"
+          {/* Desktop keeps the button — there's no sticky bar up there, so this is the
+              only CTA above the fold. On mobile the sticky bar already carries "Book your
+              spot", so the hero spends that space on proof instead. */}
+          <BookCta
+            source={`${source}_hero`}
+            className="hidden sm:inline-flex items-center justify-center gap-3 bg-tropic-coral text-white font-semibold px-8 py-4 rounded-full hover:bg-sunrise transition-colors text-base"
           >
             Book your spot
-          </a>
+          </BookCta>
 
-          <p className="text-warm-white/50 text-sm mt-5">
-            Prefer to talk?{" "}
-            <a href={PHONE_HREF} className="text-warm-white font-semibold hover:text-tropic-coral transition-colors">
-              Call {PHONE_DISPLAY}
-            </a>
-          </p>
+          <div className="sm:hidden min-h-[76px]">
+            <GoogleReviews appId={ELFSIGHT_HERO} />
+          </div>
+        </div>
+      </section>
+
+      {/* Proof first: an ad visitor sees who vouches for us before the page asks for a
+          phone number. min-height reserves the widget's space — Elfsight mounts
+          client-side, and a page that jumps after paint is what costs money here. */}
+      <section className="bg-warm-white py-14 px-6">
+        <div className="max-w-6xl mx-auto min-h-[320px]">
+          <div className="flex items-center gap-3 mb-8">
+            <span className="h-px w-6 bg-tropic-coral" aria-hidden="true" />
+            <h2 className="text-tropic-coral text-[11px] font-semibold tracking-[0.22em] uppercase">
+              What our divers say on Google
+            </h2>
+          </div>
+          <GoogleReviews appId={ELFSIGHT_REVIEWS} />
         </div>
       </section>
 
@@ -112,6 +131,26 @@ export default function AdLandingPage({
               Tell us what you&apos;re after and when you&apos;re around. We&apos;ll come back to you
               on WhatsApp within 24 hours to confirm.
             </p>
+          </AnimatedSection>
+
+          {/* Anyone diving in the next 48 hours decides faster than the form's own 24-hour
+              promise, so send them straight to chat rather than losing them to whoever
+              replies first.
+              ponytail: static strip, not date-aware. Add opening-hours logic only if it matters. */}
+          <AnimatedSection>
+            <div className="border-l-4 border-tropic-coral bg-sunrise/12 rounded-r-2xl p-5 sm:p-6 mb-6">
+              <p className="text-charcoal-sea leading-relaxed mb-4">
+                <strong className="font-bold">Diving today or tomorrow?</strong> The form can take up
+                to 24 hours. Message us instead and we&apos;ll answer in minutes — tell us when
+                you&apos;re free and we&apos;ll say what&apos;s running.
+              </p>
+              <WhatsAppCta
+                message={urgentMessage}
+                source={`${source}_urgent`}
+                label="WhatsApp us now"
+                className="!px-6 !py-3 text-sm"
+              />
+            </div>
           </AnimatedSection>
 
           <AdBookingForm
@@ -183,9 +222,10 @@ export default function AdLandingPage({
 
           <AnimatedSection className="mt-10">
             <p className="text-charcoal-sea/70 leading-relaxed bg-warm-white rounded-2xl p-6">
-              Message us for today&apos;s rate and what&apos;s available this week. Prices shift a
-              little with group size and the boat schedule, so we&apos;d rather tell you straight
-              than post a number that turns out to be wrong.
+              The price covers your gear, tanks, the boat, and your instructor — there&apos;s no kit
+              hire bolted on at the end. Groups of four or more and multi-day bookings usually come
+              down a bit, so tell us how many of you there are and we&apos;ll give you the real
+              number before you commit to anything.
             </p>
           </AnimatedSection>
         </div>
@@ -200,27 +240,47 @@ export default function AdLandingPage({
             {closingHeading}
           </h2>
           <p className="text-warm-white/60 leading-relaxed mb-9">
-            We usually reply within a few minutes during the day. Ask us anything, even if
-            you&apos;re still deciding.
+            On WhatsApp we usually reply within a few minutes while we&apos;re open. Ask us anything,
+            even if you&apos;re still deciding.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <WhatsAppCta message={message} source={source} />
-            <a
-              href={PHONE_HREF}
-              className="inline-flex items-center justify-center gap-3 border-2 border-warm-white/40 text-warm-white font-semibold px-8 py-4 rounded-full hover:bg-warm-white hover:text-charcoal-sea transition-colors text-base"
+            <BookCta
+              source={`${source}_closing`}
+              className="inline-flex items-center justify-center gap-3 bg-tropic-coral text-white font-semibold px-8 py-4 rounded-full hover:bg-sunrise transition-colors text-base"
             >
-              Call {PHONE_DISPLAY}
-            </a>
+              Book your spot
+            </BookCta>
+            <WhatsAppCta message={message} source={source} />
           </div>
 
+          {/* Reachable, just not a tracked CTA — the phone converts worst of the three. */}
           <p className="text-warm-white/40 text-sm mt-9 leading-relaxed">
             Diving Club · 74/9 Sandy Cove, Trincomalee 31000, Sri Lanka
             <br />
-            Open every day, 7am to 6pm
+            Open every day, 7am to 6pm · {PHONE_DISPLAY}
           </p>
         </div>
       </section>
+
+      {/* These routes are in SiteChrome's BARE_ROUTES, so there's no WhatsAppFab here —
+          without this, mobile has no CTA between the hero and the bottom of the page.
+          pb-24 on the closing section keeps the bar off the footer text. */}
+      <div className="sm:hidden h-20" aria-hidden="true" />
+      <div className="sm:hidden fixed bottom-0 inset-x-0 z-40 flex gap-3 p-3 bg-warm-white border-t border-charcoal-sea/10 [padding-bottom:calc(0.75rem+env(safe-area-inset-bottom))]">
+        <BookCta
+          source={`${source}_sticky`}
+          className="flex-1 inline-flex items-center justify-center gap-2 bg-tropic-coral text-white font-semibold px-4 py-3.5 rounded-full text-base"
+        >
+          Book your spot
+        </BookCta>
+        <WhatsAppCta
+          message={message}
+          source={`${source}_sticky`}
+          label="WhatsApp"
+          className="flex-1 !px-4 !py-3.5"
+        />
+      </div>
     </>
   );
 }

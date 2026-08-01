@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import PhoneInput from "@/components/ui/PhoneInput";
 import { splitPhone } from "@/lib/phone";
+import { CONVERSIONS, trackConversion } from "@/lib/ads";
 import type { BookableItem } from "@/lib/types";
 import WhatsAppCta from "./WhatsAppCta";
 
@@ -115,16 +116,19 @@ export default function AdBookingForm({
     const getValue = (name: string) =>
       (form.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement)?.value ?? "";
 
+    const email = getValue("email");
+    const people = getValue("people");
+
     try {
       const res = await fetch("/api/booking", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: getValue("name"),
-          email: getValue("email"),
+          email,
           ...splitPhone(phone),
           date: getValue("date"),
-          people: getValue("people"),
+          people,
           bookingFor,
           item: itemName,
         }),
@@ -132,9 +136,19 @@ export default function AdBookingForm({
       if (!res.ok) throw new Error();
       const data = await res.json();
       setReference(data.reference ?? null);
-      // No gtag conversion yet — Ads only has a conversion action for WhatsApp clicks.
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({ event: "booking_submit", source });
+
+      // A form booking is a different, higher-intent lead than a chat, so it gets its
+      // own action. transaction_id dedupes it against the offline upload the backend
+      // will send once the booking is actually confirmed.
+      trackConversion("booking_submit", CONVERSIONS.form, {
+        data: { source, item: itemName },
+        conversion: {
+          value: selected ? selected.price * (Number(people) || 1) : undefined,
+          currency: selected?.currency ?? "USD",
+          transaction_id: data.reference ?? undefined,
+        },
+        userData: { email, phone_number: phone },
+      });
       setStatus("success");
     } catch {
       setStatus("error");
@@ -267,6 +281,11 @@ export default function AdBookingForm({
             min={new Date().toISOString().split("T")[0]}
             className={inputClass}
           />
+          {/* The backend requires a date, so it can't be optional — but nobody should
+              stall here thinking they're locking something in. */}
+          <p className="text-xs text-charcoal-sea/40 mt-1.5">
+            Roughly is fine. We&apos;ll settle the exact day with you.
+          </p>
         </div>
 
         <div>
@@ -304,12 +323,25 @@ export default function AdBookingForm({
         disabled={status === "submitting"}
         className="w-full bg-tropic-coral text-white font-bold py-3.5 rounded-full hover:bg-sunrise transition-colors disabled:opacity-60 text-base"
       >
-        {status === "submitting" ? "Sending…" : "Book Now"}
+        {/* Not "Book Now" — nothing is booked, and the word makes people brace for a
+            card form that never comes. The success screen already says as much. */}
+        {status === "submitting" ? "Sending…" : "Check availability"}
       </button>
 
-      <p className="text-xs text-charcoal-sea/45 text-center">
-        Nothing is charged now. We&apos;ll confirm your dates and the advance payment on WhatsApp.
-      </p>
+      {/* Baymard: trust markers do the most work at the point of commitment, not in a
+          section further down the page. */}
+      <div className="text-center space-y-2">
+        <p className="text-xs text-charcoal-sea/45">
+          No card needed. Nothing is charged now — we confirm your dates and the advance on
+          WhatsApp first.
+        </p>
+        {/* The Google rating used to sit here too. Elfsight renders reviews inside its
+            own container, so there's no number to read — this is what's left that we
+            can state as fact. */}
+        <p className="text-xs text-charcoal-sea/45">
+          PADI dive centre in Trincomalee since 2010
+        </p>
+      </div>
     </form>
   );
 }

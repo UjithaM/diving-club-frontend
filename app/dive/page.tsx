@@ -26,6 +26,7 @@ export default async function DivePage() {
     <AdLandingPage
       source="dive"
       message="Hi! Can I book a dive?"
+      urgentMessage="Hi! Are you running dives today or tomorrow? I'd like to join."
       bookingFor="course"
       items={[]}
       fixedItem={course}

@@ -12,5 +12,26 @@ export async function apiFetch<T>(path: string, tags: string[] = [], init?: Requ
 
 export async function apiList<T>(path: string, tags: string[] = []): Promise<T[]> {
   const json = await apiFetch<{ data: T[] }>(path, tags);
-  return json.data;
+  return Array.isArray(json.data) ? json.data : [];
+}
+
+/**
+ * One item by slug, or undefined.
+ *
+ * The backend answers an unknown slug with 200 `{"data": []}` rather than a 404, and an
+ * empty array is truthy — it sailed through as a "course" and every `item.includes.map`
+ * downstream resolved to Array.prototype.includes and threw at render. Anything that
+ * isn't an object with a slug is not an item.
+ */
+export function isItem(data: unknown): boolean {
+  return !!data && typeof data === "object" && !Array.isArray(data) && "slug" in data;
+}
+
+export async function apiItem<T>(path: string, tags: string[] = []): Promise<T | undefined> {
+  try {
+    const json = await apiFetch<{ data: T }>(path, tags);
+    return isItem(json?.data) ? json.data : undefined;
+  } catch {
+    return undefined;
+  }
 }

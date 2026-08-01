@@ -1,4 +1,4 @@
-import { apiFetch, apiList } from "./client";
+import { apiItem, apiList } from "./client";
 import type { Course } from "@/lib/types";
 
 export async function getCourses(): Promise<Course[]> {
@@ -6,10 +6,5 @@ export async function getCourses(): Promise<Course[]> {
 }
 
 export async function getCourseBySlug(slug: string): Promise<Course | undefined> {
-  try {
-    const json = await apiFetch<{ data: Course }>(`/courses/${slug}`, ["courses", `course:${slug}`]);
-    return json.data;
-  } catch {
-    return undefined;
-  }
+  return apiItem<Course>(`/courses/${slug}`, ["courses", `course:${slug}`]);
 }

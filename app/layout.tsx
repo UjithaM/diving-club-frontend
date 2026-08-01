@@ -82,13 +82,10 @@ const localBusinessJsonLd: WithContext<LocalBusiness> = {
   paymentAccepted: "Cash, Credit Card",
   areaServed: ["Trincomalee", "Nilaveli", "Uppuveli"],
   knowsAbout: ["Scuba Diving", "PADI Certification", "Wreck Diving", "Underwater Photography", "Marine Conservation"],
-  aggregateRating: {
-    "@type": "AggregateRating",
-    ratingValue: "5",
-    reviewCount: "50",
-    bestRating: "5",
-    worstRating: "1",
-  },
+  // No aggregateRating. Google rules it ineligible when the business controls the
+  // reviews, and marked-up ratings must be visible on the page carrying them — the
+  // old 5.0/50 was backed by neither. Re-add from lib/api/reviews.ts only once real
+  // reviews render on the page carrying the markup.
   sameAs: [
     "https://www.facebook.com/profile.php?id=100092324331693",
     "https://www.instagram.com/diving_club_s30212/",

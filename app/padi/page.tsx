@@ -2,12 +2,25 @@ import type { Metadata } from "next";
 import AdLandingPage from "@/components/ads/AdLandingPage";
 import { getCourses } from "@/lib/api/courses";
 
-export const metadata: Metadata = {
-  title: "PADI Courses in Trincomalee | Diving Club",
-  description:
-    "Get PADI certified in Trincomalee, Sri Lanka. Open Water, Advanced, and specialty courses with small classes and warm, clear water. Message us on WhatsApp.",
-  robots: { index: false, follow: false },
+/** Open Water is what the ads sell, so its price is the one that has to match the ad. */
+const HEADLINE_COURSE = "open-water-diver";
+
+/** " from $395", or "" if the API is down — never a hardcoded price. */
+const fromPrice = (courses: { slug: string; price: number }[]) => {
+  const course = courses.find((c) => c.slug === HEADLINE_COURSE);
+  return course ? ` from $${course.price}` : "";
 };
+
+export async function generateMetadata(): Promise<Metadata> {
+  // Same call as the page — Next's Data Cache dedupes it to one request.
+  const courses = await getCourses().catch(() => []);
+  return {
+    // No "| Diving Club" — the root layout's title.template already appends it.
+    title: `PADI Courses in Trincomalee${fromPrice(courses)}`,
+    description: `Get PADI certified in Trincomalee, Sri Lanka${fromPrice(courses)}. Open Water, Advanced, and specialty courses with small classes and warm, clear water. Message us on WhatsApp.`,
+    robots: { index: false, follow: false },
+  };
+}
 
 export default async function PadiPage() {
   const courses = await getCourses().catch(() => []);
@@ -16,11 +29,12 @@ export default async function PadiPage() {
     <AdLandingPage
       source="padi"
       message="Hi! Can you tell me about PADI courses?"
+      urgentMessage="Hi! I'd like to start a PADI course this week — what's available?"
       bookingFor="course"
       items={courses}
       bookingHeading="Start your PADI course"
       eyebrow="PADI centre · Trincomalee · since 2010"
-      heading="Get PADI certified in Trincomalee"
+      heading={`Get PADI certified in Trincomalee${fromPrice(courses)}`}
       subheading="Open Water in four days, in 28°C water, on reefs with turtles and WWII wrecks. Your card is recognised at every dive centre in the world, for life."
       image="/assets/J-rockshan-with-open-water-students.webp"
       imageAlt="PADI instructor Rockshan briefing Open Water students in Trincomalee, Sri Lanka"

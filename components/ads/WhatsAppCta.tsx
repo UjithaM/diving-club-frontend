@@ -1,21 +1,13 @@
 "use client";
 
-declare global {
-  interface Window {
-    dataLayer?: Record<string, unknown>[];
-    gtag?: (...args: unknown[]) => void;
-  }
-}
+import { CONVERSIONS, trackConversion } from "@/lib/ads";
 
 const WHATSAPP_NUMBER = "94743945010";
-
-// Google Ads "WhatsApp click" conversion action (Contact category).
-const CONVERSION_SEND_TO = "AW-18356209738/OOyDCM3yktgcEMqQ9rBE";
 
 interface WhatsAppCtaProps {
   /** Prefill text, un-encoded. */
   message: string;
-  /** GTM event label: "dive" | "padi". */
+  /** GTM event label: "dive" | "padi", or "{page}_urgent" for the same-day path. */
   source: string;
   label?: string;
   className?: string;
@@ -34,13 +26,7 @@ export default function WhatsAppCta({
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      // Opens a new tab, so the page never unloads and both calls always land —
-      // no event_callback or navigation delay needed.
-      onClick={() => {
-        window.gtag?.("event", "conversion", { send_to: CONVERSION_SEND_TO });
-        window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push({ event: "whatsapp_click", source });
-      }}
+      onClick={() => trackConversion("whatsapp_click", CONVERSIONS.whatsapp, { data: { source } })}
       className={`inline-flex items-center justify-center gap-3 bg-[#25D366] text-white font-semibold px-8 py-4 rounded-full hover:brightness-95 transition text-base ${className}`}
     >
       <svg width="22" height="22" viewBox="0 0 24 24" fill="white" aria-hidden="true" className="flex-shrink-0">
