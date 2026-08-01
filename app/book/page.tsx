@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import BookingWizard from "@/components/booking/BookingWizard";
+import { getDiscountLink } from "@/lib/api/discount-links";
 import type { WebPage, WithContext } from "schema-dts";
 import { safeJsonLd } from "@/lib/jsonld";
 
 export async function generateMetadata({
   searchParams,
 }: {
-  searchParams: Promise<{ type?: string; item?: string }>;
+  searchParams: Promise<{ type?: string; item?: string; discount?: string }>;
 }): Promise<Metadata> {
-  const { type, item } = await searchParams;
+  const { type, item, discount } = await searchParams;
 
   return {
     title: "Book a Dive | Diving Club",
@@ -19,7 +20,8 @@ export async function generateMetadata({
     // The course/activity/dive-site CTAs link here with ?type=&item= prefilled. Those are
     // pure duplicates of /book, so say so explicitly instead of leaning on the canonical
     // alone. follow:true keeps the internal links passing equity.
-    ...((type || item) && { robots: { index: false, follow: true } }),
+    // ?discount= is a one-time personal link — it must never be indexed.
+    ...((type || item || discount) && { robots: { index: false, follow: true } }),
     openGraph: {
       title: "Book a Dive | Diving Club, Trincomalee",
       description:
@@ -39,9 +41,13 @@ const jsonLd: WithContext<WebPage> = {
 export default async function BookPage({
   searchParams,
 }: {
-  searchParams: Promise<{ type?: string; item?: string }>;
+  searchParams: Promise<{ type?: string; item?: string; discount?: string }>;
 }) {
-  const { type, item } = await searchParams;
+  const { type, item, discount } = await searchParams;
+
+  // Resolved server-side so the wizard renders with the discount already known — no
+  // loading flicker, and no chance of showing full price for a beat before correcting it.
+  const discountLink = discount ? await getDiscountLink(discount) : null;
 
   return (
     <>
@@ -78,7 +84,12 @@ export default async function BookPage({
       {/* Wizard */}
       <section className="bg-warm-white min-h-[60vh] py-4">
         {/* searchParams arrives already decoded — decoding again threw URIError on any item containing '%' */}
-        <BookingWizard initialType={type} initialItem={item} />
+        <BookingWizard
+          initialType={type}
+          initialItem={item}
+          discountCode={discount}
+          discountLink={discountLink}
+        />
       </section>
 
       {/* Bottom help strip */}

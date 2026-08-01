@@ -6,7 +6,10 @@ import PhoneInput from "@/components/ui/PhoneInput";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import { splitPhone } from "@/lib/phone";
 import Link from "next/link";
-import type { PaymentOptions } from "@/lib/types";
+import type { Deposit, PaymentOptions } from "@/lib/types";
+import type { DiscountLink } from "@/lib/api/discount-links";
+import { discountReasonMessage } from "@/lib/api/discount-links";
+import { depositRuleLabel, previewDiscount, subtotal } from "@/lib/discount";
 import PaymentStep from "@/components/booking/PaymentStep";
 
 // ─── Data ────────────────────────────────────────────────────────────────────
@@ -53,15 +56,28 @@ const inputClass =
 
 const labelClass = "block text-sm font-semibold text-charcoal-sea mb-1.5";
 
+/** What the option lists carry now — the price and deposit were previously discarded. */
+interface ItemOption {
+  name: string;
+  slug: string;
+  price?: number;
+  currency?: string;
+  deposit?: Deposit;
+}
+
 function optionsForType(
   type: BookingType,
-  courseOptions: string[],
-  activityOptions: string[],
-  diveSiteOptions: string[]
+  courseOptions: ItemOption[],
+  activityOptions: ItemOption[],
+  diveSiteOptions: ItemOption[]
 ) {
   if (type === "course") return courseOptions;
   if (type === "activity") return activityOptions;
   return diveSiteOptions;
+}
+
+function money(amount: number, currency: string) {
+  return `${currency} ${amount.toFixed(2)}`;
 }
 
 function typeLabel(type: BookingType) {
@@ -182,6 +198,71 @@ function StickyNav({
           {submitting ? "Sending…" : nextLabel}
         </button>
       </div>
+    </div>
+  );
+}
+
+// ─── Discount banner ──────────────────────────────────────────────────────────
+
+/**
+ * An unusable link is NOT an error state — the customer did nothing wrong and can still
+ * book at the normal price. It gets a neutral note, not red.
+ */
+function DiscountBanner({
+  link,
+  rejected,
+  onDrop,
+}: {
+  link: DiscountLink;
+  /** Backend rejection at submit time, e.g. the link was redeemed a moment ago. */
+  rejected: string | null;
+  onDrop: () => void;
+}) {
+  if (rejected) {
+    return (
+      <div className="mb-5 rounded-xl border border-tropic-coral/30 bg-tropic-coral/[0.06] px-4 py-3">
+        <p className="text-sm text-charcoal-sea leading-relaxed">{rejected}</p>
+        <button
+          type="button"
+          onClick={onDrop}
+          className="mt-2 text-sm font-bold text-tropic-coral underline underline-offset-2"
+        >
+          Continue without the discount
+        </button>
+      </div>
+    );
+  }
+
+  if (!link.valid) {
+    return (
+      <div className="mb-5 rounded-xl border border-charcoal-sea/15 bg-charcoal-sea/[0.04] px-4 py-3">
+        <p className="text-sm text-charcoal-sea/70 leading-relaxed">
+          {discountReasonMessage(link.reason)}
+        </p>
+      </div>
+    );
+  }
+
+  const off =
+    link.discount_type === "percentage"
+      ? `${link.discount_value}% off`
+      : `$${link.discount_value} off`;
+
+  return (
+    <div className="mb-5 rounded-xl border border-shallow-water/30 bg-shallow-water/[0.08] px-4 py-3">
+      <p className="text-sm font-bold text-charcoal-sea">
+        {off} — {link.label}
+      </p>
+      {link.item && (
+        <p className="text-xs text-charcoal-sea/55 mt-1">
+          Applies to {link.item.name}, already selected below.
+        </p>
+      )}
+      {link.expires_at && (
+        <p className="text-xs text-charcoal-sea/45 mt-1">
+          Valid until {link.expires_at.split(" ")[0]}
+        </p>
+      )}
     </div>
   );
 }
@@ -331,12 +412,21 @@ function StepPanel({
 interface BookingWizardProps {
   initialType?: string;
   initialItem?: string;
+  /** Raw token from ?discount=. Sent back on submit; the backend re-validates. */
+  discountCode?: string;
+  /** Resolved server-side. null = no token, or we couldn't reach the API to check. */
+  discountLink?: DiscountLink | null;
 }
 
 export default function BookingWizard({
   initialType,
   initialItem,
+  discountCode,
+  discountLink = null,
 }: BookingWizardProps) {
+  // A link scoped to one item wins over ?type=&item= — the backend rejects anything else.
+  const lockedItem = discountLink?.valid ? discountLink.item : null;
+
   const validType = (["course", "activity", "dive-site"] as const).includes(
     initialType as BookingType
   )
@@ -344,8 +434,8 @@ export default function BookingWizard({
     : "course";
 
   const [draft, dispatch] = useReducer(reducer, {
-    bookingType: validType,
-    item: initialItem ?? "",
+    bookingType: lockedItem ? lockedItem.type : validType,
+    item: lockedItem ? lockedItem.name : initialItem ?? "",
     name: "",
     email: "",
     phone: "",
@@ -356,21 +446,24 @@ export default function BookingWizard({
     notes: "",
   });
 
-  const hasPreselection = Boolean(initialType && initialItem);
+  const hasPreselection = Boolean((initialType && initialItem) || lockedItem);
   const [step, setStep] = useState(hasPreselection ? 2 : 1);
   const [dir, setDir] = useState<"forward" | "backward">("forward");
   const [errors, setErrors] = useState<Partial<Record<keyof BookingDraft, string>>>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const topRef = useRef<HTMLDivElement>(null);
 
-  const [courseOptions, setCourseOptions] = useState<string[]>([]);
-  const [activityOptions, setActivityOptions] = useState<string[]>([]);
-  const [diveSiteOptions, setDiveSiteOptions] = useState<string[]>([]);
+  const [courseOptions, setCourseOptions] = useState<ItemOption[]>([]);
+  const [activityOptions, setActivityOptions] = useState<ItemOption[]>([]);
+  const [diveSiteOptions, setDiveSiteOptions] = useState<ItemOption[]>([]);
   const [optionsLoading, setOptionsLoading] = useState(true);
 
   const [bookingRef, setBookingRef] = useState<string | null>(null);
   const [totalPrice, setTotalPrice] = useState<number | null>(null);
   const [currency, setCurrency] = useState<string>("USD");
+  /** Set when the backend refuses the code at submit — e.g. redeemed since page load. */
+  const [discountRejected, setDiscountRejected] = useState<string | null>(null);
+  const [useDiscount, setUseDiscount] = useState(true);
   const [paymentOptions, setPaymentOptions] = useState<PaymentOptions | null>(null);
   const [paymentOptionsError, setPaymentOptionsError] = useState(false);
   const router = useRouter();
@@ -383,9 +476,20 @@ export default function BookingWizard({
       fetch(`${base}/dive-sites`).then((r) => r.json()),
     ])
       .then(([c, a, d]) => {
-        setCourseOptions((c.data ?? []).map((x: { name: string }) => x.name));
-        setActivityOptions((a.data ?? []).map((x: { name: string }) => x.name));
-        setDiveSiteOptions((d.data ?? []).map((x: { name: string }) => x.name));
+        // Keep the whole object. Price, currency and the per-item deposit all ride along
+        // in this same payload — throwing them away used to mean the wizard couldn't show
+        // a price without a second round trip.
+        const toOptions = (rows: ItemOption[]): ItemOption[] =>
+          (rows ?? []).map(({ name, slug, price, currency, deposit }) => ({
+            name,
+            slug,
+            price,
+            currency,
+            deposit,
+          }));
+        setCourseOptions(toOptions(c.data));
+        setActivityOptions(toOptions(a.data));
+        setDiveSiteOptions(toOptions(d.data));
       })
       .finally(() => setOptionsLoading(false));
 
@@ -436,9 +540,29 @@ export default function BookingWizard({
     paymentOptions?.gateways?.bank_transfer?.enabled
   );
 
+  // ── Price preview ──────────────────────────────────────────────────────────
+  // Preview only. Once the booking exists, the server's total_price and discount_amount
+  // are the truth — this just stops the customer committing to an unknown number.
+  const selectedItem = optionsForType(
+    draft.bookingType,
+    courseOptions,
+    activityOptions,
+    diveSiteOptions
+  ).find((o) => o.name === draft.item);
+
+  const itemCurrency = selectedItem?.currency ?? "USD";
+  const sub = selectedItem?.price ? subtotal(selectedItem.price, draft.people) : 0;
+  const activeDiscount = useDiscount && !discountRejected && discountLink?.valid ? discountLink : null;
+  const discountOff = activeDiscount
+    ? previewDiscount(sub, activeDiscount.discount_type, activeDiscount.discount_value)
+    : 0;
+  const previewTotal = Math.max(sub - discountOff, 0);
+  const depositLabel = depositRuleLabel(selectedItem?.deposit, itemCurrency);
+
   // Step 3 → POST booking → advance to step 4 (payment) or show success
   async function step3Submit() {
     setStatus("submitting");
+    setDiscountRejected(null);
     try {
       const res = await fetch("/api/booking", {
         method: "POST",
@@ -454,10 +578,24 @@ export default function BookingWizard({
           item: draft.item,
           certificationLevel: draft.certificationLevel,
           notes: draft.notes,
+          ...(activeDiscount && discountCode ? { discount_code: discountCode } : {}),
         }),
       });
-      if (!res.ok) throw new Error();
-      const data = await res.json();
+      const data = await res.json().catch(() => null);
+
+      // A bad code is a hard error by design — the backend won't quietly charge full
+      // price. Say so and let them choose to drop it rather than deciding for them.
+      if (!res.ok) {
+        const codeError = data?.fields?.discount_code;
+        if (codeError) {
+          setDiscountRejected(codeError);
+          setStatus("idle");
+          topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+          return;
+        }
+        throw new Error();
+      }
+
       if (data.reference) {
         setBookingRef(data.reference);
         if (data.total_price != null) setTotalPrice(data.total_price);
@@ -490,6 +628,17 @@ export default function BookingWizard({
 
   return (
     <div ref={topRef} className="max-w-lg mx-auto px-6 py-10 pb-4 scroll-mt-20">
+      {discountLink && (
+        <DiscountBanner
+          link={discountLink}
+          rejected={discountRejected}
+          onDrop={() => {
+            setUseDiscount(false);
+            setDiscountRejected(null);
+          }}
+        />
+      )}
+
       <StepIndicator step={step} hasPayment={hasAnyGateway} />
 
       {step === 1 && (
@@ -507,11 +656,14 @@ export default function BookingWizard({
                 <button
                   key={value}
                   type="button"
+                  // The link is tied to one item; submitting anything else gets rejected,
+                  // so disable rather than let them pick a dead end.
+                  disabled={Boolean(lockedItem)}
                   onClick={() => {
                     set("bookingType", value);
                     set("item", "");
                   }}
-                  className={`flex-1 min-h-[48px] rounded-xl text-sm font-semibold border transition-all duration-200 ${
+                  className={`flex-1 min-h-[48px] rounded-xl text-sm font-semibold border transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50 ${
                     draft.bookingType === value
                       ? "bg-charcoal-sea text-warm-white border-charcoal-sea"
                       : "bg-white text-charcoal-sea/55 border-charcoal-sea/20 hover:border-charcoal-sea/40"
@@ -533,21 +685,35 @@ export default function BookingWizard({
               id="item"
               value={draft.item}
               onChange={(e) => set("item", e.target.value)}
-              disabled={optionsLoading}
+              disabled={optionsLoading || Boolean(lockedItem)}
               className={`${inputClass} ${errors.item ? "border-tropic-coral ring-1 ring-tropic-coral" : ""} disabled:opacity-60`}
             >
               <option value="">
                 {optionsLoading ? "Loading…" : `Select a ${typeLabel(draft.bookingType).toLowerCase()}…`}
               </option>
-              {optionsLoading && draft.item && (
-                <option value={draft.item}>{draft.item}</option>
-              )}
+              {/* The locked/preselected name may not be in the list yet while it loads. */}
+              {draft.item &&
+                !optionsForType(draft.bookingType, courseOptions, activityOptions, diveSiteOptions)
+                  .some((o) => o.name === draft.item) && (
+                  <option value={draft.item}>{draft.item}</option>
+                )}
               {optionsForType(draft.bookingType, courseOptions, activityOptions, diveSiteOptions).map((opt) => (
-                <option key={opt} value={opt}>{opt}</option>
+                <option key={opt.slug || opt.name} value={opt.name}>{opt.name}</option>
               ))}
             </select>
+            {lockedItem && (
+              <p className="text-xs text-charcoal-sea/45 mt-1.5">
+                Your discount link only applies to this one, so it&apos;s fixed.
+              </p>
+            )}
             {errors.item && (
               <p className="text-tropic-coral text-xs mt-1.5">{errors.item}</p>
+            )}
+            {!lockedItem && sub > 0 && (
+              <p className="text-xs text-charcoal-sea/55 mt-2">
+                {money(selectedItem?.price ?? 0, itemCurrency)} per person
+                {depositLabel ? ` · ${depositLabel}` : ""}
+              </p>
             )}
           </div>
 
@@ -729,6 +895,40 @@ export default function BookingWizard({
                 <p className="text-warm-white/70 text-xs">{draft.email}</p>
                 <p className="text-warm-white/70 text-xs">{draft.phone}</p>
               </div>
+
+              {/* Estimate. The server recalculates on submit and its number wins — which
+                  is why this says "estimate" rather than quoting a total as final. */}
+              {sub > 0 && (
+                <div className="border-t border-white/10 pt-3 space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-warm-white/50">
+                      {money(selectedItem?.price ?? 0, itemCurrency)} × {draft.people}
+                    </span>
+                    <span className="text-warm-white font-semibold">
+                      {money(sub, itemCurrency)}
+                    </span>
+                  </div>
+                  {discountOff > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-shallow-water">Discount</span>
+                      <span className="text-shallow-water font-semibold">
+                        −{money(discountOff, itemCurrency)}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex justify-between border-t border-white/10 pt-2">
+                    <span className="text-warm-white/50">Estimated total</span>
+                    <span className="text-warm-white font-bold text-base">
+                      {money(previewTotal, itemCurrency)}
+                    </span>
+                  </div>
+                  {depositLabel && (
+                    <p className="text-warm-white/40 text-xs pt-1">
+                      You can pay {depositLabel} now and the rest on arrival.
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 

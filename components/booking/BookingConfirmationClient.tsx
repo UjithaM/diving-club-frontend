@@ -190,10 +190,23 @@ export default function BookingConfirmationClient({ bookingRef }: Props) {
           <SummaryRow label="Item" value={booking.item} />
           <SummaryRow label="Date" value={booking.booking_date} />
           <SummaryRow label="People" value={String(booking.participants)} />
+          {booking.discount_amount > 0 && (
+            <SummaryRow
+              label="Discount"
+              value={`−${booking.discount_amount.toFixed(2)} ${booking.currency}`}
+            />
+          )}
           <SummaryRow
             label="Total"
             value={`${booking.total_price} ${booking.currency}`}
           />
+          {/* Server-computed advance. Never derived from a percentage here. */}
+          {isPartial && booking.deposit?.amount != null && (
+            <SummaryRow
+              label="Paid now"
+              value={`${booking.deposit.amount.toFixed(2)} ${booking.currency}`}
+            />
+          )}
           <SummaryRow
             label="Payment"
             value={

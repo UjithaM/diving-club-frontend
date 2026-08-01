@@ -1,8 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
-import type { PaymentOptions } from "@/lib/types";
+import type { BookingConfirmation, PaymentOptions } from "@/lib/types";
 
 interface PaymentStepProps {
   bookingRef: string;
@@ -52,6 +52,37 @@ export default function PaymentStep({
   const [gateway, setGateway] = useState<"paypal" | "bank_transfer">(defaultGateway);
   const [error, setError] = useState<string | null>(null);
   const [bankConfirming, setBankConfirming] = useState(false);
+
+  /**
+   * The booking as the server sees it. This is the ONLY source of the advance figure:
+   * `deposit.amount` already accounts for the per-item override, the per-person maths on
+   * a fixed advance, any discount, and clamping to the total. Computing it here from
+   * paymentOptions (the site default) is what this component used to do, and it is wrong
+   * the moment an item overrides the default — see docs on the Deposit type.
+   */
+  const [booking, setBooking] = useState<BookingConfirmation | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`${API}/bookings/${bookingRef}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!cancelled && d) setBooking(d as BookingConfirmation);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [bookingRef]);
+
+  const deposit = booking?.deposit;
+  // Falls back to the site default only for the enabled/disabled decision — never for a
+  // number. Until the booking loads, the deposit option simply isn't offered.
+  const depositEnabled = deposit ? deposit.enabled : false;
+  const depositAmount = deposit?.amount;
+  const total = booking?.total_price ?? totalPrice;
+  const cur = booking?.currency ?? currency;
+  const discountAmount = booking?.discount_amount ?? 0;
 
   // Carries the internal payment_id from createOrder into onApprove
   const pendingPaymentIdRef = useRef<string | null>(null);
@@ -119,16 +150,24 @@ export default function PaymentStep({
           <span className="text-xs text-charcoal-sea/50 uppercase tracking-widest">Booking ref</span>
           <span className="font-mono text-sm font-semibold text-charcoal-sea">{bookingRef}</span>
         </div>
-        {totalPrice != null && (
+        {discountAmount > 0 && (
+          <div className="flex items-center justify-between border-t border-shallow-water/20 pt-2">
+            <span className="text-xs text-charcoal-sea/50 uppercase tracking-widest">Discount</span>
+            <span className="text-sm font-semibold text-shallow-water">
+              −{cur} {discountAmount.toFixed(2)}
+            </span>
+          </div>
+        )}
+        {total != null && (
           <div className="flex items-center justify-between border-t border-shallow-water/20 pt-2">
             <span className="text-xs text-charcoal-sea/50 uppercase tracking-widest">Total</span>
-            <span className="text-sm font-semibold text-charcoal-sea">{currency} {totalPrice.toFixed(2)}</span>
+            <span className="text-sm font-semibold text-charcoal-sea">{cur} {total.toFixed(2)}</span>
           </div>
         )}
       </div>
 
-      {/* Deposit toggle */}
-      {paymentOptions.deposit.enabled && (
+      {/* Deposit toggle. Every figure here comes from the server — nothing is derived. */}
+      {depositEnabled && depositAmount != null && (
         <div className="mb-5 bg-white border border-charcoal-sea/10 rounded-xl p-4">
           <p className="text-sm font-semibold text-charcoal-sea mb-3">
             Payment amount
@@ -154,12 +193,12 @@ export default function PaymentStep({
                   : "bg-white text-charcoal-sea/55 border-charcoal-sea/20 hover:border-charcoal-sea/40"
               }`}
             >
-              Pay deposit ({paymentOptions.deposit.percentage}%{totalPrice != null ? ` — ${currency} ${((totalPrice * paymentOptions.deposit.percentage) / 100).toFixed(2)}` : ""})
+              Pay advance ({cur} {depositAmount.toFixed(2)})
             </button>
           </div>
           <p className="text-xs text-charcoal-sea/40 mt-2">
             {depositOnly
-              ? `Pay ${paymentOptions.deposit.percentage}% now to secure your spot. Remaining balance due on arrival.`
+              ? `Pay ${cur} ${depositAmount.toFixed(2)} now to secure your spot. Remaining balance due on arrival.`
               : "Pay the full amount now. All equipment and guide fees included."}
           </p>
         </div>

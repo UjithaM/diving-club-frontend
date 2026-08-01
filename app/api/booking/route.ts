@@ -5,7 +5,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000/
 export async function POST(req: Request) {
   const body = await req.json();
 
-  const { name, email, phone, country_code, date, bookingFor, item } = body;
+  const { name, email, phone, country_code, date, bookingFor, item, discount_code } = body;
 
   const missing: Record<string, string> = {};
   if (!name?.trim()) missing.name = "Required";
@@ -20,6 +20,10 @@ export async function POST(req: Request) {
     missing.date = "Must be a future date";
   if (!bookingFor) missing.bookingFor = "Required";
   if (!item?.trim()) missing.item = "Required";
+  // Optional. Validity is the backend's call — it owns redemption state, expiry and the
+  // item lock, and deliberately hard-errors rather than silently charging full price.
+  if (discount_code && String(discount_code).length > 16)
+    missing.discount_code = "This discount code is not valid.";
 
   if (Object.keys(missing).length > 0) {
     return NextResponse.json({ success: false, error: "Validation failed", fields: missing }, { status: 400 });

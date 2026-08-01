@@ -1,3 +1,25 @@
+/**
+ * The advance a customer pays upfront to hold a booking. Admin-managed: a site-wide
+ * default with per-item overrides.
+ *
+ * NEVER compute the advance. `amount` is server-side and already accounts for the
+ * per-item override, per-person maths, any discount, and clamping to the total — read
+ * it from GET /bookings/{reference} and render it. Before a booking exists there is no
+ * amount, so show the rule (`type` + `value`) as a label instead.
+ *
+ * Careful: `type: "fixed"` here means that amount PER PERSON. On a discount it means a
+ * flat amount off the whole total. The two are deliberately different.
+ */
+export interface Deposit {
+  enabled: boolean;
+  type: "percentage" | "fixed";
+  /** 20 = 20%, or 50 = $50 per person, depending on `type`. */
+  value: number;
+  /** Authoritative, and only present on GET /bookings/{reference}. */
+  amount?: number;
+  currency?: string;
+}
+
 export interface Course {
   slug: string;
   name: string;
@@ -17,6 +39,8 @@ export interface Course {
   image: string;
   popular: boolean;
   featured?: boolean;
+  /** The effective advance for this item. No `amount` — headcount isn't known yet. */
+  deposit?: Deposit;
 }
 
 export interface Experience {
@@ -35,6 +59,8 @@ export interface Experience {
   popular: boolean;
   featured?: boolean;
   divesIncluded?: number;
+  /** The effective advance for this item. No `amount` — headcount isn't known yet. */
+  deposit?: Deposit;
 }
 
 export interface DiveSite {
@@ -184,8 +210,13 @@ export interface BookingConfirmation {
   booking_type: string;
   item: string;
   participants: number;
+  /** Already discounted. Don't subtract discount_amount again. */
   total_price: number;
+  /** 0 when no discount link was used. */
+  discount_amount: number;
   currency: string;
+  /** `deposit.amount` here is the authoritative advance — never recompute it. */
+  deposit: Deposit;
 }
 
 export interface PaymentGatewayPayPal {
@@ -209,5 +240,12 @@ export interface PaymentOptions {
     paypal?: PaymentGatewayPayPal;
     bank_transfer?: PaymentGatewayBankTransfer;
   };
-  deposit: { enabled: boolean; percentage: number };
+  /**
+   * SITE DEFAULT only — it can't know about per-item overrides, because there's no
+   * booking yet. Fine for generic copy ("pay 10% to reserve"), never for a real number
+   * on a real booking.
+   *
+   * `percentage` is kept for backwards compatibility but is null when type is "fixed".
+   */
+  deposit: Deposit & { percentage: number | null };
 }
