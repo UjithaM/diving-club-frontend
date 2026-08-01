@@ -13,8 +13,11 @@ export async function POST(req: Request) {
   else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) missing.email = "Invalid email address";
   if (!phone?.trim()) missing.phone = "Required";
   if (!country_code?.trim()) missing.country_code = "Required";
-  if (!date) missing.date = "Required";
-  else if (new Date(date) < new Date(new Date().toDateString())) missing.date = "Must be a future date";
+  // Optional — plenty of enquiries arrive before dates are fixed. Only the value is
+  // checked. NOTE: the Laravel backend still has `date` as required, so a blank one
+  // comes back 400 with a field error until that rule becomes `nullable`.
+  if (date && new Date(date) < new Date(new Date().toDateString()))
+    missing.date = "Must be a future date";
   if (!bookingFor) missing.bookingFor = "Required";
   if (!item?.trim()) missing.item = "Required";
 

@@ -22,6 +22,8 @@ export default function SmoothScrollProvider({ children }: { children: React.Rea
 
     scheduleInit(() => {
       lenis = new Lenis({ lerp: 0.08 });
+      // Anchor links have to go through Lenis, or they fight its rAF loop and jump.
+      window.__lenis = lenis;
       function raf(time: number) {
         lenis!.raf(time);
         rafId = requestAnimationFrame(raf);
@@ -31,6 +33,7 @@ export default function SmoothScrollProvider({ children }: { children: React.Rea
 
     return () => {
       cancelAnimationFrame(rafId);
+      delete window.__lenis;
       lenis?.destroy();
     };
   }, []);

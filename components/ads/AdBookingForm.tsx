@@ -4,7 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import PhoneInput from "@/components/ui/PhoneInput";
 import { splitPhone } from "@/lib/phone";
+import { isValidPhoneNumber } from "react-phone-number-input";
 import { CONVERSIONS, trackConversion } from "@/lib/ads";
+import {
+  fieldErrorsFromApi,
+  todayISO,
+  validateField,
+  type BookingField,
+} from "@/lib/booking-validation";
 import type { BookableItem } from "@/lib/types";
 import WhatsAppCta from "./WhatsAppCta";
 
@@ -12,6 +19,18 @@ const inputClass =
   "w-full border border-charcoal-sea/20 rounded-xl px-4 py-2.5 text-charcoal-sea placeholder:text-charcoal-sea/40 focus:outline-none focus:ring-2 focus:ring-shallow-water text-sm bg-white";
 
 const labelClass = "block text-sm font-medium text-charcoal-sea mb-1.5";
+
+const errorInputClass =
+  "border-tropic-coral focus:ring-tropic-coral bg-tropic-coral/[0.03]";
+
+function FieldError({ id, message }: { id: string; message?: string }) {
+  if (!message) return null;
+  return (
+    <p id={id} role="alert" className="text-tropic-coral text-xs mt-1.5">
+      {message}
+    </p>
+  );
+}
 
 /** Price, duration and inclusions, straight from the API. Sells the item and confirms the choice. */
 function ItemSummary({ item }: { item: BookableItem }) {
@@ -97,7 +116,52 @@ export default function AdBookingForm({
   const [phone, setPhone] = useState("");
   const [itemName, setItemName] = useState(fixedItem?.name ?? "");
   const [reference, setReference] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Partial<Record<BookingField, string>>>({});
+  // A field only shows its error once the visitor has left it (or tried to submit).
+  // Marking it red while they're still typing the first character is hostile.
+  const [touched, setTouched] = useState<Partial<Record<BookingField, boolean>>>({});
   const topRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  /** Phone needs the country context the input holds, so it can't live in the module. */
+  const checkPhone = (value: string) =>
+    validateField("phone", value) ||
+    (isValidPhoneNumber(value) ? "" : "That number doesn't look right for the country picked.");
+
+  function validateAll(): Partial<Record<BookingField, string>> {
+    const form = formRef.current;
+    const read = (name: string) =>
+      (form?.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement | null)?.value ?? "";
+
+    const next: Partial<Record<BookingField, string>> = {
+      // A locked-in fixedItem has nothing for the visitor to get wrong.
+      item: fixedItem ? "" : validateField("item", itemName),
+      name: validateField("name", read("name")),
+      email: validateField("email", read("email")),
+      phone: checkPhone(phone),
+      date: validateField("date", read("date")),
+    };
+    for (const key of Object.keys(next) as BookingField[]) if (!next[key]) delete next[key];
+    return next;
+  }
+
+  /** Blur validates that one field. Re-typing in an already-flagged field re-checks live. */
+  const handleBlur = (field: BookingField) => (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const message = field === "phone" ? checkPhone(phone) : validateField(field, e.target.value);
+    setTouched((t) => ({ ...t, [field]: true }));
+    setErrors((prev) => ({ ...prev, [field]: message || undefined }));
+  };
+
+  const revalidate = (field: BookingField, value: string) => {
+    if (!touched[field]) return;
+    const message = field === "phone" ? checkPhone(value) : validateField(field, value);
+    setErrors((prev) => ({ ...prev, [field]: message || undefined }));
+  };
+
+  const errorProps = (field: BookingField) =>
+    errors[field]
+      ? { "aria-invalid": true as const, "aria-describedby": `${field}-error` }
+      : {};
 
   // The success message is shorter than the form it replaces, so without this the
   // visitor is left staring at whitespace below it.
@@ -110,12 +174,22 @@ export default function AdBookingForm({
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setStatus("submitting");
 
     const form = e.currentTarget;
     const getValue = (name: string) =>
       (form.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement)?.value ?? "";
 
+    // Same rules blur uses, so nothing can pass one and fail the other.
+    const found = validateAll();
+    setTouched({ item: true, name: true, email: true, phone: true, date: true });
+    setErrors(found);
+    if (Object.keys(found).length > 0) {
+      const first = (Object.keys(found) as BookingField[])[0];
+      form.querySelector<HTMLElement>(`[name="${first}"]`)?.focus();
+      return;
+    }
+
+    setStatus("submitting");
     const email = getValue("email");
     const people = getValue("people");
 
@@ -133,8 +207,23 @@ export default function AdBookingForm({
           item: itemName,
         }),
       });
-      if (!res.ok) throw new Error();
-      const data = await res.json();
+      const data = await res.json().catch(() => null);
+
+      // A rejection names the fields it didn't like — show it on the inputs rather than
+      // as a generic "something went wrong" the visitor can't act on.
+      if (!res.ok) {
+        const fromApi = fieldErrorsFromApi(data?.fields ?? {});
+        if (Object.keys(fromApi).length > 0) {
+          setTouched((t) => ({ ...t, ...Object.fromEntries(Object.keys(fromApi).map((k) => [k, true])) }));
+          setErrors(fromApi);
+          setStatus("idle");
+          const first = (Object.keys(fromApi) as BookingField[])[0];
+          form.querySelector<HTMLElement>(`[name="${first}"]`)?.focus();
+          return;
+        }
+        throw new Error();
+      }
+
       setReference(data.reference ?? null);
 
       // A form booking is a different, higher-intent lead than a chat, so it gets its
@@ -202,7 +291,14 @@ export default function AdBookingForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white border border-charcoal-sea/10 rounded-2xl p-6 sm:p-8 space-y-5">
+    <form
+      ref={formRef}
+      onSubmit={handleSubmit}
+      // noValidate: our messages are friendlier than the browser's bubbles, and the
+      // native ones only fire on submit — which is the thing being fixed here.
+      noValidate
+      className="bg-white border border-charcoal-sea/10 rounded-2xl p-6 sm:p-8 space-y-5"
+    >
       {/* What */}
       {fixedItem ? (
         <div>
@@ -217,10 +313,14 @@ export default function AdBookingForm({
           <select
             id="item"
             name="item"
-            required
             value={itemName}
-            onChange={(e) => setItemName(e.target.value)}
-            className={inputClass}
+            onChange={(e) => {
+              setItemName(e.target.value);
+              revalidate("item", e.target.value);
+            }}
+            onBlur={handleBlur("item")}
+            className={`${inputClass} ${errors.item ? errorInputClass : ""}`}
+            {...errorProps("item")}
           >
             <option value="" disabled>
               Pick one…
@@ -232,6 +332,7 @@ export default function AdBookingForm({
             ))}
             <option value="Not sure yet">Not sure yet — help me choose</option>
           </select>
+          <FieldError id="item-error" message={errors.item} />
 
           {selected && (
             <div className="mt-4">
@@ -247,45 +348,82 @@ export default function AdBookingForm({
           <label htmlFor="name" className={labelClass}>
             Full name <span className="text-tropic-coral">*</span>
           </label>
-          <input id="name" name="name" type="text" required placeholder="Your name" className={inputClass} />
+          <input
+            id="name"
+            name="name"
+            type="text"
+            autoComplete="name"
+            placeholder="Your name"
+            onBlur={handleBlur("name")}
+            onChange={(e) => revalidate("name", e.target.value)}
+            className={`${inputClass} ${errors.name ? errorInputClass : ""}`}
+            {...errorProps("name")}
+          />
+          <FieldError id="name-error" message={errors.name} />
         </div>
 
         <div>
           <label htmlFor="email" className={labelClass}>
             Email <span className="text-tropic-coral">*</span>
           </label>
-          <input id="email" name="email" type="email" required placeholder="you@email.com" className={inputClass} />
+          <input
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            placeholder="you@email.com"
+            onBlur={handleBlur("email")}
+            onChange={(e) => revalidate("email", e.target.value)}
+            className={`${inputClass} ${errors.email ? errorInputClass : ""}`}
+            {...errorProps("email")}
+          />
+          <FieldError id="email-error" message={errors.email} />
         </div>
       </div>
 
       {/* Phone */}
-      <div>
+      <div onBlur={() => handleBlur("phone")({ target: { value: phone } } as never)}>
         <label className={labelClass}>
           Phone / WhatsApp <span className="text-tropic-coral">*</span>
         </label>
-        <PhoneInput value={phone} onChange={setPhone} required />
-        <p className="text-xs text-charcoal-sea/40 mt-1.5">This is how we&apos;ll reach you to confirm.</p>
+        <PhoneInput
+          value={phone}
+          onChange={(v) => {
+            setPhone(v);
+            revalidate("phone", v);
+          }}
+        />
+        <FieldError id="phone-error" message={errors.phone} />
+        {!errors.phone && (
+          <p className="text-xs text-charcoal-sea/40 mt-1.5">
+            This is how we&apos;ll reach you to confirm.
+          </p>
+        )}
       </div>
 
       {/* Date + People */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label htmlFor="date" className={labelClass}>
-            Preferred date <span className="text-tropic-coral">*</span>
+            Preferred date{" "}
+            <span className="text-charcoal-sea/40 font-normal">(optional)</span>
           </label>
           <input
             id="date"
             name="date"
             type="date"
-            required
-            min={new Date().toISOString().split("T")[0]}
-            className={inputClass}
+            min={todayISO()}
+            onBlur={handleBlur("date")}
+            onChange={(e) => revalidate("date", e.target.value)}
+            className={`${inputClass} ${errors.date ? errorInputClass : ""}`}
+            {...errorProps("date")}
           />
-          {/* The backend requires a date, so it can't be optional — but nobody should
-              stall here thinking they're locking something in. */}
-          <p className="text-xs text-charcoal-sea/40 mt-1.5">
-            Roughly is fine. We&apos;ll settle the exact day with you.
-          </p>
+          <FieldError id="date-error" message={errors.date} />
+          {!errors.date && (
+            <p className="text-xs text-charcoal-sea/40 mt-1.5">
+              Not sure yet? Leave it blank.
+            </p>
+          )}
         </div>
 
         <div>
