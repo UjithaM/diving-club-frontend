@@ -115,7 +115,7 @@ export default function AdLandingPage({
       </section>
 
       {/* Booking */}
-      <section id="book" className="bg-charcoal-sea/5 py-16 px-6 scroll-mt-24">
+      <section className="bg-charcoal-sea/5 py-16 px-6">
         <div className="max-w-xl mx-auto">
           <AnimatedSection>
             <div className="flex items-center gap-3 mb-5">
@@ -133,33 +133,35 @@ export default function AdLandingPage({
             </p>
           </AnimatedSection>
 
-          {/* Anyone diving in the next 48 hours decides faster than the form's own 24-hour
-              promise, so send them straight to chat rather than losing them to whoever
-              replies first.
-              ponytail: static strip, not date-aware. Add opening-hours logic only if it matters. */}
-          <AnimatedSection>
-            <div className="border-l-4 border-tropic-coral bg-sunrise/12 rounded-r-2xl p-5 sm:p-6 mb-6">
-              <p className="text-charcoal-sea leading-relaxed mb-4">
-                <strong className="font-bold">Diving today or tomorrow?</strong> The form can take up
-                to 24 hours. Message us instead and we&apos;ll answer in minutes — tell us when
-                you&apos;re free and we&apos;ll say what&apos;s running.
-              </p>
+          {/* The scroll target sits here, not on the section — "Book your spot" has to land
+              on the price and the fields, not on the heading above them. scroll-mt-24 must
+              stay in step with SCROLL_OFFSET in BookCta.tsx: same jump, two code paths.
+              No AnimatedSection on this block — it slides as well as fades, and content
+              moving into place exactly where you land is what made the jump confusing. */}
+          <div id="book" className="scroll-mt-24">
+            {/* Anyone diving in the next 48 hours decides faster than the form's own 24-hour
+                promise, so send them straight to chat rather than losing them to whoever
+                replies first. One line, so it can sit above the form without burying it.
+                ponytail: static strip, not date-aware. Add opening-hours logic only if it matters. */}
+            <p className="border-l-4 border-tropic-coral bg-sunrise/12 rounded-r-xl px-4 py-3 mb-5 text-sm text-charcoal-sea leading-relaxed">
+              <strong className="font-bold">Diving today or tomorrow?</strong>{" "}
               <WhatsAppCta
                 message={urgentMessage}
                 source={`${source}_urgent`}
-                label="WhatsApp us now"
-                className="!px-6 !py-3 text-sm"
-              />
-            </div>
-          </AnimatedSection>
+                label="WhatsApp us"
+                variant="inline"
+              />{" "}
+              — we reply in minutes.
+            </p>
 
-          <AdBookingForm
-            bookingFor={bookingFor}
-            items={items}
-            fixedItem={fixedItem}
-            source={source}
-            message={message}
-          />
+            <AdBookingForm
+              bookingFor={bookingFor}
+              items={items}
+              fixedItem={fixedItem}
+              source={source}
+              message={message}
+            />
+          </div>
 
           <div className="flex items-center gap-4 my-8" aria-hidden="true">
             <span className="h-px flex-1 bg-charcoal-sea/15" />
