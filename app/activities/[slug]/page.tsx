@@ -4,11 +4,10 @@ import Link from "next/link";
 import { getExperiences, getExperienceBySlug } from "@/lib/api/experiences";
 import ActivityDetailClient from "@/components/activities/ActivityDetailClient";
 import FaqAccordion from "@/components/ui/FaqAccordion";
-import GalleryStrip from "@/components/ui/GalleryStrip";
-import TestimonialStrip from "@/components/ui/TestimonialStrip";
+import HeroImage from "@/components/ui/HeroImage";
+import GoogleReviewsSection from "@/components/ui/GoogleReviewsSection";
 import RelatedGrid from "@/components/ui/RelatedGrid";
 import { activityFaqs } from "@/lib/data/activity-faqs";
-import { testimonials } from "@/lib/data/testimonials";
 import type { TouristAttraction, FAQPage, WithContext } from "schema-dts";
 import { safeJsonLd } from "@/lib/jsonld";
 
@@ -117,11 +116,6 @@ export default async function ActivityDetailPage({
       };
     });
 
-  // Pick 1–2 testimonials
-  const activityTestimonials = testimonials
-    .filter((t) => t.course === "Discover Scuba Diving" || !t.course?.includes("Diver"))
-    .slice(0, 2);
-
   const isSeasonalEvent = experience.type === "whale-watching" || experience.type === "try-diving" || experience.type === "fun-diving";
 
   const jsonLd: WithContext<TouristAttraction> = {
@@ -169,8 +163,12 @@ export default async function ActivityDetailPage({
       )}
 
       {/* Hero */}
-      <section className="bg-charcoal-sea py-16 lg:py-24 px-6">
-        <div className="max-w-6xl mx-auto">
+      <section className="relative overflow-hidden bg-charcoal-sea py-16 lg:py-24 px-6">
+        <HeroImage
+          src={experience.image}
+          alt={`${experience.name} with Diving Club in Trincomalee, Sri Lanka`}
+        />
+        <div className="relative max-w-6xl mx-auto">
           <nav className="flex items-center gap-2 text-warm-white/35 text-xs mb-7">
             <Link href="/" className="hover:text-warm-white/60 transition-colors">Home</Link>
             <span>/</span>
@@ -270,18 +268,12 @@ export default async function ActivityDetailPage({
         </div>
       </section>
 
-      {/* Gallery */}
-      <GalleryStrip images={[]} heading={`${experience.name} Photos`} />
-
       {/* FAQ */}
       {pageFaqs.length > 0 && (
         <FaqAccordion faqs={pageFaqs} heading={`Questions about ${experience.name}`} />
       )}
 
-      {/* Testimonials */}
-      {activityTestimonials.length > 0 && (
-        <TestimonialStrip testimonials={activityTestimonials} />
-      )}
+      <GoogleReviewsSection />
 
       {/* Related activities */}
       <RelatedGrid items={relatedActivities} heading="More things to do" />

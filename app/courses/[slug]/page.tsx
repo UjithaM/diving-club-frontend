@@ -5,11 +5,10 @@ import { getCourses, getCourseBySlug } from "@/lib/api/courses";
 import type { Course } from "@/lib/types";
 import CourseDetailClient from "@/components/courses/CourseDetailClient";
 import FaqAccordion from "@/components/ui/FaqAccordion";
-import GalleryStrip from "@/components/ui/GalleryStrip";
-import TestimonialStrip from "@/components/ui/TestimonialStrip";
+import HeroImage from "@/components/ui/HeroImage";
+import GoogleReviewsSection from "@/components/ui/GoogleReviewsSection";
 import RelatedGrid from "@/components/ui/RelatedGrid";
 import { courseFaqs } from "@/lib/data/course-faqs";
-import { testimonials } from "@/lib/data/testimonials";
 import type { Course as SchemaCourse, FAQPage, WithContext } from "schema-dts";
 import { safeJsonLd } from "@/lib/jsonld";
 
@@ -117,11 +116,6 @@ export default async function CourseDetailPage({
       href: `/courses/${c.slug}`,
     }));
 
-  // Pick testimonials that mention this course or are general
-  const courseTestimonials = testimonials
-    .filter((t) => !t.course || t.course === course.name || t.course === "Fun Diving")
-    .slice(0, 2);
-
   const isCredentialCourse = course.level !== "beginner" || course.slug !== "discover-scuba-diving";
 
   const jsonLd: WithContext<SchemaCourse> = {
@@ -195,8 +189,12 @@ export default async function CourseDetailPage({
       )}
 
       {/* Hero */}
-      <section className="bg-charcoal-sea py-16 lg:py-24 px-6">
-        <div className="max-w-6xl mx-auto">
+      <section className="relative overflow-hidden bg-charcoal-sea py-16 lg:py-24 px-6">
+        <HeroImage
+          src={course.image}
+          alt={`${course.name} course with Diving Club in Trincomalee, Sri Lanka`}
+        />
+        <div className="relative max-w-6xl mx-auto">
           <nav className="flex items-center gap-2 text-warm-white/35 text-xs mb-7">
             <Link href="/" className="hover:text-warm-white/60 transition-colors">Home</Link>
             <span>/</span>
@@ -308,18 +306,12 @@ export default async function CourseDetailPage({
         </div>
       </section>
 
-      {/* Gallery */}
-      <GalleryStrip images={[]} heading={`${course.name} Photos`} />
-
       {/* FAQ */}
       {pageFaqs.length > 0 && (
         <FaqAccordion faqs={pageFaqs} heading={`Questions about the ${course.name} course`} />
       )}
 
-      {/* Testimonials */}
-      {courseTestimonials.length > 0 && (
-        <TestimonialStrip testimonials={courseTestimonials} />
-      )}
+      <GoogleReviewsSection />
 
       {/* Related courses */}
       <RelatedGrid items={relatedCourses} heading="Other courses you might like" />

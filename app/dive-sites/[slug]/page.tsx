@@ -5,11 +5,10 @@ import { getDiveSites, getDiveSiteBySlug } from "@/lib/api/dive-sites";
 import { getCourseBySlug } from "@/lib/api/courses";
 import DiveSiteDetailClient from "@/components/dive-sites/DiveSiteDetailClient";
 import FaqAccordion from "@/components/ui/FaqAccordion";
-import GalleryStrip from "@/components/ui/GalleryStrip";
-import TestimonialStrip from "@/components/ui/TestimonialStrip";
+import HeroImage from "@/components/ui/HeroImage";
+import GoogleReviewsSection from "@/components/ui/GoogleReviewsSection";
 import RelatedGrid from "@/components/ui/RelatedGrid";
 import { diveSiteFaqs } from "@/lib/data/dive-site-faqs";
-import { testimonials } from "@/lib/data/testimonials";
 import type { TouristAttraction, FAQPage, WithContext } from "schema-dts";
 import { safeJsonLd } from "@/lib/jsonld";
 
@@ -154,11 +153,6 @@ export default async function DiveSiteDetailPage({
       }
     : null;
 
-  // Filter 1–2 relevant testimonials
-  const siteTestimonials = testimonials.filter((t) =>
-    t.course === "Fun Diving" || t.course === "Advanced Open Water Diver"
-  ).slice(0, 2);
-
   return (
     <>
       <script
@@ -173,8 +167,12 @@ export default async function DiveSiteDetailPage({
       )}
 
       {/* Hero */}
-      <section className="bg-charcoal-sea py-16 lg:py-24 px-6">
-        <div className="max-w-6xl mx-auto">
+      <section className="relative overflow-hidden bg-charcoal-sea py-16 lg:py-24 px-6">
+        <HeroImage
+          src={site.image}
+          alt={`${site.name} dive site in Trincomalee, Sri Lanka`}
+        />
+        <div className="relative max-w-6xl mx-auto">
           <nav className="flex items-center gap-2 text-warm-white/35 text-xs mb-7">
             <Link href="/" className="hover:text-warm-white/60 transition-colors">Home</Link>
             <span>/</span>
@@ -294,12 +292,6 @@ export default async function DiveSiteDetailPage({
         </div>
       </section>
 
-      {/* Gallery */}
-      <GalleryStrip
-        images={[]}
-        heading={`Photos: ${site.name}`}
-      />
-
       {/* FAQ */}
       {pageFaqs.length > 0 && (
         <FaqAccordion
@@ -308,10 +300,7 @@ export default async function DiveSiteDetailPage({
         />
       )}
 
-      {/* Testimonials */}
-      {siteTestimonials.length > 0 && (
-        <TestimonialStrip testimonials={siteTestimonials} />
-      )}
+      <GoogleReviewsSection />
 
       {/* Related dive sites */}
       <RelatedGrid

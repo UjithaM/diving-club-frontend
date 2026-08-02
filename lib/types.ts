@@ -139,15 +139,6 @@ export interface PageFaq {
   answer: string;
 }
 
-export interface Testimonial {
-  name: string;
-  country: string;
-  course?: string;
-  text: string;
-  rating: number;
-  date: string;
-}
-
 export interface GalleryImage {
   id: number;
   title: string;

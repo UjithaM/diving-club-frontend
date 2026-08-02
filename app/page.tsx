@@ -9,7 +9,7 @@ import FeaturedExperiencesSection from "@/components/home/FeaturedExperiencesSec
 import FeaturedCoursesSection from "@/components/home/FeaturedCoursesSection";
 import WhyChooseUsSection from "@/components/home/WhyChooseUsSection";
 import DiveSitesSection from "@/components/home/DiveSitesSection";
-import TestimonialsSection from "@/components/home/TestimonialsSection";
+import GoogleReviewsSection from "@/components/ui/GoogleReviewsSection";
 import GallerySection from "@/components/home/GallerySection";
 import ContactCtaSection from "@/components/home/ContactCtaSection";
 
@@ -108,7 +108,7 @@ export default async function HomePage() {
       <FeaturedCoursesSection courses={featuredCourses} />
       <WhyChooseUsSection />
       <DiveSitesSection sites={featuredDiveSites} />
-      <TestimonialsSection />
+      <GoogleReviewsSection />
       <GallerySection images={galleryImages} />
       <ContactCtaSection />
     </>

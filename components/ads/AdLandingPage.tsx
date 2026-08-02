@@ -4,7 +4,8 @@ import FaqAccordion from "@/components/ui/FaqAccordion";
 import WhatsAppCta from "./WhatsAppCta";
 import AdBookingForm from "./AdBookingForm";
 import BookCta from "./BookCta";
-import GoogleReviews, { ELFSIGHT_HERO, ELFSIGHT_REVIEWS } from "./GoogleReviews";
+import GoogleReviews, { ELFSIGHT_HERO } from "@/components/ui/GoogleReviews";
+import GoogleReviewsSection from "@/components/ui/GoogleReviewsSection";
 import type { BookableItem, PageFaq } from "@/lib/types";
 
 const PHONE_DISPLAY = "074 394 5010";
@@ -100,19 +101,8 @@ export default function AdLandingPage({
       </section>
 
       {/* Proof first: an ad visitor sees who vouches for us before the page asks for a
-          phone number. min-height reserves the widget's space — Elfsight mounts
-          client-side, and a page that jumps after paint is what costs money here. */}
-      <section className="bg-warm-white py-14 px-6">
-        <div className="max-w-6xl mx-auto min-h-[320px]">
-          <div className="flex items-center gap-3 mb-8">
-            <span className="h-px w-6 bg-tropic-coral" aria-hidden="true" />
-            <h2 className="text-tropic-coral text-[11px] font-semibold tracking-[0.22em] uppercase">
-              What our divers say on Google
-            </h2>
-          </div>
-          <GoogleReviews appId={ELFSIGHT_REVIEWS} />
-        </div>
-      </section>
+          phone number. */}
+      <GoogleReviewsSection />
 
       {/* Booking */}
       <section className="bg-charcoal-sea/5 py-16 px-6">
