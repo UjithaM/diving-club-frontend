@@ -6,6 +6,7 @@ import PhoneInput from "@/components/ui/PhoneInput";
 import { splitPhone } from "@/lib/phone";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import { CONVERSIONS, trackConversion } from "@/lib/ads";
+import { getAttribution } from "@/lib/attribution";
 import {
   fieldErrorsFromApi,
   todayISO,
@@ -205,6 +206,8 @@ export default function AdBookingForm({
           people,
           bookingFor,
           item: itemName,
+          // Which ad brought them here. Undefined on organic traffic, so the key drops out.
+          attribution: getAttribution(),
         }),
       });
       const data = await res.json().catch(() => null);

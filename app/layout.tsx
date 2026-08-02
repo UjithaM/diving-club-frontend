@@ -141,6 +141,23 @@ gtag('js', new Date());
 gtag('config', 'AW-18356209738', { allow_enhanced_conversions: true });`,
           }}
         />
+        {/* Ad click params vanish the moment the visitor navigates, so stash them at landing.
+            lib/attribution.ts reads this back when a booking form submits, which is what lets
+            the Laravel booking row say which campaign paid for it. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){
+var p=new URLSearchParams(location.search),out={};
+['gclid','gbraid','wbraid','utm_source','utm_medium','utm_campaign','utm_term','utm_content']
+  .forEach(function(k){if(p.get(k))out[k]=p.get(k);});
+if(!Object.keys(out).length)return;
+out.landing_page=location.pathname;
+if(document.referrer)out.referrer=document.referrer;
+out.clicked_at=new Date().toISOString();
+try{localStorage.setItem('dc_attr',JSON.stringify(out));}catch(e){}
+})();`,
+          }}
+        />
       </head>
       <body className="min-h-screen flex flex-col">
         {/* Google Tag Manager (noscript) */}

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import PhoneInput from "@/components/ui/PhoneInput";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import { splitPhone } from "@/lib/phone";
+import { getAttribution } from "@/lib/attribution";
 import Link from "next/link";
 import type { Deposit, PaymentOptions } from "@/lib/types";
 import type { DiscountLink } from "@/lib/api/discount-links";
@@ -578,6 +579,8 @@ export default function BookingWizard({
           item: draft.item,
           certificationLevel: draft.certificationLevel,
           notes: draft.notes,
+          // Which ad brought them here. Undefined on organic traffic, so the key drops out.
+          attribution: getAttribution(),
           ...(activeDiscount && discountCode ? { discount_code: discountCode } : {}),
         }),
       });
