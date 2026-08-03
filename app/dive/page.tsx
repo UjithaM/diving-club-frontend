@@ -32,7 +32,10 @@ export default async function DivePage() {
       fixedItem={course}
       bookingHeading="Your first dive, all in"
       eyebrow="PADI centre · Trincomalee · since 2010"
-      heading={`Go diving in Trincomalee${fromPrice(course)}`}
+      // "Scuba" earns its place: search terms containing it convert ~4.5x better than
+      // those without, and this matches the ad headline and the QS-8 keyword
+      // "scuba diving in trincomalee" word for word.
+      heading={`Scuba diving in Trincomalee${fromPrice(course)}`}
       subheading="Turtles on nearly every dive, WWII wrecks in the bay, and water warm enough that nobody wants a wetsuit. Never dived before? That's most of the people who message us."
       image="/assets/couple-scuba-diving-trincomalee.webp"
       imageAlt="Two divers swimming over a coral reef in Trincomalee, Sri Lanka"

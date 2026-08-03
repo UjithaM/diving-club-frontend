@@ -129,11 +129,20 @@ export default function AdLandingPage({
               No AnimatedSection on this block — it slides as well as fades, and content
               moving into place exactly where you land is what made the jump confusing. */}
           <div id="book" className="scroll-mt-24">
+            <AdBookingForm
+              bookingFor={bookingFor}
+              items={items}
+              fixedItem={fixedItem}
+              source={source}
+              message={message}
+            />
+
             {/* Anyone diving in the next 48 hours decides faster than the form's own 24-hour
-                promise, so send them straight to chat rather than losing them to whoever
-                replies first. One line, so it can sit above the form without burying it.
+                promise, so give them a chat route — but below the form, not above it. Above
+                the fields it pulled people into WhatsApp at the exact moment they were about
+                to book, and bookings are the only conversion we count now.
                 ponytail: static strip, not date-aware. Add opening-hours logic only if it matters. */}
-            <p className="border-l-4 border-tropic-coral bg-sunrise/12 rounded-r-xl px-4 py-3 mb-5 text-sm text-charcoal-sea leading-relaxed">
+            <p className="border-l-4 border-tropic-coral bg-sunrise/12 rounded-r-xl px-4 py-3 mt-5 text-sm text-charcoal-sea leading-relaxed">
               <strong className="font-bold">Diving today or tomorrow?</strong>{" "}
               <WhatsAppCta
                 message={urgentMessage}
@@ -143,14 +152,6 @@ export default function AdLandingPage({
               />{" "}
               — we reply in minutes.
             </p>
-
-            <AdBookingForm
-              bookingFor={bookingFor}
-              items={items}
-              fixedItem={fixedItem}
-              source={source}
-              message={message}
-            />
           </div>
 
           <div className="flex items-center gap-4 my-8" aria-hidden="true">
@@ -243,7 +244,7 @@ export default function AdLandingPage({
             >
               Book your spot
             </BookCta>
-            <WhatsAppCta message={message} source={source} />
+            <WhatsAppCta message={message} source={source} variant="outlineDark" />
           </div>
 
           {/* Reachable, just not a tracked CTA — the phone converts worst of the three. */}
@@ -260,9 +261,11 @@ export default function AdLandingPage({
           pb-24 on the closing section keeps the bar off the footer text. */}
       <div className="sm:hidden h-20" aria-hidden="true" />
       <div className="sm:hidden fixed bottom-0 inset-x-0 z-40 flex gap-3 p-3 bg-warm-white border-t border-charcoal-sea/10 [padding-bottom:calc(0.75rem+env(safe-area-inset-bottom))]">
+        {/* 2:1 in booking's favour — this bar is the main CTA on mobile, and booking is the
+            only conversion we count. WhatsApp stays reachable, just clearly secondary. */}
         <BookCta
           source={`${source}_sticky`}
-          className="flex-1 inline-flex items-center justify-center gap-2 bg-tropic-coral text-white font-semibold px-4 py-3.5 rounded-full text-base"
+          className="flex-[2] inline-flex items-center justify-center gap-2 bg-tropic-coral text-white font-semibold px-4 py-3.5 rounded-full text-base"
         >
           Book your spot
         </BookCta>
@@ -270,6 +273,7 @@ export default function AdLandingPage({
           message={message}
           source={`${source}_sticky`}
           label="WhatsApp"
+          variant="outline"
           className="flex-1 !px-4 !py-3.5"
         />
       </div>

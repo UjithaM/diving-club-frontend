@@ -9,6 +9,12 @@ const VARIANTS = {
   /** Text-weight, for sitting inside a sentence rather than owning its own block. */
   inline:
     "gap-1.5 text-[#128C4A] font-bold underline underline-offset-2 hover:no-underline text-sm",
+  /** Secondary weight on a light background, where booking is the primary action. */
+  outline:
+    "gap-3 bg-transparent text-[#128C4A] font-semibold px-8 py-4 rounded-full border-2 border-[#25D366] hover:bg-[#25D366]/10 transition text-base",
+  /** Same, on charcoal-sea — #128C4A on dark navy fails contrast, so this goes light. */
+  outlineDark:
+    "gap-3 bg-transparent text-warm-white font-semibold px-8 py-4 rounded-full border-2 border-[#25D366] hover:bg-[#25D366]/20 transition text-base",
 } as const;
 
 interface WhatsAppCtaProps {

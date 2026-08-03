@@ -13,8 +13,12 @@ const ADS_ID = "AW-18356209738";
  * the Ads UI; trackConversion still fires the GTM event, just not the conversion.
  */
 export const CONVERSIONS = {
-  /** "WhatsApp click" — Contact category. */
-  whatsapp: `${ADS_ID}/OOyDCM3yktgcEMqQ9rBE`,
+  /**
+   * Deliberately empty: chats don't reliably become bookings, so WhatsApp is no
+   * longer a conversion. The GTM event still fires for analytics — only the Ads
+   * conversion is off. (The old "WhatsApp click" action is REMOVED in Ads anyway.)
+   */
+  whatsapp: "",
   /** "Booking form submitted" — Submit lead form category. Sends value + transaction_id. */
   form: `${ADS_ID}/wS7xCI3FrtocEMqQ9rBE`,
 };
