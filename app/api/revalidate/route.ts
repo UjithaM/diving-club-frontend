@@ -38,11 +38,17 @@ export async function POST(req: Request) {
     revalidated.push(`path:${p}`);
   }
 
+  // The ad landing pages print prices straight from the courses API, so a price edit in
+  // admin has to bust them too — otherwise the ad says one number and the page says another,
+  // which is the thing Google's things-to-do policy actually penalises.
+  const AD_LANDING_PAGES = ["/padi", "/dive", "/open-water", "/fun-dives"];
+
   switch (type) {
     case "course":
       tag("courses");
       path("/courses");
       if (slug) path(`/courses/${slug}`);
+      AD_LANDING_PAGES.forEach(path);
       break;
 
     case "activity":
@@ -76,6 +82,7 @@ export async function POST(req: Request) {
     case "all":
       ["courses", "activities", "dive-sites", "gallery", "faqs", "promotions"].forEach(tag);
       ["/", "/courses", "/activities", "/dive-sites", "/gallery", "/faq"].forEach(path);
+      AD_LANDING_PAGES.forEach(path);
       break;
 
     default:
