@@ -72,6 +72,8 @@ export default function CountrySelect({
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
+  /** The area left visible by the on-screen keyboard. Mobile only; ignored at sm and up. */
+  const [viewport, setViewport] = useState<{ height: number; top: number } | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -99,6 +101,25 @@ export default function CountrySelect({
     }
     document.addEventListener("mousedown", onPointerDown);
     return () => document.removeEventListener("mousedown", onPointerDown);
+  }, [open]);
+
+  // The mobile panel is `fixed`, which anchors it to the *layout* viewport — and that does
+  // not shrink when the on-screen keyboard opens. Left alone, the search box and most of the
+  // list end up underneath the keyboard. visualViewport reports the area actually visible,
+  // so the panel can size and position itself to it. Supported in iOS Safari 13+ and Chrome;
+  // where it's missing the CSS fallback of 100svh applies and behaves as before.
+  useEffect(() => {
+    if (!open) return;
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const sync = () => setViewport({ height: vv.height, top: vv.offsetTop });
+    sync();
+    vv.addEventListener("resize", sync);
+    vv.addEventListener("scroll", sync);
+    return () => {
+      vv.removeEventListener("resize", sync);
+      vv.removeEventListener("scroll", sync);
+    };
   }, [open]);
 
   // Without this the page scrolls behind the sheet on mobile, which reads as the picker
@@ -179,22 +200,44 @@ export default function CountrySelect({
 
       {open && (
         <>
-          {/* Backdrop is mobile-only; on desktop the outside-click handler is enough. It
-              needs its own onClick — it renders inside containerRef, so the outside-click
-              listener never fires for it. */}
-          <div
-            onClick={close}
-            className="fixed inset-0 z-40 bg-charcoal-sea/40 sm:hidden"
-            aria-hidden="true"
-          />
-
           <div
             onKeyDown={onKeyDown}
+            // Mobile: fills the space the keyboard leaves, measured by visualViewport, with
+            // the search box at the *top* so the keyboard can never cover it. A bottom sheet
+            // loses this fight — `bottom: 0` is the layout viewport's bottom, which the
+            // keyboard sits on top of. The sm: variants drop all of it for a plain dropdown.
+            //
+            // The mobile branch relies on `fixed` resolving against the viewport, so no
+            // ancestor of the phone field may carry transform/filter/will-change — any of
+            // those become the containing block and the panel collapses into the field.
+            // AdBookingForm is deliberately kept outside AnimatedSection for this reason.
+            style={
+              {
+                "--vv-h": viewport ? `${viewport.height}px` : "100svh",
+                "--vv-top": `${viewport?.top ?? 0}px`,
+              } as React.CSSProperties
+            }
             className="
-              fixed inset-x-0 bottom-0 z-50 flex max-h-[75svh] flex-col rounded-t-2xl border-t border-charcoal-sea/10 bg-white shadow-2xl
-              sm:absolute sm:inset-x-auto sm:bottom-auto sm:top-full sm:mt-2 sm:w-80 sm:max-h-80 sm:rounded-2xl sm:border
+              fixed inset-x-0 top-[var(--vv-top)] z-50 flex h-[var(--vv-h)] flex-col border-charcoal-sea/10 bg-white shadow-2xl
+              sm:absolute sm:inset-x-auto sm:top-full sm:mt-2 sm:h-auto sm:max-h-80 sm:w-80 sm:rounded-2xl sm:border
             "
           >
+            {/* Mobile needs an explicit way out: the panel covers the screen, so there's no
+                backdrop left to tap. */}
+            <div className="flex items-center justify-between border-b border-charcoal-sea/10 px-4 py-3 sm:hidden">
+              <span className="text-sm font-semibold text-charcoal-sea">Select country</span>
+              <button
+                type="button"
+                onClick={close}
+                aria-label="Close country picker"
+                className="-m-2 p-2 text-charcoal-sea/50"
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                  <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
+                </svg>
+              </button>
+            </div>
+
             <div className="p-3 border-b border-charcoal-sea/10">
               <input
                 autoFocus
