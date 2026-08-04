@@ -144,38 +144,17 @@ input[type="time"] {
   flex-shrink: 0;
 }
 
-.phone-input-wrapper .PhoneInputCountrySelect {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  cursor: pointer;
-  width: 100%;
-  height: 100%;
-}
-
+/* The country picker is components/ui/CountrySelect.tsx, not the library's <select>. It
+   draws its own flag and chevron, so the library's are hidden rather than stacked under it.
+   The old rules here made the select an invisible overlay (inset:0, opacity:0) — leave any
+   of that in place and the replacement disappears too. */
+.phone-input-wrapper .PhoneInputCountryIcon,
 .phone-input-wrapper .PhoneInputCountrySelectArrow {
-  width: 0.6em;
-  height: 0.6em;
-  border-style: solid;
-  border-color: var(--color-charcoal-sea);
-  border-top-width: 0;
-  border-right-width: 0.1em;
-  border-bottom-width: 0.1em;
-  border-left-width: 0;
-  transform: rotate(45deg);
-  opacity: 0.5;
-  margin-left: 2px;
+  display: none;
 }
 
-.phone-input-wrapper .PhoneInputCountryIcon {
-  width: 1.5rem;
-  height: 1rem;
-  display: flex;
-  align-items: center;
-}
-
-.phone-input-wrapper .PhoneInputCountryIconImg {
-  width: 100%;
-  height: auto;
-  display: block;
+/* The panel is absolutely positioned against .PhoneInputCountry, so it must not be clipped
+   by the field's rounded border. */
+.phone-input-wrapper .PhoneInputCountry {
+  position: relative;
 }

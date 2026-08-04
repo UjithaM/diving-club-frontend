@@ -3,6 +3,19 @@
 import { useState } from "react";
 import RawPhoneInput, { type Country } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
+import CountrySelect from "./CountrySelect";
+
+/**
+ * Pinned above the divider so most visitors never search: Sri Lanka, then the usual
+ * Trincomalee source markets. "..." is the library's token for "everything else,
+ * alphabetical".
+ *
+ * Replace this with real data once bookings have volume — `country_code` is stored on
+ * every booking row, so the top nine are one GROUP BY away.
+ */
+const TOP_COUNTRIES: (Country | "|" | "...")[] = [
+  "LK", "GB", "DE", "FR", "NL", "RU", "IN", "AU", "US", "|", "...",
+];
 
 interface PhoneInputProps {
   value: string;
@@ -20,6 +33,8 @@ export default function PhoneInput({ value, onChange, required }: PhoneInputProp
         countryCallingCodeEditable={false}
         defaultCountry={country}
         onCountryChange={(c) => c && setCountry(c)}
+        countrySelectComponent={CountrySelect}
+        countryOptionsOrder={TOP_COUNTRIES}
         value={value}
         onChange={(v) => onChange(v ?? "")}
         placeholder="Enter phone number"
