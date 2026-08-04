@@ -153,7 +153,6 @@ export default function CountrySelect({
   }
 
   const selected = options.find((o) => o.value === value && !o.divider);
-  const code = dialCode(value);
   const highlighted = results[active];
   const activeOption = highlighted && !highlighted.divider ? highlighted : undefined;
 
@@ -169,8 +168,10 @@ export default function CountrySelect({
         aria-label={`Country: ${selected?.label ?? "International"}. Change`}
         className="flex items-center gap-1.5 shrink-0 disabled:opacity-50"
       >
+        {/* Flag and chevron only. The number input already renders "+94" as a fixed prefix
+            (international + countryCallingCodeEditable=false), so a dial code here shows it
+            twice. It still appears against each row in the list, where it's useful. */}
         <Flag iso={value} className="w-6 h-4" />
-        <span className="text-sm text-charcoal-sea tabular-nums">{code ? `+${code}` : ""}</span>
         <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true" className={`transition-transform ${open ? "rotate-180" : ""}`}>
           <path d="M1 3l4 4 4-4" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" className="text-charcoal-sea/50" />
         </svg>
