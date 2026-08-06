@@ -15,8 +15,13 @@
  * shows the same reviews as a dive-site page.
  */
 
+/**
+ * Lands on the REVIEWS tab, not the map pin — that's the `!9m1!1b1` on the end. The
+ * `?entry=ttu&g_ep=…` Google appends when you copy the URL is a session/build stamp and is
+ * dropped on purpose; it goes stale and changes nothing about where the link lands.
+ */
 const GOOGLE_LISTING =
-  "https://www.google.com/maps/place/Diving+Club/@8.5609627,81.2431568,341m/data=!3m1!1e3!4m6!3m5!1s0x3afbbdb47010bccd:0xade22adddd90b6c!8m2!3d8.5609377!4d81.2422479";
+  "https://www.google.com/maps/place/Diving+Club+padi+diving+center+S-30212/@8.5609627,81.2431568,19z/data=!4m8!3m7!1s0x3afbbdb47010bccd:0xade22adddd90b6c!8m2!3d8.5609377!4d81.2422479!9m1!1b1!16s%2Fg%2F11n9pwpxsr";
 
 interface Review {
   name: string;
@@ -134,11 +139,20 @@ export default function GoogleReviewsSection({
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        {/* Mobile is a swipe carousel, desktop is a grid — CSS scroll-snap does both, so
+            this stays a server component with no JS. The negative margin lets cards run to
+            the screen edge, and the 85% width leaves the next one peeking so it's obvious
+            there's more to swipe. tabIndex makes the strip keyboard-scrollable. */}
+        <div
+          tabIndex={0}
+          role="region"
+          aria-label="Google reviews"
+          className="flex gap-4 overflow-x-auto snap-x snap-mandatory -mx-6 px-6 pb-3 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-5 md:overflow-visible md:mx-0 md:px-0 md:pb-0"
+        >
           {reviews.map((r) => (
             <figure
               key={r.name}
-              className="bg-white border border-charcoal-sea/8 rounded-2xl p-6 flex flex-col"
+              className="snap-start shrink-0 w-[85%] max-w-sm md:w-auto md:max-w-none bg-white border border-charcoal-sea/8 rounded-2xl p-6 flex flex-col"
             >
               <div className="flex items-center justify-between mb-4">
                 <StarRating rating={r.rating} />
