@@ -38,6 +38,8 @@ export interface BookingDraft {
   nationality: string;
   date: string;
   people: string;
+  /** Dives per person. Only ever sent for items with a maxQuantity. */
+  quantity: string;
   certificationLevel: string;
   notes: string;
 }
@@ -45,7 +47,10 @@ export interface BookingDraft {
 type Action = { type: "SET_FIELD"; field: keyof BookingDraft; value: string };
 
 function reducer(state: BookingDraft, action: Action): BookingDraft {
-  return { ...state, [action.field]: action.value };
+  // The cap belongs to the item, so a 5 chosen for one item must not survive a switch to
+  // another that allows 2 — or to a course, which allows none.
+  const reset = action.field === "item" || action.field === "bookingType" ? { quantity: "1" } : null;
+  return { ...state, ...reset, [action.field]: action.value };
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -63,6 +68,8 @@ interface ItemOption {
   slug: string;
   price?: number;
   currency?: string;
+  /** Activities only. Non-null turns on the "How many dives?" input, capped at this. */
+  maxQuantity?: number | null;
   deposit?: Deposit;
 }
 
@@ -443,6 +450,7 @@ export default function BookingWizard({
     nationality: "",
     date: "",
     people: "1",
+    quantity: "1",
     certificationLevel: "none",
     notes: "",
   });
@@ -481,11 +489,12 @@ export default function BookingWizard({
         // in this same payload — throwing them away used to mean the wizard couldn't show
         // a price without a second round trip.
         const toOptions = (rows: ItemOption[]): ItemOption[] =>
-          (rows ?? []).map(({ name, slug, price, currency, deposit }) => ({
+          (rows ?? []).map(({ name, slug, price, currency, maxQuantity, deposit }) => ({
             name,
             slug,
             price,
             currency,
+            maxQuantity,
             deposit,
           }));
         setCourseOptions(toOptions(c.data));
@@ -532,6 +541,13 @@ export default function BookingWizard({
     if (!draft.email.trim() || !isValidEmail(draft.email)) errs.email = "A valid email is required.";
     if (!draft.phone || !isValidPhoneNumber(draft.phone)) errs.phone = "Enter a valid international phone number.";
     if (!draft.date) errs.date = "Please choose a preferred date.";
+    // Native min/max don't block a typed-in value outside the range — this form never
+    // submits the browser way, so it's checked here.
+    if (maxQuantity) {
+      const q = Number(draft.quantity);
+      if (!Number.isInteger(q) || q < 1 || q > maxQuantity)
+        errs.quantity = `Choose between 1 and ${maxQuantity} dives.`;
+    }
     if (Object.keys(errs).length) { setErrors(errs); return; }
     goTo(3);
   }
@@ -552,7 +568,11 @@ export default function BookingWizard({
   ).find((o) => o.name === draft.item);
 
   const itemCurrency = selectedItem?.currency ?? "USD";
-  const sub = selectedItem?.price ? subtotal(selectedItem.price, draft.people) : 0;
+  /** Non-null only on activities the admin has opened up to multiple dives. */
+  const maxQuantity = selectedItem?.maxQuantity ?? null;
+  const sub = selectedItem?.price
+    ? subtotal(selectedItem.price, draft.people, maxQuantity ? draft.quantity : 1)
+    : 0;
   const activeDiscount = useDiscount && !discountRejected && discountLink?.valid ? discountLink : null;
   const discountOff = activeDiscount
     ? previewDiscount(sub, activeDiscount.discount_type, activeDiscount.discount_value)
@@ -575,6 +595,8 @@ export default function BookingWizard({
           nationality: draft.nationality,
           date: draft.date,
           people: draft.people,
+          // Only items with a cap take a quantity — everything else has no key at all.
+          ...(maxQuantity ? { quantity: Number(draft.quantity) } : {}),
           bookingFor: draft.bookingType === "course" ? "course" : "activity",
           item: draft.item,
           certificationLevel: draft.certificationLevel,
@@ -837,6 +859,32 @@ export default function BookingWizard({
               </select>
             </div>
 
+            {/* Dives per person — activities with a maxQuantity only. Lives on this step,
+                not step 1: a link like /book?type=activity&item=Fun%20Dive opens straight
+                on step 2, so anything on step 1 would never be seen. */}
+            {maxQuantity && (
+              <div>
+                <label htmlFor="quantity" className={labelClass}>
+                  How many dives?
+                </label>
+                <input
+                  id="quantity"
+                  type="number"
+                  inputMode="numeric"
+                  min={1}
+                  max={maxQuantity}
+                  step={1}
+                  value={draft.quantity}
+                  onChange={(e) => set("quantity", e.target.value)}
+                  className={`${inputClass} ${errors.quantity ? "border-tropic-coral ring-1 ring-tropic-coral" : ""}`}
+                />
+                {errors.quantity
+                  ? <p className="text-tropic-coral text-xs mt-1.5">{errors.quantity}</p>
+                  : <p className="text-xs text-charcoal-sea/40 mt-1.5">Each person, up to {maxQuantity}. Every dive goes to a different site.</p>
+                }
+              </div>
+            )}
+
             {/* Certification */}
             <div>
               <label htmlFor="cert" className={labelClass}>
@@ -888,6 +936,12 @@ export default function BookingWizard({
                 <span className="text-warm-white/50">People</span>
                 <span className="text-warm-white font-semibold">{draft.people} {draft.people === "1" ? "person" : "people"}</span>
               </div>
+              {maxQuantity && (
+                <div className="flex justify-between">
+                  <span className="text-warm-white/50">Dives each</span>
+                  <span className="text-warm-white font-semibold">{draft.quantity}</span>
+                </div>
+              )}
               <div className="flex justify-between">
                 <span className="text-warm-white/50">Level</span>
                 <span className="text-warm-white font-semibold text-right max-w-[60%]">{certLabel(draft.certificationLevel)}</span>
@@ -906,6 +960,7 @@ export default function BookingWizard({
                   <div className="flex justify-between">
                     <span className="text-warm-white/50">
                       {money(selectedItem?.price ?? 0, itemCurrency)} × {draft.people}
+                      {maxQuantity ? ` × ${draft.quantity} dives` : ""}
                     </span>
                     <span className="text-warm-white font-semibold">
                       {money(sub, itemCurrency)}

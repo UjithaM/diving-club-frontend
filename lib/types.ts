@@ -59,6 +59,11 @@ export interface Experience {
   popular: boolean;
   featured?: boolean;
   divesIncluded?: number;
+  /**
+   * Cap for the "How many dives?" input, admin-set per activity. null (or absent) means
+   * there's nothing to choose and no `quantity` goes in the booking. Courses never have it.
+   */
+  maxQuantity?: number | null;
   /** The effective advance for this item. No `amount` — headcount isn't known yet. */
   deposit?: Deposit;
 }
@@ -79,11 +84,15 @@ export interface DiveSite {
   popular: boolean;
 }
 
-/** What a booking form needs to describe and price something. Course and Experience both satisfy this. */
+/**
+ * What a booking form needs to describe and price something. Course and Experience both
+ * satisfy this. `maxQuantity` is spliced in rather than Pick'd — only activities carry it,
+ * the courses endpoint doesn't return the field at all.
+ */
 export type BookableItem = Pick<
   Course,
   "slug" | "name" | "duration" | "price" | "currency" | "originalPrice" | "includes" | "minAge"
->;
+> & { maxQuantity?: number | null };
 
 // GET /api/home returns trimmed versions of the three types above, with a nullable
 // image. The full types are supersets, so the cards accept either.

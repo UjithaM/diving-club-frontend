@@ -3,7 +3,6 @@ import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import SiteChrome from "@/components/layout/SiteChrome";
 import WhatsAppFab from "@/components/ui/WhatsAppFab";
 import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
 import type { LocalBusiness, WithContext } from "schema-dts";
@@ -174,18 +173,14 @@ try{localStorage.setItem('dc_attr',JSON.stringify(out));}catch(e){}
           dangerouslySetInnerHTML={{ __html: safeJsonLd(localBusinessJsonLd) }}
         />
         <SmoothScrollProvider>
-          <SiteChrome>
-            <Header
-              courseItems={toNav(courses)}
-              experienceItems={toNav(experiences)}
-              diveSiteItems={toNav(diveSites)}
-            />
-          </SiteChrome>
+          <Header
+            courseItems={toNav(courses)}
+            experienceItems={toNav(experiences)}
+            diveSiteItems={toNav(diveSites)}
+          />
           <main className="flex-1">{children}</main>
-          <SiteChrome>
-            <Footer />
-            <WhatsAppFab />
-          </SiteChrome>
+          <Footer />
+          <WhatsAppFab />
         </SmoothScrollProvider>
       </body>
     </html>

@@ -1,11 +1,10 @@
 import Image from "next/image";
 import AnimatedSection from "@/components/ui/AnimatedSection";
 import FaqAccordion from "@/components/ui/FaqAccordion";
+import GoogleReviewsSection from "@/components/ui/GoogleReviewsSection";
 import WhatsAppCta from "./WhatsAppCta";
 import AdBookingForm from "./AdBookingForm";
 import BookCta from "./BookCta";
-import GoogleReviews, { ELFSIGHT_HERO } from "@/components/ui/GoogleReviews";
-import GoogleReviewsSection from "@/components/ui/GoogleReviewsSection";
 import type { BookableItem, PageFaq } from "@/lib/types";
 
 const PHONE_DISPLAY = "074 394 5010";
@@ -84,19 +83,14 @@ export default function AdLandingPage({
           </h1>
           <p className="text-warm-white/70 text-lg leading-relaxed mb-9 max-w-xl">{subheading}</p>
 
-          {/* Desktop keeps the button — there's no sticky bar up there, so this is the
-              only CTA above the fold. On mobile the sticky bar already carries "Book your
-              spot", so the hero spends that space on proof instead. */}
+          {/* Desktop only — there's no sticky bar up there, so this is the one CTA above
+              the fold. On mobile the sticky bar carries "Book your spot" already. */}
           <BookCta
             source={`${source}_hero`}
             className="hidden sm:inline-flex items-center justify-center gap-3 bg-tropic-coral text-white font-semibold px-8 py-4 rounded-full hover:bg-sunrise transition-colors text-base"
           >
             Book your spot
           </BookCta>
-
-          <div className="sm:hidden min-h-[76px]">
-            <GoogleReviews appId={ELFSIGHT_HERO} />
-          </div>
         </div>
       </section>
 
@@ -256,26 +250,20 @@ export default function AdLandingPage({
         </div>
       </section>
 
-      {/* These routes are in SiteChrome's BARE_ROUTES, so there's no WhatsAppFab here —
-          without this, mobile has no CTA between the hero and the bottom of the page.
-          pb-24 on the closing section keeps the bar off the footer text. */}
+      {/* Mobile's only CTA between the hero and the bottom of the page. pb-24 on the
+          closing section keeps the bar off the footer text. pr-20 keeps it clear of the
+          WhatsApp FAB, which floats at bottom-6 right-6 over this same corner. */}
       <div className="sm:hidden h-20" aria-hidden="true" />
-      <div className="sm:hidden fixed bottom-0 inset-x-0 z-40 flex gap-3 p-3 bg-warm-white border-t border-charcoal-sea/10 [padding-bottom:calc(0.75rem+env(safe-area-inset-bottom))]">
-        {/* 2:1 in booking's favour — this bar is the main CTA on mobile, and booking is the
-            only conversion we count. WhatsApp stays reachable, just clearly secondary. */}
+      <div className="sm:hidden fixed bottom-0 inset-x-0 z-40 flex p-3 pr-20 bg-warm-white border-t border-charcoal-sea/10 [padding-bottom:calc(0.75rem+env(safe-area-inset-bottom))]">
+        {/* Booking only. WhatsApp used to sit here as a secondary button, but the FAB now
+            carries it on these pages and two chat entry points beside one another just
+            split the tap. Booking is the conversion we count, so it gets the whole bar. */}
         <BookCta
           source={`${source}_sticky`}
-          className="flex-[2] inline-flex items-center justify-center gap-2 bg-tropic-coral text-white font-semibold px-4 py-3.5 rounded-full text-base"
+          className="flex-1 inline-flex items-center justify-center gap-2 bg-tropic-coral text-white font-semibold px-4 py-3.5 rounded-full text-base"
         >
           Book your spot
         </BookCta>
-        <WhatsAppCta
-          message={message}
-          source={`${source}_sticky`}
-          label="WhatsApp"
-          variant="outline"
-          className="flex-1 !px-4 !py-3.5"
-        />
       </div>
     </>
   );

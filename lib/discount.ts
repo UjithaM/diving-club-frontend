@@ -14,8 +14,13 @@ export function headcount(people: string | number): number {
   return Number.isFinite(n) && n > 0 ? n : 1;
 }
 
-export function subtotal(price: number, people: string | number): number {
-  return round2(price * headcount(people));
+/** `quantity` is per person — 2 people × 3 dives at $40 is $240, same as the backend. */
+export function subtotal(
+  price: number,
+  people: string | number,
+  quantity: string | number = 1
+): number {
+  return round2(price * headcount(people) * headcount(quantity));
 }
 
 /**

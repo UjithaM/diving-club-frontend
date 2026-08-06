@@ -14,6 +14,7 @@ import {
   type BookingField,
 } from "@/lib/booking-validation";
 import type { BookableItem } from "@/lib/types";
+import { headcount } from "@/lib/discount";
 import WhatsAppCta from "./WhatsAppCta";
 
 const inputClass =
@@ -172,6 +173,8 @@ export default function AdBookingForm({
 
   // "Not sure yet" matches nothing, so no card shows — which is right.
   const selected = fixedItem ?? items.find((i) => i.name === itemName);
+  /** Activities only, and only once the admin sets a cap. Courses never have one. */
+  const maxQuantity = selected?.maxQuantity ?? null;
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -193,6 +196,8 @@ export default function AdBookingForm({
     setStatus("submitting");
     const email = getValue("email");
     const people = getValue("people");
+    // The form is noValidate, so min/max are decoration — clamp what actually gets sent.
+    const quantity = maxQuantity ? Math.min(headcount(getValue("quantity")), maxQuantity) : null;
 
     try {
       const res = await fetch("/api/booking", {
@@ -204,6 +209,7 @@ export default function AdBookingForm({
           ...splitPhone(phone),
           date: getValue("date"),
           people,
+          ...(quantity ? { quantity } : {}),
           bookingFor,
           item: itemName,
           // Which ad brought them here. Undefined on organic traffic, so the key drops out.
@@ -235,7 +241,7 @@ export default function AdBookingForm({
       trackConversion("booking_submit", CONVERSIONS.form, {
         data: { source, item: itemName },
         conversion: {
-          value: selected ? selected.price * (Number(people) || 1) : undefined,
+          value: selected ? selected.price * headcount(people) * (quantity ?? 1) : undefined,
           currency: selected?.currency ?? "USD",
           transaction_id: data.reference ?? undefined,
         },
@@ -442,6 +448,31 @@ export default function AdBookingForm({
             <option value="7+">7+ — a group</option>
           </select>
         </div>
+
+        {/* Activities with a cap only. `key` resets the uncontrolled value when the
+            visitor switches to a different item with a different cap. */}
+        {maxQuantity && (
+          <div>
+            <label htmlFor="quantity" className={labelClass}>
+              How many dives?
+            </label>
+            <input
+              key={selected?.slug}
+              id="quantity"
+              name="quantity"
+              type="number"
+              inputMode="numeric"
+              min={1}
+              max={maxQuantity}
+              step={1}
+              defaultValue={1}
+              className={inputClass}
+            />
+            <p className="text-xs text-charcoal-sea/40 mt-1.5">
+              Each person, up to {maxQuantity}.
+            </p>
+          </div>
+        )}
       </div>
 
       {status === "error" && (

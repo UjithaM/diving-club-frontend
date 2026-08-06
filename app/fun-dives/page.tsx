@@ -1,19 +1,20 @@
 import type { Metadata } from "next";
 import AdLandingPage from "@/components/ads/AdLandingPage";
-import { getCourseBySlug } from "@/lib/api/courses";
+import { getExperienceBySlug } from "@/lib/api/experiences";
 
 /**
- * Requires a `fun-dives` product ($40) to exist in the API — see CourseSeeder.
- * Without it `fixedItem` is undefined and AdBookingForm falls back to an empty
- * dropdown, so the "Fun Dives" ad group stays PAUSED until the product is live.
+ * The `fun-dive` ACTIVITY ($40), not the `fun-dives` course — only activities carry
+ * `maxQuantity`, and this page's whole pitch is "pick how many dives". Without it
+ * `fixedItem` is undefined and AdBookingForm falls back to an empty dropdown, so the
+ * "Fun Dives" ad group stays PAUSED until the activity is live.
  */
-const COURSE_SLUG = "fun-dives";
+const ACTIVITY_SLUG = "fun-dive";
 
 /** " from $40", or "" if the API is down — never a hardcoded price. */
 const fromPrice = (course?: { price: number }) => (course ? ` from $${course.price}` : "");
 
 export async function generateMetadata(): Promise<Metadata> {
-  const course = await getCourseBySlug(COURSE_SLUG);
+  const course = await getExperienceBySlug(ACTIVITY_SLUG);
   return {
     // No "| Diving Club" — the root layout's title.template already appends it.
     title: `Fun Dives in Trincomalee${fromPrice(course)}`,
@@ -25,14 +26,14 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function FunDivesPage() {
   // One item, already chosen for the visitor. Returns undefined if the API is down.
   // Same call as generateMetadata — Next's Data Cache dedupes it to one request.
-  const course = await getCourseBySlug(COURSE_SLUG);
+  const course = await getExperienceBySlug(ACTIVITY_SLUG);
 
   return (
     <AdLandingPage
       source="fun-dives"
       message="Hi! I'm already certified — can I book a fun dive?"
       urgentMessage="Hi! I'm certified and in Trincomalee now — are you running dives today or tomorrow?"
-      bookingFor="course"
+      bookingFor="activity"
       items={[]}
       fixedItem={course}
       bookingHeading="Book your dives"

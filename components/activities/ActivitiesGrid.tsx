@@ -16,12 +16,15 @@ const typeMeta: Record<Experience["type"], { label: string; accent: string; text
   "sunset-tour":    { label: "Sunset Tour",    accent: "#E76F51", textClass: "text-tropic-coral",  bgClass: "bg-tropic-coral/10",  emoji: "🌅" },
 };
 
+/** Admin can add an activity type any day — an unmapped one must render, not crash the page. */
+const defaultTypeMeta = { label: "Activity", accent: "#2A9D8F", textClass: "text-shallow-water", bgClass: "bg-shallow-water/10", emoji: "🤿" };
+
 const ease = "cubic-bezier(0.16, 1, 0.3, 1)";
 
 function ActivityCard({ experience, index }: { experience: Experience; index: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
-  const meta = typeMeta[experience.type];
+  const meta = typeMeta[experience.type] ?? defaultTypeMeta;
 
   useEffect(() => {
     const el = ref.current;
