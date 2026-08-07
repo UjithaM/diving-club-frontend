@@ -103,6 +103,13 @@ export default function Footer() {
       <div className="border-t border-white/8">
         <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-[11px] text-warm-white/25">© {new Date().getFullYear()} Diving Club. All rights reserved.</p>
+          {/* The payment gateway's partner banks check these three are reachable from the
+              site before they activate an account — keep all three linked. */}
+          <nav className="flex items-center gap-4">
+            <Link href="/terms" className="text-[11px] text-warm-white/35 hover:text-warm-white transition-colors">Terms &amp; Conditions</Link>
+            <Link href="/refund-policy" className="text-[11px] text-warm-white/35 hover:text-warm-white transition-colors">Refund Policy</Link>
+            <Link href="/privacy-policy" className="text-[11px] text-warm-white/35 hover:text-warm-white transition-colors">Privacy Policy</Link>
+          </nav>
           <p className="text-[10px] tracking-widest text-warm-white/20 uppercase">PADI Certified · Est. 2010 · Trincomalee</p>
         </div>
       </div>

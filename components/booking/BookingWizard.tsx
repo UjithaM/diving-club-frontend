@@ -1012,6 +1012,15 @@ export default function BookingWizard({
             </p>
           )}
 
+          {/* Consent at the point of commitment, not buried in the footer — the 48-hour
+              refund rule and the late-arrival rule only hold if they were shown here. */}
+          <p className="text-xs text-charcoal-sea/45 leading-relaxed mb-4">
+            By sending this you agree to our{" "}
+            <Link href="/terms" className="underline hover:text-shallow-water">terms</Link> and{" "}
+            <Link href="/refund-policy" className="underline hover:text-shallow-water">refund policy</Link>
+            . Cancel 48 hours or more before your start time and the advance comes back in full.
+          </p>
+
           <StickyNav
             onBack={() => goTo(2)}
             nextLabel={hasAnyGateway ? "Continue to Payment →" : "Send Booking Request →"}

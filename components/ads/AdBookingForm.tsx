@@ -507,11 +507,15 @@ export default function AdBookingForm({
           No card needed. Nothing is charged now — we confirm your dates and the advance on
           WhatsApp first.
         </p>
-        {/* The Google rating used to sit here too. Elfsight renders reviews inside its
-            own container, so there's no number to read — this is what's left that we
-            can state as fact. */}
         <p className="text-xs text-charcoal-sea/45">
           PADI dive centre in Trincomalee since 2010
+        </p>
+        {/* Consent has to be visible at the point of commitment for the 48-hour rule and
+            the late-arrival rule to hold. */}
+        <p className="text-xs text-charcoal-sea/40 leading-relaxed">
+          By sending this you agree to our{" "}
+          <Link href="/terms" className="underline hover:text-shallow-water">terms</Link> and{" "}
+          <Link href="/refund-policy" className="underline hover:text-shallow-water">refund policy</Link>.
         </p>
       </div>
     </form>
