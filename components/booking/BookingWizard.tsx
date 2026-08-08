@@ -766,6 +766,8 @@ export default function BookingWizard({
               <input
                 id="name"
                 type="text"
+                autoComplete="name"
+                enterKeyHint="next"
                 value={draft.name}
                 onChange={(e) => set("name", e.target.value)}
                 placeholder="Your full name"
@@ -782,6 +784,9 @@ export default function BookingWizard({
               <input
                 id="email"
                 type="email"
+                autoComplete="email"
+                inputMode="email"
+                enterKeyHint="next"
                 value={draft.email}
                 onChange={(e) => set("email", e.target.value)}
                 placeholder="you@email.com"
@@ -816,6 +821,8 @@ export default function BookingWizard({
               <input
                 id="nationality"
                 type="text"
+                autoComplete="country-name"
+                enterKeyHint="next"
                 value={draft.nationality}
                 onChange={(e) => set("nationality", e.target.value)}
                 placeholder="e.g. British, German, Australian…"
@@ -831,6 +838,7 @@ export default function BookingWizard({
               <input
                 id="date"
                 type="date"
+                autoComplete="off"
                 value={draft.date}
                 onChange={(e) => set("date", e.target.value)}
                 min={getTomorrow()}

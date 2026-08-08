@@ -17,8 +17,10 @@ import type { BookableItem } from "@/lib/types";
 import { headcount } from "@/lib/discount";
 import WhatsAppCta from "./WhatsAppCta";
 
+// min-h: py-2.5 + text-sm landed at ~42px, under the 44px minimum touch target — and this is
+// the form paid mobile traffic lands on.
 const inputClass =
-  "w-full border border-charcoal-sea/20 rounded-xl px-4 py-2.5 text-charcoal-sea placeholder:text-charcoal-sea/40 focus:outline-none focus:ring-2 focus:ring-shallow-water text-sm bg-white";
+  "w-full min-h-[48px] border border-charcoal-sea/20 rounded-xl px-4 py-2.5 text-charcoal-sea placeholder:text-charcoal-sea/40 focus:outline-none focus:ring-2 focus:ring-shallow-water text-sm bg-white";
 
 const labelClass = "block text-sm font-medium text-charcoal-sea mb-1.5";
 
@@ -362,6 +364,7 @@ export default function AdBookingForm({
             name="name"
             type="text"
             autoComplete="name"
+            enterKeyHint="next"
             placeholder="Your name"
             onBlur={handleBlur("name")}
             onChange={(e) => revalidate("name", e.target.value)}
@@ -380,6 +383,8 @@ export default function AdBookingForm({
             name="email"
             type="email"
             autoComplete="email"
+            inputMode="email"
+            enterKeyHint="next"
             placeholder="you@email.com"
             onBlur={handleBlur("email")}
             onChange={(e) => revalidate("email", e.target.value)}
@@ -421,6 +426,7 @@ export default function AdBookingForm({
             id="date"
             name="date"
             type="date"
+            autoComplete="off"
             min={todayISO()}
             onBlur={handleBlur("date")}
             onChange={(e) => revalidate("date", e.target.value)}
@@ -445,7 +451,7 @@ export default function AdBookingForm({
                 {n} {n === 1 ? "person" : "people"}
               </option>
             ))}
-            <option value="7+">7+ — a group</option>
+            <option value="7+">7+ (contact us first)</option>
           </select>
         </div>
 

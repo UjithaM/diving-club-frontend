@@ -14,11 +14,12 @@ const ADS_ID = "AW-18356209738";
  */
 export const CONVERSIONS = {
   /**
-   * Deliberately empty: chats don't reliably become bookings, so WhatsApp is no
-   * longer a conversion. The GTM event still fires for analytics — only the Ads
-   * conversion is off. (The old "WhatsApp click" action is REMOVED in Ads anyway.)
+   * "WhatsApp chat" — Contact category, marked SECONDARY in Ads. Chats don't
+   * reliably become bookings, so this reports chat volume without steering
+   * Smart Bidding; only `form` below is primary. (Replaces the old "WhatsApp
+   * click" action, which is REMOVED and whose name is still reserved.)
    */
-  whatsapp: "",
+  whatsapp: `${ADS_ID}/YR3TCNDant4cEMqQ9rBE`,
   /** "Booking form submitted" — Submit lead form category. Sends value + transaction_id. */
   form: `${ADS_ID}/wS7xCI3FrtocEMqQ9rBE`,
 };

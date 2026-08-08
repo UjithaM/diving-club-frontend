@@ -96,7 +96,9 @@ export default function AdLandingPage({
 
       {/* Proof first: an ad visitor sees who vouches for us before the page asks for a
           phone number. */}
-      <GoogleReviewsSection />
+      {/* Four, not the full set: on an ad page the form is the point, and eight cards pushed
+          it a screen further down. The rest are one click away on the listing. */}
+      <GoogleReviewsSection limit={4} />
 
       {/* Booking */}
       <section className="bg-charcoal-sea/5 py-16 px-6">
@@ -111,9 +113,11 @@ export default function AdLandingPage({
             <h2 className="text-charcoal-sea font-display text-3xl font-extrabold leading-tight mb-3">
               {bookingHeading}
             </h2>
+            {/* The page used to make three different speed promises and this one — the
+                slowest — sat closest to the fields. Lead with the real number. */}
             <p className="text-charcoal-sea/70 leading-relaxed mb-8">
-              Tell us what you&apos;re after and when you&apos;re around. We&apos;ll come back to you
-              on WhatsApp within 24 hours to confirm.
+              Tell us what you&apos;re after and when you&apos;re around. We usually reply on
+              WhatsApp within a few minutes while we&apos;re open, and always within 24 hours.
             </p>
           </AnimatedSection>
 
@@ -172,7 +176,9 @@ export default function AdLandingPage({
         <div className="max-w-4xl mx-auto grid sm:grid-cols-2 gap-x-10 gap-y-9">
           {points.map((point) => (
             <AnimatedSection key={point.title}>
-              <h2 className="text-charcoal-sea font-bold text-lg mb-2">{point.title}</h2>
+              {/* h3, not h2 — these are supporting points under the page's offer, not
+                  sections ranking alongside "Book your spot". */}
+              <h3 className="text-charcoal-sea font-bold text-lg mb-2">{point.title}</h3>
               <p className="text-charcoal-sea/70 leading-relaxed">{point.body}</p>
             </AnimatedSection>
           ))}
@@ -185,9 +191,11 @@ export default function AdLandingPage({
           <AnimatedSection>
             <div className="flex items-center gap-3 mb-8">
               <span className="h-px w-6 bg-tropic-coral" aria-hidden="true" />
-              <span className="text-tropic-coral text-[11px] font-semibold tracking-[0.22em] uppercase">
+              {/* A real heading, not a span — the steps below it are h3s, so without this
+                  the section had children but no label in the outline. */}
+              <h2 className="text-tropic-coral text-[11px] font-semibold tracking-[0.22em] uppercase">
                 How it works
-              </span>
+              </h2>
             </div>
           </AnimatedSection>
 

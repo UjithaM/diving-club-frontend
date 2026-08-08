@@ -126,9 +126,14 @@ function GoogleMark() {
 
 export default function GoogleReviewsSection({
   heading = "What our divers say on Google",
+  limit,
 }: {
   heading?: string;
+  /** Ad pages pass 4 — the form matters more there than scroll depth. Default shows all. */
+  limit?: number;
 }) {
+  const shown = limit ? reviews.slice(0, limit) : reviews;
+
   return (
     <section className="bg-warm-white py-14 px-6">
       <div className="max-w-6xl mx-auto">
@@ -149,7 +154,7 @@ export default function GoogleReviewsSection({
           aria-label="Google reviews"
           className="flex gap-4 overflow-x-auto snap-x snap-mandatory -mx-6 px-6 pb-3 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-5 md:overflow-visible md:mx-0 md:px-0 md:pb-0"
         >
-          {reviews.map((r) => (
+          {shown.map((r) => (
             <figure
               key={r.name}
               className="snap-start shrink-0 w-[85%] max-w-sm md:w-auto md:max-w-none bg-white border border-charcoal-sea/8 rounded-2xl p-6 flex flex-col"
