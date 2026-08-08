@@ -259,19 +259,26 @@ export default function AdLandingPage({
       </section>
 
       {/* Mobile's only CTA between the hero and the bottom of the page. pb-24 on the
-          closing section keeps the bar off the footer text. pr-20 keeps it clear of the
-          WhatsApp FAB, which floats at bottom-6 right-6 over this same corner. */}
+          closing section keeps the bar off the footer text. The floating WhatsApp button is
+          suppressed on these routes (see WhatsAppFab), so nothing overlaps this. */}
       <div className="sm:hidden h-20" aria-hidden="true" />
-      <div className="sm:hidden fixed bottom-0 inset-x-0 z-40 flex p-3 pr-20 bg-warm-white border-t border-charcoal-sea/10 [padding-bottom:calc(0.75rem+env(safe-area-inset-bottom))]">
-        {/* Booking only. WhatsApp used to sit here as a secondary button, but the FAB now
-            carries it on these pages and two chat entry points beside one another just
-            split the tap. Booking is the conversion we count, so it gets the whole bar. */}
+      <div className="sm:hidden fixed bottom-0 inset-x-0 z-40 flex gap-3 p-3 bg-warm-white border-t border-charcoal-sea/10 [padding-bottom:calc(0.75rem+env(safe-area-inset-bottom))]">
+        {/* 2:1 in booking's favour — this bar is the main CTA on mobile, and booking is the
+            only conversion we count. WhatsApp stays reachable, just clearly secondary, and
+            it carries this page's own pre-filled message rather than the generic one. */}
         <BookCta
           source={`${source}_sticky`}
-          className="flex-1 inline-flex items-center justify-center gap-2 bg-tropic-coral text-white font-semibold px-4 py-3.5 rounded-full text-base"
+          className="flex-[2] inline-flex items-center justify-center gap-2 bg-tropic-coral text-white font-semibold px-4 py-3.5 rounded-full text-base"
         >
           Book your spot
         </BookCta>
+        <WhatsAppCta
+          message={message}
+          source={`${source}_sticky`}
+          label="WhatsApp"
+          variant="outline"
+          className="flex-1 !px-4 !py-3.5"
+        />
       </div>
     </>
   );

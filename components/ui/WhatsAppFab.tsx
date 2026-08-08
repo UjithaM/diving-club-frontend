@@ -1,12 +1,23 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 
 const WHATSAPP_NUMBER = "94743945010";
 const WHATSAPP_MESSAGE = "Hi! I'd like to book a dive or find out more about your courses.";
 
+/**
+ * Ad landing pages carry their own WhatsApp button in the mobile sticky bar, with the message
+ * pre-filled for that page. A generic floating one on top of it is a second chat route
+ * competing with the form — the only conversion those pages count.
+ */
+const NO_FAB_ROUTES = new Set(["/dive", "/padi", "/fun-dives", "/open-water"]);
+
 export default function WhatsAppFab() {
+  const pathname = usePathname();
   const [hovered, setHovered] = useState(false);
+
+  if (NO_FAB_ROUTES.has(pathname)) return null;
 
   const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(WHATSAPP_MESSAGE)}`;
 
