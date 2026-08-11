@@ -83,20 +83,26 @@ export default function AdLandingPage({
           </h1>
           <p className="text-warm-white/70 text-lg leading-relaxed mb-9 max-w-xl">{subheading}</p>
 
-          {/* Desktop only — there's no sticky bar up there, so this is the one CTA above
-              the fold. On mobile the sticky bar carries "Book your spot" already. */}
-          <BookCta
-            source={`${source}_hero`}
-            className="hidden sm:inline-flex items-center justify-center gap-3 bg-tropic-coral text-white font-semibold px-8 py-4 rounded-full hover:bg-sunrise transition-colors text-base"
-          >
-            Book your spot
-          </BookCta>
+          {/* Desktop only — there's no sticky bar up there, so these are the CTAs above
+              the fold. On mobile the sticky bar carries both already. WhatsApp leads:
+              most visitors bounce off the multi-field form, so chat is the easy first
+              move and booking direct is the fallback for people who already know what
+              they want. */}
+          <div className="hidden sm:flex items-center gap-4">
+            <WhatsAppCta message={message} source={`${source}_hero`} label="WhatsApp us" />
+            <BookCta
+              source={`${source}_hero`}
+              className="inline-flex items-center justify-center gap-3 bg-transparent text-warm-white font-semibold px-8 py-4 rounded-full border-2 border-warm-white/40 hover:bg-warm-white/10 transition-colors text-base"
+            >
+              Book your spot
+            </BookCta>
+          </div>
         </div>
       </section>
 
       {/* Proof first: an ad visitor sees who vouches for us before the page asks for a
           phone number. */}
-      {/* Four, not the full set: on an ad page the form is the point, and eight cards pushed
+      {/* Four, not the full set: on an ad page the CTA is the point, and eight cards pushed
           it a screen further down. The rest are one click away on the listing. */}
       <GoogleReviewsSection limit={4} />
 
@@ -113,11 +119,41 @@ export default function AdLandingPage({
             <h2 className="text-charcoal-sea font-display text-3xl font-extrabold leading-tight mb-3">
               {bookingHeading}
             </h2>
-            {/* The page used to make three different speed promises and this one — the
-                slowest — sat closest to the fields. Lead with the real number. */}
-            <p className="text-charcoal-sea/70 leading-relaxed mb-8">
-              Tell us what you&apos;re after and when you&apos;re around. We usually reply on
-              WhatsApp within a few minutes while we&apos;re open, and always within 24 hours.
+            {/* Most visitors bounce off a multi-field form on a first visit, so lead with
+                the low-friction path: a chat, not a form. */}
+            <p className="text-charcoal-sea/70 leading-relaxed mb-6">
+              Message us on WhatsApp and tell us what you&apos;re after — we usually reply within
+              a few minutes while we&apos;re open, and always within 24 hours.
+            </p>
+          </AnimatedSection>
+
+          <AnimatedSection className="text-center mb-4">
+            <WhatsAppCta message={message} source={source} label="Message us on WhatsApp" />
+          </AnimatedSection>
+
+          {/* Same-day/next-day divers decide faster than the general chat prompt above
+              accounts for, so give them their own line with a date-specific message.
+              ponytail: static strip, not date-aware. Add opening-hours logic only if it matters. */}
+          <p className="border-l-4 border-tropic-coral bg-sunrise/12 rounded-r-xl px-4 py-3 mb-8 text-sm text-charcoal-sea leading-relaxed text-center">
+            <strong className="font-bold">Diving today or tomorrow?</strong>{" "}
+            <WhatsAppCta
+              message={urgentMessage}
+              source={`${source}_urgent`}
+              label="WhatsApp us"
+              variant="inline"
+            />{" "}
+            — we reply in minutes.
+          </p>
+
+          <div className="flex items-center gap-4 mb-8" aria-hidden="true">
+            <span className="h-px flex-1 bg-charcoal-sea/15" />
+            <span className="text-charcoal-sea/40 text-xs uppercase tracking-[0.2em]">or</span>
+            <span className="h-px flex-1 bg-charcoal-sea/15" />
+          </div>
+
+          <AnimatedSection className="text-center mb-5">
+            <p className="text-charcoal-sea/70 leading-relaxed">
+              Prefer to fill in the details yourself? Book your spot directly below.
             </p>
           </AnimatedSection>
 
@@ -133,39 +169,6 @@ export default function AdLandingPage({
               fixedItem={fixedItem}
               source={source}
               message={message}
-            />
-
-            {/* Anyone diving in the next 48 hours decides faster than the form's own 24-hour
-                promise, so give them a chat route — but below the form, not above it. Above
-                the fields it pulled people into WhatsApp at the exact moment they were about
-                to book, and bookings are the only conversion we count now.
-                ponytail: static strip, not date-aware. Add opening-hours logic only if it matters. */}
-            <p className="border-l-4 border-tropic-coral bg-sunrise/12 rounded-r-xl px-4 py-3 mt-5 text-sm text-charcoal-sea leading-relaxed">
-              <strong className="font-bold">Diving today or tomorrow?</strong>{" "}
-              <WhatsAppCta
-                message={urgentMessage}
-                source={`${source}_urgent`}
-                label="WhatsApp us"
-                variant="inline"
-              />{" "}
-              — we reply in minutes.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-4 my-8" aria-hidden="true">
-            <span className="h-px flex-1 bg-charcoal-sea/15" />
-            <span className="text-charcoal-sea/40 text-xs uppercase tracking-[0.2em]">or</span>
-            <span className="h-px flex-1 bg-charcoal-sea/15" />
-          </div>
-
-          <div className="text-center">
-            <p className="text-charcoal-sea/70 leading-relaxed mb-5">
-              Still deciding, or got a question first? Ask us anything — no booking needed.
-            </p>
-            <WhatsAppCta
-              message={message}
-              source={source}
-              label="Any questions? Message us on WhatsApp"
             />
           </div>
         </div>
@@ -240,13 +243,13 @@ export default function AdLandingPage({
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <WhatsAppCta message={message} source={`${source}_closing`} />
             <BookCta
               source={`${source}_closing`}
-              className="inline-flex items-center justify-center gap-3 bg-tropic-coral text-white font-semibold px-8 py-4 rounded-full hover:bg-sunrise transition-colors text-base"
+              className="inline-flex items-center justify-center gap-3 bg-transparent text-warm-white font-semibold px-8 py-4 rounded-full border-2 border-warm-white/40 hover:bg-warm-white/10 transition-colors text-base"
             >
               Book your spot
             </BookCta>
-            <WhatsAppCta message={message} source={source} variant="outlineDark" />
           </div>
 
           {/* Reachable, just not a tracked CTA — the phone converts worst of the three. */}
@@ -263,22 +266,21 @@ export default function AdLandingPage({
           suppressed on these routes (see WhatsAppFab), so nothing overlaps this. */}
       <div className="sm:hidden h-20" aria-hidden="true" />
       <div className="sm:hidden fixed bottom-0 inset-x-0 z-40 flex gap-3 p-3 bg-warm-white border-t border-charcoal-sea/10 [padding-bottom:calc(0.75rem+env(safe-area-inset-bottom))]">
-        {/* 2:1 in booking's favour — this bar is the main CTA on mobile, and booking is the
-            only conversion we count. WhatsApp stays reachable, just clearly secondary, and
-            it carries this page's own pre-filled message rather than the generic one. */}
-        <BookCta
-          source={`${source}_sticky`}
-          className="flex-[2] inline-flex items-center justify-center gap-2 bg-tropic-coral text-white font-semibold px-4 py-3.5 rounded-full text-base"
-        >
-          Book your spot
-        </BookCta>
+        {/* 2:1 in WhatsApp's favour — most visitors don't want to fill in the form on a
+            phone screen, so chat is the main CTA on mobile now. Booking stays reachable,
+            just clearly secondary. */}
         <WhatsAppCta
           message={message}
           source={`${source}_sticky`}
           label="WhatsApp"
-          variant="outline"
-          className="flex-1 !px-4 !py-3.5"
+          className="flex-[2] !px-4 !py-3.5"
         />
+        <BookCta
+          source={`${source}_sticky`}
+          className="flex-1 inline-flex items-center justify-center gap-2 bg-transparent text-charcoal-sea font-semibold px-4 py-3.5 rounded-full border-2 border-charcoal-sea/25 text-base"
+        >
+          Book
+        </BookCta>
       </div>
     </>
   );

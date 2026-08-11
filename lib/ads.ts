@@ -14,13 +14,19 @@ const ADS_ID = "AW-18356209738";
  */
 export const CONVERSIONS = {
   /**
-   * "WhatsApp chat" — Contact category, marked SECONDARY in Ads. Chats don't
-   * reliably become bookings, so this reports chat volume without steering
-   * Smart Bidding; only `form` below is primary. (Replaces the old "WhatsApp
-   * click" action, which is REMOVED and whose name is still reserved.)
+   * "WhatsApp chat" — Contact category. Most visitors now convert here rather
+   * than through the form (it's the primary CTA on the ad pages), so this
+   * should be marked PRIMARY in the Ads UI so Smart Bidding steers on it.
+   * Note: unlike `form`, WhatsApp clicks don't send value/transaction_id — a
+   * click isn't a confirmed lead — so bidding optimizes on click volume, not
+   * lead value. (Replaces the old "WhatsApp click" action, which is REMOVED
+   * and whose name is still reserved.)
    */
   whatsapp: `${ADS_ID}/YR3TCNDant4cEMqQ9rBE`,
-  /** "Booking form submitted" — Submit lead form category. Sends value + transaction_id. */
+  /**
+   * "Booking form submitted" — Submit lead form category. Sends value +
+   * transaction_id. Now SECONDARY in the Ads UI — WhatsApp above is primary.
+   */
   form: `${ADS_ID}/wS7xCI3FrtocEMqQ9rBE`,
 };
 
