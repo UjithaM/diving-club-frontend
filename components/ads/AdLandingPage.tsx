@@ -83,12 +83,12 @@ export default function AdLandingPage({
           </h1>
           <p className="text-warm-white/70 text-lg leading-relaxed mb-9 max-w-xl">{subheading}</p>
 
-          {/* Desktop only — there's no sticky bar up there, so these are the CTAs above
-              the fold. On mobile the sticky bar carries both already. WhatsApp leads:
-              most visitors bounce off the multi-field form, so chat is the easy first
-              move and booking direct is the fallback for people who already know what
-              they want. */}
-          <div className="hidden sm:flex items-center gap-4">
+          {/* Same CTAs on every breakpoint now — no separate mobile sticky bar, so this
+              is the one place mobile gets a CTA above the fold. WhatsApp leads: most
+              visitors bounce off the multi-field form, so chat is the easy first move
+              and booking direct is the fallback for people who already know what they
+              want. */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
             <WhatsAppCta message={message} source={`${source}_hero`} label="WhatsApp us" />
             <BookCta
               source={`${source}_hero`}
@@ -260,28 +260,6 @@ export default function AdLandingPage({
           </p>
         </div>
       </section>
-
-      {/* Mobile's only CTA between the hero and the bottom of the page. pb-24 on the
-          closing section keeps the bar off the footer text. The floating WhatsApp button is
-          suppressed on these routes (see WhatsAppFab), so nothing overlaps this. */}
-      <div className="sm:hidden h-20" aria-hidden="true" />
-      <div className="sm:hidden fixed bottom-0 inset-x-0 z-40 flex gap-3 p-3 bg-warm-white border-t border-charcoal-sea/10 [padding-bottom:calc(0.75rem+env(safe-area-inset-bottom))]">
-        {/* 2:1 in WhatsApp's favour — most visitors don't want to fill in the form on a
-            phone screen, so chat is the main CTA on mobile now. Booking stays reachable,
-            just clearly secondary. */}
-        <WhatsAppCta
-          message={message}
-          source={`${source}_sticky`}
-          label="WhatsApp"
-          className="flex-[2] !px-4 !py-3.5"
-        />
-        <BookCta
-          source={`${source}_sticky`}
-          className="flex-1 inline-flex items-center justify-center gap-2 bg-transparent text-charcoal-sea font-semibold px-4 py-3.5 rounded-full border-2 border-charcoal-sea/25 text-base"
-        >
-          Book
-        </BookCta>
-      </div>
     </>
   );
 }

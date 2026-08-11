@@ -5,7 +5,7 @@ import { CONVERSIONS, trackConversion } from "@/lib/ads";
 const WHATSAPP_NUMBER = "94743945010";
 
 const VARIANTS = {
-  pill: "gap-3 bg-[#25D366] text-white font-semibold px-8 py-4 rounded-full hover:brightness-95 transition text-base",
+  pill: "gap-3 bg-[#25D366] text-white font-semibold px-8 py-4 rounded-full hover:brightness-95 transition text-base whatsapp-glow",
   /** Text-weight, for sitting inside a sentence rather than owning its own block. */
   inline:
     "gap-1.5 text-[#128C4A] font-bold underline underline-offset-2 hover:no-underline text-sm",
