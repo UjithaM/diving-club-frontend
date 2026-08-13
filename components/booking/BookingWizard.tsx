@@ -29,12 +29,41 @@ const certOptions = [
 
 type BookingType = "course" | "activity" | "dive-site";
 
+/**
+ * The activity a dive site is booked as. Dive sites are places, not products — they carry no
+ * price and the backend has no item to match them against, so picking one books a fun dive
+ * and records which site they asked for.
+ *
+ * ponytail: matched by name. If admin renames the activity the booking is rejected with the
+ * backend's own message rather than failing quietly — swap to a slug if that gets annoying.
+ */
+const DIVE_SITE_ACTIVITY = "Fun Dive";
+
 /** One thing being booked. The cap belongs to the item, so quantity lives on the line. */
 export interface BookingLine {
   type: BookingType;
   item: string;
   /** Dives per person. Only ever sent for items with a maxQuantity. */
   quantity: string;
+  /** Set only for dive sites: the place they asked for, passed along in the notes. */
+  site?: string;
+}
+
+/** Turns whatever the picker holds into a line the backend can actually resolve. */
+function toLine(type: BookingType, name: string): BookingLine {
+  return type === "dive-site"
+    ? { type: "activity", item: DIVE_SITE_ACTIVITY, quantity: "1", site: name }
+    : { type, item: name, quantity: "1" };
+}
+
+/** What the customer chose, not what gets posted — "Fun Dive at Swami Rock". */
+function lineLabel(line: BookingLine) {
+  return line.site ? `${line.item} at ${line.site}` : line.item;
+}
+
+/** Unique per line: two fun dives at different sites share an item name. */
+function lineKey(line: BookingLine) {
+  return `${line.item}|${line.site ?? ""}`;
 }
 
 export interface BookingDraft {
@@ -316,7 +345,7 @@ function SuccessScreen({ draft }: { draft: BookingDraft }) {
     });
   }, []);
 
-  const itemNames = draft.lines.map((l) => l.item).join(", ");
+  const itemNames = draft.lines.map(lineLabel).join(", ");
   const waText = encodeURIComponent(
     `Hi, I just submitted a booking request for ${itemNames} on ${draft.date}.`
   );
@@ -475,9 +504,9 @@ export default function BookingWizard({
     // A preselected item goes straight into the cart, so the picker starts empty.
     item: hasPreselection ? "" : initialItem ?? "",
     lines: lockedItem
-      ? [{ type: lockedItem.type as BookingType, item: lockedItem.name, quantity: "1" }]
+      ? [toLine(lockedItem.type as BookingType, lockedItem.name)]
       : initialType && initialItem
-      ? [{ type: validType, item: initialItem, quantity: "1" }]
+      ? [toLine(validType, initialItem)]
       : [],
     name: "",
     email: "",
@@ -576,14 +605,17 @@ export default function BookingWizard({
 
   function addLine() {
     if (!draft.item) return;
+    const line = toLine(draft.bookingType, draft.item);
 
-    if (draft.lines.some((l) => l.item === draft.item)) {
+    // Two fun dives at two different sites are a fair thing to want, so the site counts
+    // towards identity here.
+    if (draft.lines.some((l) => l.item === line.item && l.site === line.site)) {
       setErrors((e) => ({ ...e, item: "That's already in your booking." }));
       return;
     }
     // The backend refuses a booking that mixes currencies, so catch it here rather than
     // let them fill in three more steps and eat a rejection at the end.
-    const currency = optionFor(draft.bookingType, draft.item)?.currency;
+    const currency = optionFor(line.type, line.item)?.currency;
     if (currency && cartCurrency && currency !== cartCurrency) {
       setErrors((e) => ({
         ...e,
@@ -592,10 +624,7 @@ export default function BookingWizard({
       return;
     }
 
-    dispatch({
-      type: "ADD_LINE",
-      line: { type: draft.bookingType, item: draft.item, quantity: "1" },
-    });
+    dispatch({ type: "ADD_LINE", line });
     setErrors((e) => ({ ...e, item: undefined }));
   }
 
@@ -706,7 +735,16 @@ export default function BookingWizard({
             ...(lineMaxQuantity(line) ? { quantity: Number(line.quantity) } : {}),
           })),
           certificationLevel: draft.certificationLevel,
-          notes: draft.notes,
+          // The sites they picked have nowhere else to go — the backend books the fun dive,
+          // the crew reads the sites here.
+          notes: [
+            draft.notes,
+            ...draft.lines
+              .filter((l) => l.site)
+              .map((l) => `Dive site requested: ${l.site}`),
+          ]
+            .filter(Boolean)
+            .join("\n"),
           // Which ad brought them here. Undefined on organic traffic, so the key drops out.
           attribution: getAttribution(),
           ...(activeDiscount && discountCode ? { discount_code: discountCode } : {}),
@@ -848,6 +886,11 @@ export default function BookingWizard({
                 {money(pickerItem.price, pickerItem.currency ?? "USD")} per person
               </p>
             )}
+            {draft.bookingType === "dive-site" && draft.item && (
+              <p className="text-xs text-charcoal-sea/45 mt-2">
+                We&apos;ll book you a fun dive and note that you want to dive {draft.item}.
+              </p>
+            )}
 
             <button
               type="button"
@@ -864,11 +907,11 @@ export default function BookingWizard({
             <ul className="mt-5 space-y-2">
               {cart.map(({ line, option }, i) => (
                 <li
-                  key={line.item}
+                  key={lineKey(line)}
                   className="flex items-center gap-3 rounded-xl border border-charcoal-sea/15 bg-white px-4 py-3"
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-charcoal-sea">{line.item}</p>
+                    <p className="text-sm font-semibold text-charcoal-sea">{lineLabel(line)}</p>
                     <p className="text-xs text-charcoal-sea/50 mt-0.5">
                       {typeLabel(line.type)}
                       {option?.price
@@ -885,7 +928,7 @@ export default function BookingWizard({
                     <button
                       type="button"
                       onClick={() => dispatch({ type: "REMOVE_LINE", index: i })}
-                      aria-label={`Remove ${line.item} from your booking`}
+                      aria-label={`Remove ${lineLabel(line)} from your booking`}
                       className="shrink-0 w-8 h-8 rounded-full text-charcoal-sea/40 hover:bg-tropic-coral/10 hover:text-tropic-coral transition-colors"
                     >
                       ✕
@@ -1038,11 +1081,11 @@ export default function BookingWizard({
               if (!max) return null;
               const error = errors[`quantity.${i}`];
               return (
-                <div key={line.item}>
+                <div key={lineKey(line)}>
                   <label htmlFor={`quantity-${i}`} className={labelClass}>
                     How many dives?
                     {draft.lines.length > 1 && (
-                      <span className="font-normal text-charcoal-sea/50"> — {line.item}</span>
+                      <span className="font-normal text-charcoal-sea/50"> — {lineLabel(line)}</span>
                     )}
                   </label>
                   <input
@@ -1104,11 +1147,11 @@ export default function BookingWizard({
           <div className="bg-charcoal-sea rounded-2xl p-6 mb-5">
             <div className="space-y-4 mb-5">
               {cart.map(({ line, option }) => (
-                <div key={line.item}>
+                <div key={lineKey(line)}>
                   <span className="inline-block bg-tropic-coral text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-2">
-                    {typeLabel(line.type)}
+                    {line.site ? "Dive Site" : typeLabel(line.type)}
                   </span>
-                  <p className="text-warm-white font-bold text-lg leading-snug">{line.item}</p>
+                  <p className="text-warm-white font-bold text-lg leading-snug">{lineLabel(line)}</p>
                   {option?.maxQuantity && (
                     <p className="text-warm-white/50 text-xs mt-1">
                       {line.quantity} {Number(line.quantity) === 1 ? "dive" : "dives"} each
@@ -1143,7 +1186,7 @@ export default function BookingWizard({
               {sub > 0 && (
                 <div className="border-t border-white/10 pt-3 space-y-2">
                   {cart.map(({ line, option, quantity }) => (
-                    <div key={line.item} className="flex justify-between gap-3">
+                    <div key={lineKey(line)} className="flex justify-between gap-3">
                       <span className="text-warm-white/50">
                         {money(option?.price ?? 0, option?.currency ?? itemCurrency)} × {draft.people}
                         {option?.maxQuantity ? ` × ${line.quantity} dives` : ""}

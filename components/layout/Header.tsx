@@ -61,7 +61,10 @@ function DesktopDropdown({ label, href, baseHref, items, scrolled }: DropdownPro
         <ChevronDown className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
       </button>
 
-      <div className="absolute top-full left-0 w-60 pt-2 z-50">
+      {/* The wrapper is always mounted, so it must not eat clicks while the menu is shut —
+          without this it hangs an invisible 240px column over whatever is below the header.
+          The panel inside turns pointer events back on when it opens. */}
+      <div className="absolute top-full left-0 w-60 pt-2 z-50 pointer-events-none">
         <div
           className={`rounded-xl overflow-hidden border border-charcoal-sea/10 shadow-xl bg-warm-white transition-all duration-200 ${
             open
