@@ -1,6 +1,6 @@
 // node --experimental-strip-types lib/discount.check.ts
 import assert from "node:assert";
-import { depositRuleLabel, headcount, previewDiscount, subtotal } from "./discount.ts";
+import { cartSubtotal, depositRuleLabel, headcount, previewDiscount, subtotal } from "./discount.ts";
 
 // "7+" is a real option in the booking form's people select.
 assert.strictEqual(headcount("7+"), 7);
@@ -14,6 +14,16 @@ assert.strictEqual(headcount("-4"), 1);
 assert.strictEqual(subtotal(350, "2"), 700);
 assert.strictEqual(subtotal(40, "7+"), 280);
 assert.strictEqual(subtotal(79.9, "3"), 239.7, "no floating-point dust");
+
+// A cart shares one headcount across every line.
+assert.strictEqual(
+  cartSubtotal([{ price: 350, quantity: 1 }, { price: 40, quantity: 3 }], "2"),
+  940,
+  "2 × (350 + 40×3)"
+);
+assert.strictEqual(cartSubtotal([], "2"), 0, "empty cart costs nothing");
+assert.strictEqual(cartSubtotal([{ quantity: 1 }], "2"), 0, "an item with no price yet is free");
+assert.strictEqual(cartSubtotal([{ price: 79.9, quantity: 1 }], "3"), 239.7, "no floating-point dust");
 
 // Percentage is straightforward.
 assert.strictEqual(previewDiscount(790, "percentage", 10), 79);

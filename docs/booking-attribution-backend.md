@@ -6,7 +6,8 @@ The frontend side is **done and deployed-ready**. It now posts one extra key wit
 
 ```json
 {
-  "name": "…", "email": "…", "item": "…",
+  "name": "…", "email": "…", "people": 2,
+  "items": [{ "bookingFor": "activity", "item": "Fun Dive", "quantity": 3 }],
   "attribution": {
     "gclid": "CjwKCAjw...",
     "utm_source": "google",

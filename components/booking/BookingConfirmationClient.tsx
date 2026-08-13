@@ -187,7 +187,14 @@ export default function BookingConfirmationClient({ bookingRef }: Props) {
         </p>
         <div className="space-y-3 text-sm">
           <SummaryRow label="Reference" value={booking.reference ?? bookingRef} mono />
-          <SummaryRow label="Item" value={booking.item} />
+          {/* One booking can hold several items. `quantity` is already people × per-person. */}
+          {booking.items?.map((item) => (
+            <SummaryRow
+              key={item.name}
+              label="Item"
+              value={item.quantity > 1 ? `${item.name} × ${item.quantity}` : item.name}
+            />
+          ))}
           <SummaryRow label="Date" value={booking.booking_date} />
           <SummaryRow label="People" value={String(booking.participants)} />
           {booking.discount_amount > 0 && (

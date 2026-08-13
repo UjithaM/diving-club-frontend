@@ -207,8 +207,8 @@ export interface BookingConfirmation {
   status: "pending" | "confirmed" | "cancelled" | "completed";
   payment_status: "unpaid" | "partial" | "paid";
   booking_date: string;
-  booking_type: string;
-  item: string;
+  /** One entry per booked item. `quantity` is already people × per-person quantity. */
+  items: { name: string; quantity: number }[];
   participants: number;
   /** Already discounted. Don't subtract discount_amount again. */
   total_price: number;

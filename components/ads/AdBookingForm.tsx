@@ -210,10 +210,10 @@ export default function AdBookingForm({
           email,
           ...splitPhone(phone),
           date: getValue("date"),
-          people,
-          ...(quantity ? { quantity } : {}),
-          bookingFor,
-          item: itemName,
+          // The backend wants an integer, and "7+" is a real option in the select.
+          people: headcount(people),
+          // An ad page sells one thing, so the cart the backend expects is one line long.
+          items: [{ bookingFor, item: itemName, ...(quantity ? { quantity } : {}) }],
           // Which ad brought them here. Undefined on organic traffic, so the key drops out.
           attribution: getAttribution(),
         }),
@@ -473,7 +473,11 @@ export default function AdBookingForm({
               step={1}
               defaultValue={1}
               className={inputClass}
+              {...errorProps("quantity")}
             />
+            {/* Only ever set by the backend rejecting the cap — the input's own max is
+                decoration on a noValidate form. */}
+            <FieldError id="quantity-error" message={errors.quantity} />
             <p className="text-xs text-charcoal-sea/40 mt-1.5">
               Each person, up to {maxQuantity}.
             </p>

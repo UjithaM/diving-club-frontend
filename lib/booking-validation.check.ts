@@ -46,4 +46,25 @@ assert.deepStrictEqual(
 assert.deepStrictEqual(fieldErrorsFromApi({ people: "Required" }), {}, "unknown fields ignored");
 assert.deepStrictEqual(fieldErrorsFromApi({}), {});
 
+// The payload is an items[] array now — indexed keys have to reach the single ad-form input.
+assert.deepStrictEqual(
+  fieldErrorsFromApi({ "items.0.item": "The selected item was not found." }),
+  { item: "The selected item was not found." }
+);
+assert.deepStrictEqual(
+  fieldErrorsFromApi({ "items.0.quantity": "You can book at most 4 of these at a time." }),
+  { quantity: "You can book at most 4 of these at a time." }
+);
+// Whole-cart complaints (mixed currencies, missing array) show on the item select.
+assert.deepStrictEqual(
+  fieldErrorsFromApi({ items: "The items field is required." }),
+  { item: "The items field is required." }
+);
+// First one wins, same as every other field.
+assert.deepStrictEqual(
+  fieldErrorsFromApi({ "items.0.item": "first", "items.1.item": "second" }),
+  { item: "first" }
+);
+assert.deepStrictEqual(fieldErrorsFromApi({ "items.0.unitPrice": "nope" }), {}, "unknown line fields ignored");
+
 console.log("ok");

@@ -7,7 +7,7 @@
  */
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export type BookingField = "item" | "name" | "email" | "phone" | "date";
+export type BookingField = "item" | "quantity" | "name" | "email" | "phone" | "date";
 
 /** Local YYYY-MM-DD. Not toISOString(), which shifts the day either side of UTC. */
 export function todayISO(now = new Date()): string {
@@ -23,6 +23,10 @@ export function validateField(field: BookingField, value: string, today = todayI
   switch (field) {
     case "item":
       return v ? "" : "Pick what you'd like to book.";
+
+    // Only ever set from a backend rejection — the cap lives on the item, not here.
+    case "quantity":
+      return "";
 
     case "name":
       return v.length >= 2 ? "" : "Please tell us your name.";
@@ -44,14 +48,26 @@ export function validateField(field: BookingField, value: string, today = todayI
   }
 }
 
-/** Maps the backend's `fields` object onto our field names. */
+const FIELDS: BookingField[] = ["item", "quantity", "name", "email", "phone", "date"];
+
+/**
+ * Maps the backend's `fields` object onto our field names.
+ *
+ * The booking payload is an `items` array, so rejections come back keyed `items.0.item`,
+ * `items.0.quantity`, or a bare `items` for whole-cart complaints (mixed currencies).
+ * The ad form only ever sends one line, so the index is dropped and the message lands on
+ * the single input.
+ */
 export function fieldErrorsFromApi(fields: Record<string, string>): Partial<Record<BookingField, string>> {
   const out: Partial<Record<BookingField, string>> = {};
   for (const [key, message] of Object.entries(fields ?? {})) {
-    // country_code and phone are one input as far as the visitor is concerned.
-    const field = key === "country_code" ? "phone" : key;
-    if (field === "item" || field === "name" || field === "email" || field === "phone" || field === "date") {
-      out[field] ??= message;
+    const field =
+      // country_code and phone are one input as far as the visitor is concerned.
+      key === "country_code" ? "phone"
+      : key === "items" ? "item"
+      : key.replace(/^items\.\d+\./, "");
+    if ((FIELDS as string[]).includes(field)) {
+      out[field as BookingField] ??= message;
     }
   }
   return out;

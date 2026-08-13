@@ -23,6 +23,14 @@ export function subtotal(
   return round2(price * headcount(people) * headcount(quantity));
 }
 
+/** Same headcount across every line — one booking, one group of people. */
+export function cartSubtotal(
+  lines: { price?: number; quantity: string | number }[],
+  people: string | number
+): number {
+  return round2(lines.reduce((sum, l) => sum + subtotal(l.price ?? 0, people, l.quantity), 0));
+}
+
 /**
  * Amount off, given the whole booking subtotal.
  *

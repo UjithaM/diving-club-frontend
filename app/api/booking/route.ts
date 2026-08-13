@@ -5,7 +5,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000/
 export async function POST(req: Request) {
   const body = await req.json();
 
-  const { name, email, phone, country_code, date, bookingFor, item, discount_code } = body;
+  const { name, email, phone, country_code, date, items, discount_code } = body;
 
   const missing: Record<string, string> = {};
   if (!name?.trim()) missing.name = "Required";
@@ -18,8 +18,14 @@ export async function POST(req: Request) {
   // comes back 400 with a field error until that rule becomes `nullable`.
   if (date && new Date(date) < new Date(new Date().toDateString()))
     missing.date = "Must be a future date";
-  if (!bookingFor) missing.bookingFor = "Required";
-  if (!item?.trim()) missing.item = "Required";
+  // One booking can hold several items. Only presence is checked here — the backend owns
+  // the catalogue, the per-item quantity caps and the one-currency-per-booking rule.
+  if (!Array.isArray(items) || items.length === 0) missing.items = "Required";
+  else
+    items.forEach((line, i) => {
+      if (!line?.item?.trim()) missing[`items.${i}.item`] = "Required";
+      if (!line?.bookingFor) missing[`items.${i}.bookingFor`] = "Required";
+    });
   // Optional. Validity is the backend's call — it owns redemption state, expiry and the
   // item lock, and deliberately hard-errors rather than silently charging full price.
   if (discount_code && String(discount_code).length > 16)

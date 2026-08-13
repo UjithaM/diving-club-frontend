@@ -10,7 +10,7 @@ import Link from "next/link";
 import type { Deposit, PaymentOptions } from "@/lib/types";
 import type { DiscountLink } from "@/lib/api/discount-links";
 import { discountReasonMessage } from "@/lib/api/discount-links";
-import { depositRuleLabel, previewDiscount, subtotal } from "@/lib/discount";
+import { cartSubtotal, depositRuleLabel, headcount, previewDiscount } from "@/lib/discount";
 import PaymentStep from "@/components/booking/PaymentStep";
 
 // ─── Data ────────────────────────────────────────────────────────────────────
@@ -29,28 +29,53 @@ const certOptions = [
 
 type BookingType = "course" | "activity" | "dive-site";
 
+/** One thing being booked. The cap belongs to the item, so quantity lives on the line. */
+export interface BookingLine {
+  type: BookingType;
+  item: string;
+  /** Dives per person. Only ever sent for items with a maxQuantity. */
+  quantity: string;
+}
+
 export interface BookingDraft {
+  /** Step-1 picker state — what the tabs and select currently show, not what's booked. */
   bookingType: BookingType;
   item: string;
+  /** The booking itself. One entry per item, in the order they were added. */
+  lines: BookingLine[];
   name: string;
   email: string;
   phone: string;
   nationality: string;
   date: string;
   people: string;
-  /** Dives per person. Only ever sent for items with a maxQuantity. */
-  quantity: string;
   certificationLevel: string;
   notes: string;
 }
 
-type Action = { type: "SET_FIELD"; field: keyof BookingDraft; value: string };
+type TextField = Exclude<keyof BookingDraft, "lines">;
+
+type Action =
+  | { type: "SET_FIELD"; field: TextField; value: string }
+  | { type: "ADD_LINE"; line: BookingLine }
+  | { type: "REMOVE_LINE"; index: number }
+  | { type: "SET_LINE_QUANTITY"; index: number; value: string };
 
 function reducer(state: BookingDraft, action: Action): BookingDraft {
-  // The cap belongs to the item, so a 5 chosen for one item must not survive a switch to
-  // another that allows 2 — or to a course, which allows none.
-  const reset = action.field === "item" || action.field === "bookingType" ? { quantity: "1" } : null;
-  return { ...state, ...reset, [action.field]: action.value };
+  switch (action.type) {
+    case "SET_FIELD":
+      return { ...state, [action.field]: action.value };
+    // Adding clears the picker so it's ready for the next item.
+    case "ADD_LINE":
+      return { ...state, lines: [...state.lines, action.line], item: "" };
+    case "REMOVE_LINE":
+      return { ...state, lines: state.lines.filter((_, i) => i !== action.index) };
+    case "SET_LINE_QUANTITY":
+      return {
+        ...state,
+        lines: state.lines.map((l, i) => (i === action.index ? { ...l, quantity: action.value } : l)),
+      };
+  }
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -291,8 +316,9 @@ function SuccessScreen({ draft }: { draft: BookingDraft }) {
     });
   }, []);
 
+  const itemNames = draft.lines.map((l) => l.item).join(", ");
   const waText = encodeURIComponent(
-    `Hi, I just submitted a booking request for ${draft.item} on ${draft.date}.`
+    `Hi, I just submitted a booking request for ${itemNames} on ${draft.date}.`
   );
 
   return (
@@ -335,10 +361,10 @@ function SuccessScreen({ draft }: { draft: BookingDraft }) {
           Booking summary
         </p>
         <div className="space-y-2 text-sm">
-          <div className="flex justify-between">
+          <div className="flex justify-between gap-3">
             <span className="text-charcoal-sea/55">What</span>
             <span className="font-semibold text-charcoal-sea text-right max-w-[60%]">
-              {draft.item}
+              {itemNames}
             </span>
           </div>
           <div className="flex justify-between">
@@ -432,7 +458,8 @@ export default function BookingWizard({
   discountCode,
   discountLink = null,
 }: BookingWizardProps) {
-  // A link scoped to one item wins over ?type=&item= — the backend rejects anything else.
+  // A link scoped to one item goes in the cart already discounted. Other items can still be
+  // added alongside it — the backend just applies the discount to that one line.
   const lockedItem = discountLink?.valid ? discountLink.item : null;
 
   const validType = (["course", "activity", "dive-site"] as const).includes(
@@ -441,24 +468,31 @@ export default function BookingWizard({
     ? (initialType as BookingType)
     : "course";
 
+  const hasPreselection = Boolean((initialType && initialItem) || lockedItem);
+
   const [draft, dispatch] = useReducer(reducer, {
     bookingType: lockedItem ? lockedItem.type : validType,
-    item: lockedItem ? lockedItem.name : initialItem ?? "",
+    // A preselected item goes straight into the cart, so the picker starts empty.
+    item: hasPreselection ? "" : initialItem ?? "",
+    lines: lockedItem
+      ? [{ type: lockedItem.type as BookingType, item: lockedItem.name, quantity: "1" }]
+      : initialType && initialItem
+      ? [{ type: validType, item: initialItem, quantity: "1" }]
+      : [],
     name: "",
     email: "",
     phone: "",
     nationality: "",
     date: "",
     people: "1",
-    quantity: "1",
     certificationLevel: "none",
     notes: "",
   });
 
-  const hasPreselection = Boolean((initialType && initialItem) || lockedItem);
   const [step, setStep] = useState(hasPreselection ? 2 : 1);
   const [dir, setDir] = useState<"forward" | "backward">("forward");
-  const [errors, setErrors] = useState<Partial<Record<keyof BookingDraft, string>>>({});
+  // Keys are field names, plus `quantity.<line index>` for the per-item dive counts.
+  const [errors, setErrors] = useState<Record<string, string | undefined>>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const topRef = useRef<HTMLDivElement>(null);
 
@@ -472,6 +506,8 @@ export default function BookingWizard({
   const [currency, setCurrency] = useState<string>("USD");
   /** Set when the backend refuses the code at submit — e.g. redeemed since page load. */
   const [discountRejected, setDiscountRejected] = useState<string | null>(null);
+  /** Any other field rejection from the backend, shown on the review step. */
+  const [apiError, setApiError] = useState<string | null>(null);
   const [useDiscount, setUseDiscount] = useState(true);
   const [paymentOptions, setPaymentOptions] = useState<PaymentOptions | null>(null);
   const [paymentOptionsError, setPaymentOptionsError] = useState(false);
@@ -516,7 +552,7 @@ export default function BookingWizard({
     topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [step]);
 
-  function set(field: keyof BookingDraft, value: string) {
+  function set(field: TextField, value: string) {
     dispatch({ type: "SET_FIELD", field, value });
     if (errors[field]) setErrors((e) => ({ ...e, [field]: undefined }));
   }
@@ -526,11 +562,49 @@ export default function BookingWizard({
     setStep(n);
   }
 
+  /** The catalogue entry behind a line, once the options have loaded. */
+  function optionFor(type: BookingType, name: string) {
+    return optionsForType(type, courseOptions, activityOptions, diveSiteOptions).find(
+      (o) => o.name === name
+    );
+  }
+
+  /** Per-person dives, but only for items the admin has opened up to more than one. */
+  function lineMaxQuantity(line: BookingLine) {
+    return optionFor(line.type, line.item)?.maxQuantity ?? null;
+  }
+
+  function addLine() {
+    if (!draft.item) return;
+
+    if (draft.lines.some((l) => l.item === draft.item)) {
+      setErrors((e) => ({ ...e, item: "That's already in your booking." }));
+      return;
+    }
+    // The backend refuses a booking that mixes currencies, so catch it here rather than
+    // let them fill in three more steps and eat a rejection at the end.
+    const currency = optionFor(draft.bookingType, draft.item)?.currency;
+    if (currency && cartCurrency && currency !== cartCurrency) {
+      setErrors((e) => ({
+        ...e,
+        item: `Everything in one booking has to be priced in ${cartCurrency}. Please book the ${currency} items separately.`,
+      }));
+      return;
+    }
+
+    dispatch({
+      type: "ADD_LINE",
+      line: { type: draft.bookingType, item: draft.item, quantity: "1" },
+    });
+    setErrors((e) => ({ ...e, item: undefined }));
+  }
+
   // Step 1 → 2
   function step1Next() {
-    const errs: typeof errors = {};
-    if (!draft.item) errs.item = "Please select what you want to book.";
-    if (Object.keys(errs).length) { setErrors(errs); return; }
+    if (draft.lines.length === 0) {
+      setErrors({ item: "Add at least one thing to your booking." });
+      return;
+    }
     goTo(2);
   }
 
@@ -542,12 +616,14 @@ export default function BookingWizard({
     if (!draft.phone || !isValidPhoneNumber(draft.phone)) errs.phone = "Enter a valid international phone number.";
     if (!draft.date) errs.date = "Please choose a preferred date.";
     // Native min/max don't block a typed-in value outside the range — this form never
-    // submits the browser way, so it's checked here.
-    if (maxQuantity) {
-      const q = Number(draft.quantity);
-      if (!Number.isInteger(q) || q < 1 || q > maxQuantity)
-        errs.quantity = `Choose between 1 and ${maxQuantity} dives.`;
-    }
+    // submits the browser way, so it's checked here. Each item carries its own cap.
+    draft.lines.forEach((line, i) => {
+      const max = lineMaxQuantity(line);
+      if (!max) return;
+      const q = Number(line.quantity);
+      if (!Number.isInteger(q) || q < 1 || q > max)
+        errs[`quantity.${i}`] = `Choose between 1 and ${max} dives.`;
+    });
     if (Object.keys(errs).length) { setErrors(errs); return; }
     goTo(3);
   }
@@ -560,30 +636,56 @@ export default function BookingWizard({
   // ── Price preview ──────────────────────────────────────────────────────────
   // Preview only. Once the booking exists, the server's total_price and discount_amount
   // are the truth — this just stops the customer committing to an unknown number.
-  const selectedItem = optionsForType(
-    draft.bookingType,
-    courseOptions,
-    activityOptions,
-    diveSiteOptions
-  ).find((o) => o.name === draft.item);
 
-  const itemCurrency = selectedItem?.currency ?? "USD";
-  /** Non-null only on activities the admin has opened up to multiple dives. */
-  const maxQuantity = selectedItem?.maxQuantity ?? null;
-  const sub = selectedItem?.price
-    ? subtotal(selectedItem.price, draft.people, maxQuantity ? draft.quantity : 1)
-    : 0;
+  /** What the step-1 picker currently has selected — not part of the booking until added. */
+  const pickerItem = optionFor(draft.bookingType, draft.item);
+
+  const cart = draft.lines.map((line) => {
+    const option = optionFor(line.type, line.item);
+    return {
+      line,
+      option,
+      // Courses and one-off activities have no cap, so they never multiply.
+      quantity: option?.maxQuantity ? line.quantity : 1,
+    };
+  });
+
+  /** One booking, one currency — the backend enforces it, so the first line decides. */
+  const cartCurrency = cart.find((c) => c.option?.currency)?.option?.currency;
+  const itemCurrency = cartCurrency ?? pickerItem?.currency ?? "USD";
+  const sub = cartSubtotal(
+    cart.map((c) => ({ price: c.option?.price, quantity: c.quantity })),
+    draft.people
+  );
   const activeDiscount = useDiscount && !discountRejected && discountLink?.valid ? discountLink : null;
+  /**
+   * A link scoped to one item only discounts that item's line; a generic link discounts the
+   * whole cart. Mirrors Api/BookingController::store — if these two disagree, the preview
+   * lies about the total.
+   */
+  const discountedLine = activeDiscount?.item
+    ? cart.find((c) => c.line.item === activeDiscount.item?.name)
+    : null;
+  const discountBase = !activeDiscount
+    ? 0
+    : activeDiscount.item
+    ? cartSubtotal(discountedLine ? [{ price: discountedLine.option?.price, quantity: discountedLine.quantity }] : [], draft.people)
+    : sub;
   const discountOff = activeDiscount
-    ? previewDiscount(sub, activeDiscount.discount_type, activeDiscount.discount_value)
+    ? previewDiscount(discountBase, activeDiscount.discount_type, activeDiscount.discount_value)
     : 0;
   const previewTotal = Math.max(sub - discountOff, 0);
-  const depositLabel = depositRuleLabel(selectedItem?.deposit, itemCurrency);
+  // The advance is per booking, so one label for the cart. The server computes the amount.
+  const depositLabel = depositRuleLabel(
+    cart.find((c) => c.option?.deposit?.enabled)?.option?.deposit,
+    itemCurrency
+  );
 
   // Step 3 → POST booking → advance to step 4 (payment) or show success
   async function step3Submit() {
     setStatus("submitting");
     setDiscountRejected(null);
+    setApiError(null);
     try {
       const res = await fetch("/api/booking", {
         method: "POST",
@@ -594,11 +696,15 @@ export default function BookingWizard({
           ...splitPhone(draft.phone),
           nationality: draft.nationality,
           date: draft.date,
-          people: draft.people,
-          // Only items with a cap take a quantity — everything else has no key at all.
-          ...(maxQuantity ? { quantity: Number(draft.quantity) } : {}),
-          bookingFor: draft.bookingType === "course" ? "course" : "activity",
-          item: draft.item,
+          // The backend wants an integer, and "7+" is a real option in the select.
+          people: headcount(draft.people),
+          items: draft.lines.map((line) => ({
+            // Dive sites are booked as activities — the backend has no third type.
+            bookingFor: line.type === "course" ? "course" : "activity",
+            item: line.item,
+            // Only items with a cap take a quantity — everything else has no key at all.
+            ...(lineMaxQuantity(line) ? { quantity: Number(line.quantity) } : {}),
+          })),
           certificationLevel: draft.certificationLevel,
           notes: draft.notes,
           // Which ad brought them here. Undefined on organic traffic, so the key drops out.
@@ -614,6 +720,16 @@ export default function BookingWizard({
         const codeError = data?.fields?.discount_code;
         if (codeError) {
           setDiscountRejected(codeError);
+          setStatus("idle");
+          topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+          return;
+        }
+        // Anything else the backend named — an item that went inactive, a quantity over the
+        // cap, mixed currencies. Say what it was; "something went wrong" isn't actionable,
+        // and the offending input is a step or two back from here.
+        const fieldError = Object.values((data?.fields ?? {}) as Record<string, string>)[0];
+        if (fieldError) {
+          setApiError(fieldError);
           setStatus("idle");
           topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
           return;
@@ -670,7 +786,8 @@ export default function BookingWizard({
         <StepPanel dir={dir}>
           <h2 className="text-charcoal-sea text-xl font-bold mb-1">What would you like to book?</h2>
           <p className="text-charcoal-sea/55 text-sm mb-6 leading-relaxed">
-            Pick a type and then choose the specific course, activity, or dive site.
+            Pick a type, choose the course, activity or dive site, and add it. You can add as
+            many as you like — it all goes on one booking.
           </p>
 
           {/* Type tabs */}
@@ -681,9 +798,6 @@ export default function BookingWizard({
                 <button
                   key={value}
                   type="button"
-                  // The link is tied to one item; submitting anything else gets rejected,
-                  // so disable rather than let them pick a dead end.
-                  disabled={Boolean(lockedItem)}
                   onClick={() => {
                     set("bookingType", value);
                     set("item", "");
@@ -710,7 +824,7 @@ export default function BookingWizard({
               id="item"
               value={draft.item}
               onChange={(e) => set("item", e.target.value)}
-              disabled={optionsLoading || Boolean(lockedItem)}
+              disabled={optionsLoading}
               className={`${inputClass} ${errors.item ? "border-tropic-coral ring-1 ring-tropic-coral" : ""} disabled:opacity-60`}
             >
               <option value="">
@@ -726,26 +840,74 @@ export default function BookingWizard({
                 <option key={opt.slug || opt.name} value={opt.name}>{opt.name}</option>
               ))}
             </select>
-            {lockedItem && (
-              <p className="text-xs text-charcoal-sea/45 mt-1.5">
-                Your discount link only applies to this one, so it&apos;s fixed.
-              </p>
-            )}
             {errors.item && (
               <p className="text-tropic-coral text-xs mt-1.5">{errors.item}</p>
             )}
-            {!lockedItem && sub > 0 && (
+            {pickerItem?.price != null && pickerItem.price > 0 && (
               <p className="text-xs text-charcoal-sea/55 mt-2">
-                {money(selectedItem?.price ?? 0, itemCurrency)} per person
-                {depositLabel ? ` · ${depositLabel}` : ""}
+                {money(pickerItem.price, pickerItem.currency ?? "USD")} per person
               </p>
             )}
+
+            <button
+              type="button"
+              onClick={addLine}
+              disabled={!draft.item}
+              className="mt-3 w-full min-h-[48px] rounded-xl border border-dashed border-charcoal-sea/30 text-charcoal-sea font-semibold text-sm hover:border-shallow-water hover:text-shallow-water transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-charcoal-sea/30 disabled:hover:text-charcoal-sea"
+            >
+              + Add to booking
+            </button>
           </div>
+
+          {/* The booking itself. Everything in here gets submitted as one request. */}
+          {draft.lines.length > 0 && (
+            <ul className="mt-5 space-y-2">
+              {cart.map(({ line, option }, i) => (
+                <li
+                  key={line.item}
+                  className="flex items-center gap-3 rounded-xl border border-charcoal-sea/15 bg-white px-4 py-3"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold text-charcoal-sea">{line.item}</p>
+                    <p className="text-xs text-charcoal-sea/50 mt-0.5">
+                      {typeLabel(line.type)}
+                      {option?.price
+                        ? ` · ${money(option.price, option.currency ?? "USD")} per person`
+                        : ""}
+                    </p>
+                  </div>
+                  {lockedItem?.name === line.item ? (
+                    // Removing it would throw away the discount they followed a link for.
+                    <span className="shrink-0 text-xs font-bold text-shallow-water">
+                      Discounted
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => dispatch({ type: "REMOVE_LINE", index: i })}
+                      aria-label={`Remove ${line.item} from your booking`}
+                      className="shrink-0 w-8 h-8 rounded-full text-charcoal-sea/40 hover:bg-tropic-coral/10 hover:text-tropic-coral transition-colors"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {sub > 0 && (
+            <p className="text-xs text-charcoal-sea/55 mt-3">
+              {money(sub, itemCurrency)} for {headcount(draft.people)}{" "}
+              {headcount(draft.people) === 1 ? "person" : "people"}
+              {depositLabel ? ` · ${depositLabel}` : ""}
+            </p>
+          )}
 
           <StickyNav
             nextLabel="Next: Your details →"
             onNext={step1Next}
-            nextDisabled={!draft.item}
+            nextDisabled={draft.lines.length === 0}
           />
         </StepPanel>
       )}
@@ -867,31 +1029,43 @@ export default function BookingWizard({
               </select>
             </div>
 
-            {/* Dives per person — activities with a maxQuantity only. Lives on this step,
-                not step 1: a link like /book?type=activity&item=Fun%20Dive opens straight
-                on step 2, so anything on step 1 would never be seen. */}
-            {maxQuantity && (
-              <div>
-                <label htmlFor="quantity" className={labelClass}>
-                  How many dives?
-                </label>
-                <input
-                  id="quantity"
-                  type="number"
-                  inputMode="numeric"
-                  min={1}
-                  max={maxQuantity}
-                  step={1}
-                  value={draft.quantity}
-                  onChange={(e) => set("quantity", e.target.value)}
-                  className={`${inputClass} ${errors.quantity ? "border-tropic-coral ring-1 ring-tropic-coral" : ""}`}
-                />
-                {errors.quantity
-                  ? <p className="text-tropic-coral text-xs mt-1.5">{errors.quantity}</p>
-                  : <p className="text-xs text-charcoal-sea/40 mt-1.5">Each person, up to {maxQuantity}. Every dive goes to a different site.</p>
-                }
-              </div>
-            )}
+            {/* Dives per person — one input per item with a maxQuantity, since each item
+                carries its own cap. Lives on this step, not step 1: a link like
+                /book?type=activity&item=Fun%20Dive opens straight on step 2, so anything on
+                step 1 would never be seen. */}
+            {cart.map(({ line, option }, i) => {
+              const max = option?.maxQuantity;
+              if (!max) return null;
+              const error = errors[`quantity.${i}`];
+              return (
+                <div key={line.item}>
+                  <label htmlFor={`quantity-${i}`} className={labelClass}>
+                    How many dives?
+                    {draft.lines.length > 1 && (
+                      <span className="font-normal text-charcoal-sea/50"> — {line.item}</span>
+                    )}
+                  </label>
+                  <input
+                    id={`quantity-${i}`}
+                    type="number"
+                    inputMode="numeric"
+                    min={1}
+                    max={max}
+                    step={1}
+                    value={line.quantity}
+                    onChange={(e) => {
+                      dispatch({ type: "SET_LINE_QUANTITY", index: i, value: e.target.value });
+                      if (error) setErrors((prev) => ({ ...prev, [`quantity.${i}`]: undefined }));
+                    }}
+                    className={`${inputClass} ${error ? "border-tropic-coral ring-1 ring-tropic-coral" : ""}`}
+                  />
+                  {error
+                    ? <p className="text-tropic-coral text-xs mt-1.5">{error}</p>
+                    : <p className="text-xs text-charcoal-sea/40 mt-1.5">Each person, up to {max}. Every dive goes to a different site.</p>
+                  }
+                </div>
+              );
+            })}
 
             {/* Certification */}
             <div>
@@ -928,12 +1102,21 @@ export default function BookingWizard({
 
           {/* Summary card */}
           <div className="bg-charcoal-sea rounded-2xl p-6 mb-5">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="inline-block bg-tropic-coral text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                {typeLabel(draft.bookingType)}
-              </span>
+            <div className="space-y-4 mb-5">
+              {cart.map(({ line, option }) => (
+                <div key={line.item}>
+                  <span className="inline-block bg-tropic-coral text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-2">
+                    {typeLabel(line.type)}
+                  </span>
+                  <p className="text-warm-white font-bold text-lg leading-snug">{line.item}</p>
+                  {option?.maxQuantity && (
+                    <p className="text-warm-white/50 text-xs mt-1">
+                      {line.quantity} {Number(line.quantity) === 1 ? "dive" : "dives"} each
+                    </p>
+                  )}
+                </div>
+              ))}
             </div>
-            <p className="text-warm-white font-bold text-lg leading-snug mb-5">{draft.item}</p>
 
             <div className="space-y-3 text-sm">
               <div className="flex justify-between border-t border-white/10 pt-3">
@@ -944,12 +1127,6 @@ export default function BookingWizard({
                 <span className="text-warm-white/50">People</span>
                 <span className="text-warm-white font-semibold">{draft.people} {draft.people === "1" ? "person" : "people"}</span>
               </div>
-              {maxQuantity && (
-                <div className="flex justify-between">
-                  <span className="text-warm-white/50">Dives each</span>
-                  <span className="text-warm-white font-semibold">{draft.quantity}</span>
-                </div>
-              )}
               <div className="flex justify-between">
                 <span className="text-warm-white/50">Level</span>
                 <span className="text-warm-white font-semibold text-right max-w-[60%]">{certLabel(draft.certificationLevel)}</span>
@@ -965,15 +1142,20 @@ export default function BookingWizard({
                   is why this says "estimate" rather than quoting a total as final. */}
               {sub > 0 && (
                 <div className="border-t border-white/10 pt-3 space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-warm-white/50">
-                      {money(selectedItem?.price ?? 0, itemCurrency)} × {draft.people}
-                      {maxQuantity ? ` × ${draft.quantity} dives` : ""}
-                    </span>
-                    <span className="text-warm-white font-semibold">
-                      {money(sub, itemCurrency)}
-                    </span>
-                  </div>
+                  {cart.map(({ line, option, quantity }) => (
+                    <div key={line.item} className="flex justify-between gap-3">
+                      <span className="text-warm-white/50">
+                        {money(option?.price ?? 0, option?.currency ?? itemCurrency)} × {draft.people}
+                        {option?.maxQuantity ? ` × ${line.quantity} dives` : ""}
+                      </span>
+                      <span className="text-warm-white font-semibold whitespace-nowrap">
+                        {money(
+                          cartSubtotal([{ price: option?.price, quantity }], draft.people),
+                          itemCurrency
+                        )}
+                      </span>
+                    </div>
+                  ))}
                   {discountOff > 0 && (
                     <div className="flex justify-between">
                       <span className="text-shallow-water">Discount</span>
@@ -1012,6 +1194,14 @@ export default function BookingWizard({
               className={`${inputClass} resize-none`}
             />
           </div>
+
+          {/* Named by the backend — an item that's no longer bookable, a quantity over its
+              cap, a currency mix. Actionable, unlike the generic failure below. */}
+          {apiError && (
+            <p className="text-tropic-coral text-sm bg-tropic-coral/10 border border-tropic-coral/20 rounded-xl px-4 py-3 mb-4">
+              {apiError}
+            </p>
+          )}
 
           {status === "error" && (
             <p className="text-tropic-coral text-sm bg-tropic-coral/10 border border-tropic-coral/20 rounded-xl px-4 py-3 mb-4">
