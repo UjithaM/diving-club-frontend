@@ -155,42 +155,48 @@ export default function GoogleReviewsSection({
           className="flex gap-4 overflow-x-auto snap-x snap-mandatory -mx-6 px-6 pb-3 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-5 md:overflow-visible md:mx-0 md:px-0 md:pb-0"
         >
           {shown.map((r) => (
-            <figure
+            <a
               key={r.name}
-              className="snap-start shrink-0 w-[85%] max-w-sm md:w-auto md:max-w-none bg-white border border-charcoal-sea/8 rounded-2xl p-6 flex flex-col"
+              href={GOOGLE_LISTING}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Read ${r.name}'s review on Google Maps`}
+              className="snap-start shrink-0 w-[85%] max-w-sm md:w-auto md:max-w-none bg-white border border-charcoal-sea/8 rounded-2xl p-6 flex flex-col hover:border-shallow-water/40 transition-colors"
             >
-              <div className="flex items-center justify-between mb-4">
-                <StarRating rating={r.rating} />
-                <GoogleMark />
-              </div>
-
-              <blockquote className="flex-1">
-                <p className="text-charcoal-sea/70 text-sm leading-relaxed">
-                  &ldquo;{r.text}&rdquo;
-                </p>
-              </blockquote>
-
-              <figcaption className="mt-5 pt-5 border-t border-charcoal-sea/8 flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-tropic-coral/15 flex items-center justify-center flex-shrink-0">
-                  <span className="text-tropic-coral font-bold text-sm">{r.name.charAt(0)}</span>
+              <figure className="flex flex-col flex-1">
+                <div className="flex items-center justify-between mb-4">
+                  <StarRating rating={r.rating} />
+                  <GoogleMark />
                 </div>
-                <div className="min-w-0">
-                  <p className="text-charcoal-sea font-semibold text-sm leading-tight truncate">
-                    {r.name}
+
+                <blockquote className="flex-1">
+                  <p className="text-charcoal-sea/70 text-sm leading-relaxed">
+                    &ldquo;{r.text}&rdquo;
                   </p>
-                  <p className="text-charcoal-sea/40 text-xs">
-                    {r.localGuide ? "Local Guide · " : ""}
-                    {r.date}
-                  </p>
-                  {/* Say whose words these are: Google's translation, not the reviewer's. */}
-                  {r.translatedFrom && (
-                    <p className="text-charcoal-sea/30 text-[11px] mt-0.5">
-                      Translated from {r.translatedFrom}
+                </blockquote>
+
+                <figcaption className="mt-5 pt-5 border-t border-charcoal-sea/8 flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-full bg-tropic-coral/15 flex items-center justify-center flex-shrink-0">
+                    <span className="text-tropic-coral font-bold text-sm">{r.name.charAt(0)}</span>
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-charcoal-sea font-semibold text-sm leading-tight truncate">
+                      {r.name}
                     </p>
-                  )}
-                </div>
-              </figcaption>
-            </figure>
+                    <p className="text-charcoal-sea/40 text-xs">
+                      {r.localGuide ? "Local Guide · " : ""}
+                      {r.date}
+                    </p>
+                    {/* Say whose words these are: Google's translation, not the reviewer's. */}
+                    {r.translatedFrom && (
+                      <p className="text-charcoal-sea/30 text-[11px] mt-0.5">
+                        Translated from {r.translatedFrom}
+                      </p>
+                    )}
+                  </div>
+                </figcaption>
+              </figure>
+            </a>
           ))}
         </div>
 
