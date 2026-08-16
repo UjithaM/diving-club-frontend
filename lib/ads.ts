@@ -8,6 +8,13 @@ declare global {
 const ADS_ID = "AW-18356209738";
 
 /**
+ * Paid landing pages. They render a logo-only header with no nav links and no
+ * WhatsApp FAB — the in-page form and the page's own WhatsApp CTA are the only
+ * ways out, so a click we paid for can't wander into the organic site.
+ */
+export const AD_ROUTES = new Set(["/dive", "/padi", "/fun-dives", "/open-water"]);
+
+/**
  * Google Ads conversion actions, one per lead type, so Smart Bidding can weigh a
  * form booking differently from a chat. Empty string = action not created yet in
  * the Ads UI; trackConversion still fires the GTM event, just not the conversion.

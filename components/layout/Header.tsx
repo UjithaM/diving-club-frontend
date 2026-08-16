@@ -2,11 +2,31 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
+import { AD_ROUTES } from "@/lib/ads";
 
 export interface NavItem {
   slug: string;
   name: string;
+}
+
+function LogoMark({ scrolled }: { scrolled: boolean }) {
+  return (
+    <>
+      <Image
+        src="/logo.webp"
+        alt="Diving Club logo"
+        width={36}
+        height={36}
+        className="rounded-full"
+        priority
+      />
+      <span className={`text-xs font-medium tracking-[0.18em] uppercase ${scrolled ? "text-charcoal-sea" : "text-warm-white"} transition-colors`}>
+        Diving Club
+      </span>
+    </>
+  );
 }
 
 function ChevronDown({ className }: { className?: string }) {
@@ -107,6 +127,7 @@ interface HeaderProps {
 }
 
 export default function Header({ courseItems, experienceItems, diveSiteItems }: HeaderProps) {
+  const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileSection, setMobileSection] = useState<string | null>(null);
   const [hidden, setHidden] = useState(false);
@@ -168,16 +189,28 @@ export default function Header({ courseItems, experienceItems, diveSiteItems }: 
     ? "border border-charcoal-sea text-charcoal-sea text-xs font-medium px-5 py-2 rounded-full hover:bg-charcoal-sea hover:text-warm-white transition-colors duration-200"
     : "border border-warm-white/50 text-warm-white text-xs font-medium px-5 py-2 rounded-full hover:bg-warm-white/10 hover:border-warm-white transition-colors duration-200";
 
+  const barClass = `sticky top-0 z-50 transition-all duration-300 ${
+    hidden ? "-translate-y-full" : "translate-y-0"
+  } ${
+    scrolled
+      ? "bg-warm-white/95 backdrop-blur-md border-b border-charcoal-sea/10"
+      : "bg-charcoal-sea/95 backdrop-blur-sm border-b border-transparent"
+  }`;
+
+  // Ad landers get the logo and nothing else — same 64px sticky bar, so the
+  // #book scroll offsets stay right, but no link to leak a paid click.
+  if (AD_ROUTES.has(pathname)) {
+    return (
+      <header className={barClass}>
+        <div className="max-w-6xl mx-auto px-4 flex items-center gap-2.5 h-16">
+          <LogoMark scrolled={scrolled} />
+        </div>
+      </header>
+    );
+  }
+
   return (
-    <header
-      className={`sticky top-0 z-50 transition-all duration-300 ${
-        hidden ? "-translate-y-full" : "translate-y-0"
-      } ${
-        scrolled
-          ? "bg-warm-white/95 backdrop-blur-md border-b border-charcoal-sea/10"
-          : "bg-charcoal-sea/95 backdrop-blur-sm border-b border-transparent"
-      }`}
-    >
+    <header className={barClass}>
       <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-16">
         {/* Logo */}
         <Link
@@ -185,17 +218,7 @@ export default function Header({ courseItems, experienceItems, diveSiteItems }: 
           className="flex items-center gap-2.5 hover:opacity-85 transition-opacity"
           aria-label="Diving Club — home"
         >
-          <Image
-            src="/logo.webp"
-            alt="Diving Club logo"
-            width={36}
-            height={36}
-            className="rounded-full"
-            priority
-          />
-          <span className={`text-xs font-medium tracking-[0.18em] uppercase ${scrolled ? "text-charcoal-sea" : "text-warm-white"} transition-colors`}>
-            Diving Club
-          </span>
+          <LogoMark scrolled={scrolled} />
         </Link>
 
         {/* Desktop nav */}
