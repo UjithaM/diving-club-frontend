@@ -15,6 +15,8 @@ const VARIANTS = {
   /** Same, on charcoal-sea — #128C4A on dark navy fails contrast, so this goes light. */
   outlineDark:
     "gap-3 bg-transparent text-warm-white font-semibold px-8 py-4 rounded-full border-2 border-[#25D366] hover:bg-[#25D366]/20 transition text-base",
+  /** Compact fill for the mobile sticky bar, where two buttons share the width. */
+  bar: "gap-2 w-full min-h-[48px] bg-[#25D366] text-white font-semibold px-4 py-3 rounded-full text-sm",
 } as const;
 
 interface WhatsAppCtaProps {

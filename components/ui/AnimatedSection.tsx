@@ -17,12 +17,14 @@ export default function AnimatedSection({
 }: AnimatedSectionProps) {
   const [ref, inView] = useInView<HTMLDivElement>("-80px");
 
+  // 16px, not 40: a slide longer than a touch target means a tap mid-transition lands
+  // beside the button rather than on it, which showed up as dead clicks on the ad pages.
   const from =
     direction === "up"
-      ? "translateY(40px)"
+      ? "translateY(16px)"
       : direction === "left"
-      ? "translateX(-40px)"
-      : "translateX(40px)";
+      ? "translateX(-16px)"
+      : "translateX(16px)";
 
   const to = direction === "up" ? "translateY(0)" : "translateX(0)";
 
@@ -33,7 +35,7 @@ export default function AnimatedSection({
       style={{
         opacity: inView ? 1 : 0,
         transform: inView ? to : from,
-        transition: `opacity 0.6s ${delay}s cubic-bezier(0.16,1,0.3,1), transform 0.6s ${delay}s cubic-bezier(0.16,1,0.3,1)`,
+        transition: `opacity 0.45s ${delay}s cubic-bezier(0.16,1,0.3,1), transform 0.45s ${delay}s cubic-bezier(0.16,1,0.3,1)`,
       }}
     >
       {children}

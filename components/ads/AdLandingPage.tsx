@@ -5,6 +5,7 @@ import GoogleReviewsSection from "@/components/ui/GoogleReviewsSection";
 import WhatsAppCta from "./WhatsAppCta";
 import AdBookingForm from "./AdBookingForm";
 import BookCta from "./BookCta";
+import StickyCta from "./StickyCta";
 import type { BookableItem, PageFaq } from "@/lib/types";
 
 const PHONE_DISPLAY = "074 394 5010";
@@ -231,8 +232,9 @@ export default function AdLandingPage({
 
       <FaqAccordion faqs={faqs} />
 
-      {/* Closing CTA */}
-      <section className="bg-charcoal-sea py-16 px-6">
+      {/* Closing CTA. Extra bottom padding on mobile so the sticky bar never covers the
+          address and opening hours. */}
+      <section className="bg-charcoal-sea py-16 pb-32 sm:pb-16 px-6">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-warm-white font-display text-3xl font-extrabold mb-4">
             {closingHeading}
@@ -260,6 +262,8 @@ export default function AdLandingPage({
           </p>
         </div>
       </section>
+
+      <StickyCta message={message} source={source} />
     </>
   );
 }
