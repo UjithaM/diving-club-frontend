@@ -202,13 +202,44 @@ export interface BlogPost {
   featured: boolean;
 }
 
+/** A departure the customer can book, with what's left on it for one date. */
+export interface Slot {
+  id: number;
+  /** "08:00" */
+  start_time: string;
+  /** Derived from the item's duration. Null for courses, which run for days. */
+  end_time: string | null;
+  /** "08:00 – 10:00", or "Starts 08:00" for a course. */
+  label: string;
+  /** 0 means unlimited. */
+  capacity: number;
+  booked: number;
+  /** Null means unlimited — show no counter at all rather than a big number. */
+  remaining: number | null;
+  sold_out: boolean;
+  /** This slot takes the whole boat. */
+  exclusive: boolean;
+  /** Null unless the item is sold by the seat. */
+  seat_map: { rows: number; perRow: number } | null;
+  /** Seat labels already gone on this date. */
+  taken_seats: string[];
+}
+
+/** What one line of the booking picked. `slotId` is null until they choose. */
+export interface SlotChoice {
+  slotId: number | null;
+  seats: string[];
+}
+
 export interface BookingConfirmation {
   reference: string;
   status: "pending" | "confirmed" | "cancelled" | "completed";
   payment_status: "unpaid" | "partial" | "paid";
   booking_date: string;
+  /** "HH:MM" once a slot was booked, otherwise null. */
+  report_time: string | null;
   /** One entry per booked item. `quantity` is already people × per-person quantity. */
-  items: { name: string; quantity: number }[];
+  items: { name: string; quantity: number; report_time?: string | null; seats?: string[] | null }[];
   participants: number;
   /** Already discounted. Don't subtract discount_amount again. */
   total_price: number;

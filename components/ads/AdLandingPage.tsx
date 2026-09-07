@@ -159,11 +159,12 @@ export default function AdLandingPage({
           </AnimatedSection>
 
           {/* The scroll target sits here, not on the section — "Book your spot" has to land
-              on the price and the fields, not on the heading above them. scroll-mt-24 must
-              stay in step with SCROLL_OFFSET in BookCta.tsx: same jump, two code paths.
+              on the price and the fields, not on the heading above them. BookCta computes the
+              landing position itself now, so there's no constant here to keep in step with it;
+              scroll-mt only covers a cold load on the #book hash, where no JS has run.
               No AnimatedSection on this block — it slides as well as fades, and content
               moving into place exactly where you land is what made the jump confusing. */}
-          <div id="book" className="scroll-mt-24">
+          <div id="book" className="scroll-mt-20">
             <AdBookingForm
               bookingFor={bookingFor}
               items={items}

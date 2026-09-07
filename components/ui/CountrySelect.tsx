@@ -187,7 +187,10 @@ export default function CountrySelect({
         aria-expanded={open}
         aria-haspopup="listbox"
         aria-label={`Country: ${selected?.label ?? "International"}. Change`}
-        className="flex items-center gap-1.5 shrink-0 disabled:opacity-50"
+        // The flag and chevron alone are a ~40x16px target, well under the 44x44 minimum, on
+        // the one control every visitor has to hit. Padding grows the hit area; the negative
+        // margin keeps the field looking exactly as it did.
+        className="flex items-center gap-1.5 shrink-0 disabled:opacity-50 min-h-[44px] min-w-[44px] justify-center -my-2 -ml-1 px-1"
       >
         {/* Flag and chevron only. The number input already renders "+94" as a fixed prefix
             (international + countryCallingCodeEditable=false), so a dial code here shows it

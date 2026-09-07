@@ -192,10 +192,18 @@ export default function BookingConfirmationClient({ bookingRef }: Props) {
             <SummaryRow
               key={item.name}
               label="Item"
-              value={item.quantity > 1 ? `${item.name} × ${item.quantity}` : item.name}
+              value={[
+                item.quantity > 1 ? `${item.name} × ${item.quantity}` : item.name,
+                item.report_time,
+                item.seats?.length ? `seats ${item.seats.join(", ")}` : null,
+              ]
+                .filter(Boolean)
+                .join(" · ")}
             />
           ))}
           <SummaryRow label="Date" value={booking.booking_date} />
+          {/* Only set once a time slot was booked; older date-only bookings skip the row. */}
+          {booking.report_time && <SummaryRow label="Report at" value={booking.report_time} />}
           <SummaryRow label="People" value={String(booking.participants)} />
           {booking.discount_amount > 0 && (
             <SummaryRow

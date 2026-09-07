@@ -66,3 +66,22 @@ export function trackConversion(event: string, sendTo: string, opts: TrackOption
   if (opts.userData) window.gtag?.("set", "user_data", opts.userData);
   window.gtag?.("event", "conversion", { send_to: sendTo, ...opts.conversion });
 }
+
+/**
+ * Booking funnel diagnostics. Empty `sendTo` on purpose — these are for reading the drop-off
+ * in GTM, not for bidding, and firing them as conversions would poison Smart Bidding.
+ *
+ * The three together answer "where do people leave?": how many started typing, which field
+ * turned them back, and how many closed the tab without ever submitting.
+ */
+export const trackBookingStart = (source: string) =>
+  trackConversion("booking_form_start", "", { data: { source } });
+
+/** `fields` is every field that failed, first one first — that's the one that took the focus. */
+export const trackBookingBlocked = (source: string, fields: string[]) =>
+  trackConversion("booking_blocked", "", {
+    data: { source, blocked_field: fields[0], blocked_fields: fields.join(",") },
+  });
+
+export const trackBookingAbandon = (source: string, lastField: string) =>
+  trackConversion("booking_abandon", "", { data: { source, last_field: lastField } });

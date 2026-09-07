@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import BookingWizard from "@/components/booking/BookingWizard";
+import BookingForm from "@/components/booking/BookingForm";
 import { getDiscountLink } from "@/lib/api/discount-links";
 import type { WebPage, WithContext } from "schema-dts";
 import { safeJsonLd } from "@/lib/jsonld";
@@ -81,10 +81,10 @@ export default async function BookPage({
         </div>
       </section>
 
-      {/* Wizard */}
+      {/* Booking form */}
       <section className="bg-warm-white min-h-[60vh] py-4">
         {/* searchParams arrives already decoded — decoding again threw URIError on any item containing '%' */}
-        <BookingWizard
+        <BookingForm
           initialType={type}
           initialItem={item}
           discountCode={discount}

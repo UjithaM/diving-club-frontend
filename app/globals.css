@@ -141,6 +141,36 @@ input[type="time"] {
   -webkit-min-logical-width: calc(100% - 2px);
 }
 
+/* Same class of fix, for <select>. Left as menulist, iOS sizes a select to its own native
+   control metrics and under-applies our min-height and padding — so "How many of you?"
+   rendered visibly shorter than the inputs beside it, on phones only. Resetting the
+   appearance makes it lay out like every other field; the chevron is redrawn here because
+   the reset removes the native one. */
+select {
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23264653' stroke-opacity='0.5' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 12px 8px;
+  /* Clears the chevron so a long option label never runs underneath it. */
+  padding-right: 2.5rem;
+}
+
+/* The field that blocked submit, once revealField has scrolled it into view. Colour alone is
+   already on the input via errorInputClass — this is the movement that says "here". */
+@keyframes field-flash {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(231, 111, 81, 0); }
+  25%, 75% { box-shadow: 0 0 0 4px rgba(231, 111, 81, 0.35); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .field-flash {
+    border-radius: 0.75rem;
+    animation: field-flash 1s ease-in-out;
+  }
+}
+
 /* react-phone-number-input overrides */
 .phone-input-wrapper .PhoneInput {
   display: flex;

@@ -2,49 +2,38 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import PhoneInput from "@/components/ui/PhoneInput";
+import { useForm, useWatch } from "react-hook-form";
 import { splitPhone } from "@/lib/phone";
-import { isValidPhoneNumber } from "react-phone-number-input";
-import { CONVERSIONS, trackConversion } from "@/lib/ads";
+import { CONVERSIONS, trackBookingBlocked, trackConversion } from "@/lib/ads";
 import { getAttribution } from "@/lib/attribution";
-import {
-  fieldErrorsFromApi,
-  todayISO,
-  validateField,
-  type BookingField,
-} from "@/lib/booking-validation";
-import type { BookableItem } from "@/lib/types";
+import { useFormAbandon } from "@/lib/hooks/useFormAbandon";
+import { revealField } from "@/lib/revealField";
+import { fieldErrorsFromApi, itemError, type BookingField } from "@/lib/booking-schema";
+import { bookingFormDefaults, type BookingFormValues } from "@/lib/booking-form";
+import { errorId, errorInputClass, inputClass, labelClass } from "@/components/ui/fieldStyles";
+import BookingFields, { FieldError, Req } from "@/components/booking/BookingFields";
+import SlotPicker from "@/components/booking/SlotPicker";
+import type { BookableItem, SlotChoice } from "@/lib/types";
 import { headcount } from "@/lib/discount";
 import WhatsAppCta from "./WhatsAppCta";
 
-// min-h: py-2.5 + text-sm landed at ~42px, under the 44px minimum touch target — and this is
-// the form paid mobile traffic lands on.
-const inputClass =
-  "w-full min-h-[48px] border border-charcoal-sea/20 rounded-xl px-4 py-2.5 text-charcoal-sea placeholder:text-charcoal-sea/40 focus:outline-none focus:ring-2 focus:ring-shallow-water text-sm bg-white";
-
-const labelClass = "block text-sm font-medium text-charcoal-sea mb-1.5";
-
-const errorInputClass =
-  "border-tropic-coral focus:ring-tropic-coral bg-tropic-coral/[0.03]";
-
-function FieldError({ id, message }: { id: string; message?: string }) {
-  if (!message) return null;
-  return (
-    <p id={id} role="alert" className="text-tropic-coral text-xs mt-1.5">
-      {message}
-    </p>
-  );
-}
-
-/** Price, duration and inclusions, straight from the API. Sells the item and confirms the choice. */
+/**
+ * Price, duration and inclusions, straight from the API. Sells the item and confirms the
+ * choice.
+ *
+ * The inclusions sit in a `<details>` rather than an always-open list. Fully expanded this
+ * card ran ~350px, and it's the first thing inside the form — so "Book your spot" landed the
+ * visitor on a price with every input below the fold. Collapsed, the price still lands but
+ * the first fields come with it. Native disclosure, so it works before hydration.
+ */
 function ItemSummary({ item }: { item: BookableItem }) {
   const saving = item.originalPrice && item.originalPrice > item.price
     ? item.originalPrice - item.price
     : 0;
 
   return (
-    <div className="bg-charcoal-sea rounded-2xl p-6">
-      <p className="text-warm-white font-bold text-lg leading-snug mb-4">{item.name}</p>
+    <div className="bg-charcoal-sea rounded-2xl p-5">
+      <p className="text-warm-white font-bold text-lg leading-snug mb-3">{item.name}</p>
 
       <div className="flex items-end gap-3 flex-wrap mb-2">
         <span className="text-tropic-coral text-4xl font-extrabold leading-none">
@@ -69,29 +58,40 @@ function ItemSummary({ item }: { item: BookableItem }) {
       </p>
 
       {item.includes?.length ? (
-        <ul className="mt-5 pt-5 border-t border-white/10 space-y-2">
-          {item.includes.map((line) => (
-            <li key={line} className="flex gap-2.5 text-warm-white/75 text-sm leading-relaxed">
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 20 20"
-                fill="none"
-                aria-hidden="true"
-                className="flex-shrink-0 mt-0.5"
-              >
-                <path
-                  d="M4 10.5l4 4 8-9"
-                  stroke="#2A9D8F"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              {line}
-            </li>
-          ))}
-        </ul>
+        <details className="mt-4 pt-4 border-t border-white/10 group">
+          <summary className="cursor-pointer list-none text-warm-white/70 text-sm font-semibold flex items-center justify-between gap-2 min-h-[24px]">
+            What&apos;s included ({item.includes.length})
+            <span
+              className="text-warm-white/40 transition-transform group-open:rotate-180"
+              aria-hidden="true"
+            >
+              ▾
+            </span>
+          </summary>
+          <ul className="mt-3 space-y-2">
+            {item.includes.map((line) => (
+              <li key={line} className="flex gap-2.5 text-warm-white/75 text-sm leading-relaxed">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  aria-hidden="true"
+                  className="flex-shrink-0 mt-0.5"
+                >
+                  <path
+                    d="M4 10.5l4 4 8-9"
+                    stroke="#2A9D8F"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                {line}
+              </li>
+            ))}
+          </ul>
+        </details>
       ) : null}
     </div>
   );
@@ -117,55 +117,38 @@ export default function AdBookingForm({
   message,
 }: AdBookingFormProps) {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
-  const [phone, setPhone] = useState("");
-  const [itemName, setItemName] = useState(fixedItem?.name ?? "");
   const [reference, setReference] = useState<string | null>(null);
-  const [errors, setErrors] = useState<Partial<Record<BookingField, string>>>({});
-  // A field only shows its error once the visitor has left it (or tried to submit).
-  // Marking it red while they're still typing the first character is hostile.
-  const [touched, setTouched] = useState<Partial<Record<BookingField, boolean>>>({});
   const topRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
+  const funnel = useFormAbandon(source);
 
-  /** Phone needs the country context the input holds, so it can't live in the module. */
-  const checkPhone = (value: string) =>
-    validateField("phone", value) ||
-    (isValidPhoneNumber(value) ? "" : "That number doesn't look right for the country picked.");
-
-  function validateAll(): Partial<Record<BookingField, string>> {
-    const form = formRef.current;
-    const read = (name: string) =>
-      (form?.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement | null)?.value ?? "";
-
-    const next: Partial<Record<BookingField, string>> = {
-      // A locked-in fixedItem has nothing for the visitor to get wrong.
-      item: fixedItem ? "" : validateField("item", itemName),
-      name: validateField("name", read("name")),
-      email: validateField("email", read("email")),
-      phone: checkPhone(phone),
-      date: validateField("date", read("date")),
-    };
-    for (const key of Object.keys(next) as BookingField[]) if (!next[key]) delete next[key];
-    return next;
-  }
-
-  /** Blur validates that one field. Re-typing in an already-flagged field re-checks live. */
-  const handleBlur = (field: BookingField) => (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const message = field === "phone" ? checkPhone(phone) : validateField(field, e.target.value);
-    setTouched((t) => ({ ...t, [field]: true }));
-    setErrors((prev) => ({ ...prev, [field]: message || undefined }));
-  };
-
-  const revalidate = (field: BookingField, value: string) => {
-    if (!touched[field]) return;
-    const message = field === "phone" ? checkPhone(value) : validateField(field, value);
-    setErrors((prev) => ({ ...prev, [field]: message || undefined }));
-  };
-
-  const errorProps = (field: BookingField) =>
-    errors[field]
-      ? { "aria-invalid": true as const, "aria-describedby": `${field}-error` }
-      : {};
+  const form = useForm<BookingFormValues>({
+    // onTouched, not onBlur: with onBlur, react-hook-form's skipValidation returns early on
+    // every change event until the first submit, so a flagged field stayed red the whole time
+    // the visitor was fixing it and only cleared when they left it. onTouched stays quiet
+    // while a field is filled in for the first time, then re-checks on every keystroke.
+    mode: "onTouched",
+    reValidateMode: "onChange",
+    // revealField owns this. Left on, react-hook-form's plain .focus() jumps the page and
+    // fights the smooth scroll — and on iOS it does nothing at all.
+    shouldFocusError: false,
+    defaultValues: { ...bookingFormDefaults, item: fixedItem?.name ?? "" },
+  });
+  const {
+    register,
+    handleSubmit,
+    control,
+    setError,
+    formState: { errors },
+  } = form;
+  // useWatch, not watch(): watch() can't be memoized, so it opts the whole component out of
+  // the React Compiler — and this one renders on paid traffic.
+  const itemName = useWatch({ control, name: "item" });
+  // The slot picker refetches on this, so it has to be watched rather than read at submit.
+  const bookingDate = useWatch({ control, name: "date" });
+  const people = useWatch({ control, name: "people" });
+  const quantity = useWatch({ control, name: "quantity" });
+  const [slotChoice, setSlotChoice] = useState<SlotChoice>({ slotId: null, seats: [] });
 
   // The success message is shorter than the form it replaces, so without this the
   // visitor is left staring at whitespace below it.
@@ -177,43 +160,40 @@ export default function AdBookingForm({
   const selected = fixedItem ?? items.find((i) => i.name === itemName);
   /** Activities only, and only once the admin sets a cap. Courses never have one. */
   const maxQuantity = selected?.maxQuantity ?? null;
+  /** What actually gets billed — and so how many seats a seated boat needs. Mirrors onValid. */
+  const seatsNeeded =
+    headcount(people) * (maxQuantity ? Math.min(headcount(quantity ?? "1"), maxQuantity) : 1);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-
-    const form = e.currentTarget;
-    const getValue = (name: string) =>
-      (form.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement)?.value ?? "";
-
-    // Same rules blur uses, so nothing can pass one and fail the other.
-    const found = validateAll();
-    setTouched({ item: true, name: true, email: true, phone: true, date: true });
-    setErrors(found);
-    if (Object.keys(found).length > 0) {
-      const first = (Object.keys(found) as BookingField[])[0];
-      form.querySelector<HTMLElement>(`[name="${first}"]`)?.focus();
-      return;
-    }
-
+  async function onValid(values: BookingFormValues) {
     setStatus("submitting");
-    const email = getValue("email");
-    const people = getValue("people");
-    // The form is noValidate, so min/max are decoration — clamp what actually gets sent.
-    const quantity = maxQuantity ? Math.min(headcount(getValue("quantity")), maxQuantity) : null;
+    funnel.noteSubmitted();
+    const quantity = maxQuantity
+      ? Math.min(headcount(values.quantity ?? "1"), maxQuantity)
+      : null;
 
     try {
       const res = await fetch("/api/booking", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: getValue("name"),
-          email,
-          ...splitPhone(phone),
-          date: getValue("date"),
+          name: values.name,
+          email: values.email,
+          ...splitPhone(values.phone),
+          date: values.date,
           // The backend wants an integer, and "7+" is a real option in the select.
-          people: headcount(people),
+          people: headcount(values.people),
           // An ad page sells one thing, so the cart the backend expects is one line long.
-          items: [{ bookingFor, item: itemName, ...(quantity ? { quantity } : {}) }],
+          items: [
+            {
+              bookingFor,
+              item: values.item,
+              ...(quantity ? { quantity } : {}),
+              // Absent for anything the shop hasn't set times for, which keeps those items
+              // booking by date alone exactly as they did before.
+              ...(slotChoice.slotId ? { slot_id: slotChoice.slotId } : {}),
+              ...(slotChoice.seats.length ? { seats: slotChoice.seats } : {}),
+            },
+          ],
           // Which ad brought them here. Undefined on organic traffic, so the key drops out.
           attribution: getAttribution(),
         }),
@@ -224,12 +204,13 @@ export default function AdBookingForm({
       // as a generic "something went wrong" the visitor can't act on.
       if (!res.ok) {
         const fromApi = fieldErrorsFromApi(data?.fields ?? {});
-        if (Object.keys(fromApi).length > 0) {
-          setTouched((t) => ({ ...t, ...Object.fromEntries(Object.keys(fromApi).map((k) => [k, true])) }));
-          setErrors(fromApi);
+        const named = Object.keys(fromApi) as BookingField[];
+        if (named.length > 0) {
+          named.forEach((field) => setError(field, { message: fromApi[field] }));
+          // Not setError's shouldFocus: that is the same bare .focus() iOS ignores.
+          revealField(formRef.current, named);
+          trackBookingBlocked(source, named);
           setStatus("idle");
-          const first = (Object.keys(fromApi) as BookingField[])[0];
-          form.querySelector<HTMLElement>(`[name="${first}"]`)?.focus();
           return;
         }
         throw new Error();
@@ -241,13 +222,13 @@ export default function AdBookingForm({
       // own action. transaction_id dedupes it against the offline upload the backend
       // will send once the booking is actually confirmed.
       trackConversion("booking_submit", CONVERSIONS.form, {
-        data: { source, item: itemName },
+        data: { source, item: values.item },
         conversion: {
-          value: selected ? selected.price * headcount(people) * (quantity ?? 1) : undefined,
+          value: selected ? selected.price * headcount(values.people) * (quantity ?? 1) : undefined,
           currency: selected?.currency ?? "USD",
           transaction_id: data.reference ?? undefined,
         },
-        userData: { email, phone_number: phone },
+        userData: { email: values.email, phone_number: values.phone },
       });
       setStatus("success");
     } catch {
@@ -304,7 +285,19 @@ export default function AdBookingForm({
   return (
     <form
       ref={formRef}
-      onSubmit={handleSubmit}
+      // Built at submit time, not during render: onValid closes over formRef, and calling
+      // handleSubmit inline would read that ref while rendering.
+      onSubmit={(e) =>
+        handleSubmit(onValid, (invalid) => {
+          const named = Object.keys(invalid);
+          // react-hook-form's own shouldFocusError runs after an await, and iOS drops
+          // programmatic focus once the gesture stack has unwound — so it does nothing on a
+          // phone. revealField scrolls instead, which carries no such restriction.
+          revealField(formRef.current, named);
+          trackBookingBlocked(source, named);
+        })(e)
+      }
+      onFocusCapture={funnel.noteFocus}
       // noValidate: our messages are friendlier than the browser's bubbles, and the
       // native ones only fire on submit — which is the thing being fixed here.
       noValidate
@@ -317,21 +310,17 @@ export default function AdBookingForm({
           <ItemSummary item={fixedItem} />
         </div>
       ) : (
-        <div>
+        <div data-field="item">
           <label htmlFor="item" className={labelClass}>
-            Which {bookingFor}? <span className="text-tropic-coral">*</span>
+            Which {bookingFor}? <Req />
           </label>
           <select
             id="item"
-            name="item"
-            value={itemName}
-            onChange={(e) => {
-              setItemName(e.target.value);
-              revalidate("item", e.target.value);
-            }}
-            onBlur={handleBlur("item")}
+            {...register("item", { validate: (v) => itemError(v) || true })}
             className={`${inputClass} ${errors.item ? errorInputClass : ""}`}
-            {...errorProps("item")}
+            {...(errors.item
+              ? { "aria-invalid": true as const, "aria-describedby": errorId("item") }
+              : {})}
           >
             <option value="" disabled>
               Pick one…
@@ -343,7 +332,7 @@ export default function AdBookingForm({
             ))}
             <option value="Not sure yet">Not sure yet — help me choose</option>
           </select>
-          <FieldError id="item-error" message={errors.item} />
+          <FieldError id={errorId("item")} message={errors.item?.message} />
 
           {selected && (
             <div className="mt-4">
@@ -353,140 +342,30 @@ export default function AdBookingForm({
         </div>
       )}
 
-      {/* Name + Email */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="name" className={labelClass}>
-            Full name <span className="text-tropic-coral">*</span>
-          </label>
-          <input
-            id="name"
-            name="name"
-            type="text"
-            autoComplete="name"
-            enterKeyHint="next"
-            placeholder="Your name"
-            onBlur={handleBlur("name")}
-            onChange={(e) => revalidate("name", e.target.value)}
-            className={`${inputClass} ${errors.name ? errorInputClass : ""}`}
-            {...errorProps("name")}
-          />
-          <FieldError id="name-error" message={errors.name} />
-        </div>
-
-        <div>
-          <label htmlFor="email" className={labelClass}>
-            Email <span className="text-tropic-coral">*</span>
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            inputMode="email"
-            enterKeyHint="next"
-            placeholder="you@email.com"
-            onBlur={handleBlur("email")}
-            onChange={(e) => revalidate("email", e.target.value)}
-            className={`${inputClass} ${errors.email ? errorInputClass : ""}`}
-            {...errorProps("email")}
-          />
-          <FieldError id="email-error" message={errors.email} />
-        </div>
-      </div>
-
-      {/* Phone */}
-      <div onBlur={() => handleBlur("phone")({ target: { value: phone } } as never)}>
-        <label className={labelClass}>
-          Phone / WhatsApp <span className="text-tropic-coral">*</span>
-        </label>
-        <PhoneInput
-          value={phone}
-          onChange={(v) => {
-            setPhone(v);
-            revalidate("phone", v);
-          }}
-        />
-        <FieldError id="phone-error" message={errors.phone} />
-        {!errors.phone && (
-          <p className="text-xs text-charcoal-sea/40 mt-1.5">
-            This is how we&apos;ll reach you to confirm.
-          </p>
-        )}
-      </div>
-
-      {/* Date + People */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="date" className={labelClass}>
-            Preferred date{" "}
-            <span className="text-charcoal-sea/40 font-normal">(optional)</span>
-          </label>
-          <input
-            id="date"
-            name="date"
-            type="date"
-            autoComplete="off"
-            min={todayISO()}
-            onBlur={handleBlur("date")}
-            onChange={(e) => revalidate("date", e.target.value)}
-            className={`${inputClass} ${errors.date ? errorInputClass : ""}`}
-            {...errorProps("date")}
-          />
-          <FieldError id="date-error" message={errors.date} />
-          {!errors.date && (
-            <p className="text-xs text-charcoal-sea/40 mt-1.5">
-              Not sure yet? Leave it blank.
-            </p>
-          )}
-        </div>
-
-        <div>
-          <label htmlFor="people" className={labelClass}>
-            How many of you?
-          </label>
-          <select id="people" name="people" defaultValue="1" className={inputClass}>
-            {[1, 2, 3, 4, 5, 6].map((n) => (
-              <option key={n} value={n}>
-                {n} {n === 1 ? "person" : "people"}
-              </option>
-            ))}
-            <option value="7+">7+ (contact us first)</option>
-          </select>
-        </div>
-
-        {/* Activities with a cap only. `key` resets the uncontrolled value when the
-            visitor switches to a different item with a different cap. */}
-        {maxQuantity && (
-          <div>
-            <label htmlFor="quantity" className={labelClass}>
-              How many dives?
-            </label>
-            <input
-              key={selected?.slug}
-              id="quantity"
-              name="quantity"
-              type="number"
-              inputMode="numeric"
-              min={1}
-              max={maxQuantity}
-              step={1}
-              defaultValue={1}
-              className={inputClass}
-              {...errorProps("quantity")}
+      <BookingFields
+        form={form}
+        maxQuantity={maxQuantity}
+        quantityKey={selected?.slug}
+        slotPicker={
+          itemName ? (
+            <SlotPicker
+              type={bookingFor}
+              item={itemName}
+              date={bookingDate ?? ""}
+              people={seatsNeeded}
+              value={slotChoice}
+              onChange={setSlotChoice}
+              error={errors.slot_id?.message}
             />
-            {/* Only ever set by the backend rejecting the cap — the input's own max is
-                decoration on a noValidate form. */}
-            <FieldError id="quantity-error" message={errors.quantity} />
-            <p className="text-xs text-charcoal-sea/40 mt-1.5">
-              Each person, up to {maxQuantity}.
-            </p>
-          </div>
-        )}
-      </div>
+          ) : null
+        }
+      />
 
       {status === "error" && (
-        <p className="text-tropic-coral text-sm bg-tropic-coral/10 border border-tropic-coral/20 rounded-xl px-4 py-3">
+        <p
+          role="alert"
+          className="text-tropic-coral text-sm bg-tropic-coral/10 border border-tropic-coral/20 rounded-xl px-4 py-3"
+        >
           Something went wrong. Please try again, or WhatsApp us on{" "}
           <a
             href="https://wa.me/94743945010"
