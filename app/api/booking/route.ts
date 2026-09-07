@@ -10,8 +10,8 @@ export async function POST(req: Request) {
   // copy here, and a copy that drifts means a visitor passes client validation and then eats
   // a 400 with nothing on screen to act on.
   //
-  // The original `body` is what gets forwarded: it also carries `people`, `nationality`,
-  // `notes`, `certificationLevel` and `attribution`, which the backend reads.
+  // The original `body` is what gets forwarded: it also carries `people`, `notes` and
+  // `attribution`, which the backend reads.
   //
   // NOTE: `date` is optional here, but the Laravel backend still has it `required`, so a
   // blank one comes back 400 with a field error until that rule becomes `nullable`.

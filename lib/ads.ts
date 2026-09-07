@@ -8,9 +8,12 @@ declare global {
 const ADS_ID = "AW-18356209738";
 
 /**
- * Paid landing pages. They render a logo-only header with no nav links and no
- * WhatsApp FAB — the in-page form and the page's own WhatsApp CTA are the only
- * ways out, so a click we paid for can't wander into the organic site.
+ * Paid landing pages. They carry the site's full header, so the logo goes home and the
+ * nav is reachable — a paid visitor who isn't ready to book can still find the rest of
+ * the site rather than closing the tab.
+ *
+ * Still no WhatsApp FAB on these routes: StickyCta already pins a WhatsApp button to the
+ * bottom of every ad page, and two floating buttons stacked on mobile covered the form.
  */
 export const AD_ROUTES = new Set(["/dive", "/padi", "/fun-dives", "/open-water"]);
 

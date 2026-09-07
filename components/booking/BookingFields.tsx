@@ -18,16 +18,6 @@ import { phoneFieldError, type BookingFormValues } from "@/lib/booking-form";
  */
 const rule = (check: (v: unknown) => string) => (v: unknown) => check(v) || true;
 
-export const certOptions = [
-  { value: "none", label: "No certification (complete beginner)" },
-  { value: "scuba-diver", label: "PADI Scuba Diver" },
-  { value: "open-water", label: "PADI Open Water Diver" },
-  { value: "advanced", label: "PADI Advanced Open Water" },
-  { value: "rescue", label: "PADI Rescue Diver" },
-  { value: "divemaster", label: "Divemaster or above" },
-  { value: "other", label: "Other certification (mention in notes)" },
-];
-
 /**
  * The repo's only announced error message, promoted out of AdBookingForm so /book gets it
  * too — it used to render five bare `<p>` tags a screen reader never mentioned.
@@ -50,11 +40,6 @@ interface BookingFieldsProps {
   form: UseFormReturn<BookingFormValues>;
   /** Non-null turns on "How many dives?", capped at this. Activities only. */
   maxQuantity?: number | null;
-  /**
-   * Nationality and certification level. /book asks for them; the ad landers deliberately
-   * don't — every extra field on a paid lander is another reason to close the tab.
-   */
-  extras?: boolean;
   /** Resets the uncontrolled quantity when the visitor switches to an item with a new cap. */
   quantityKey?: string;
   /**
@@ -75,7 +60,6 @@ interface BookingFieldsProps {
 export default function BookingFields({
   form,
   maxQuantity,
-  extras,
   quantityKey,
   slotPicker,
 }: BookingFieldsProps) {
@@ -152,24 +136,6 @@ export default function BookingFields({
         )}
       </div>
 
-      {extras && (
-        <div>
-          <label htmlFor="nationality" className={labelClass}>
-            Nationality / country{" "}
-            <span className="text-charcoal-sea/40 font-normal">(optional)</span>
-          </label>
-          <input
-            id="nationality"
-            type="text"
-            autoComplete="country-name"
-            enterKeyHint="next"
-            placeholder="e.g. British, German, Australian…"
-            {...register("nationality")}
-            className={inputClass}
-          />
-        </div>
-      )}
-
       {/* Date + People */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div data-field="date">
@@ -232,21 +198,6 @@ export default function BookingFields({
 
       {/* Full width under the date — a row of times and a boat plan don't fit half a grid. */}
       {slotPicker}
-
-      {extras && (
-        <div>
-          <label htmlFor="cert" className={labelClass}>
-            Your diving certification
-          </label>
-          <select id="cert" {...register("certificationLevel")} className={inputClass}>
-            {certOptions.map(({ value, label }) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
     </>
   );
 }

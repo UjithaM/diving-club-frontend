@@ -24,7 +24,7 @@ import {
   inputClass,
   labelClass,
 } from "@/components/ui/fieldStyles";
-import BookingFields, { FieldError, Req, certOptions } from "@/components/booking/BookingFields";
+import BookingFields, { FieldError, Req } from "@/components/booking/BookingFields";
 import SlotPicker from "@/components/booking/SlotPicker";
 import PaymentStep from "@/components/booking/PaymentStep";
 import type { Deposit, PaymentOptions, SlotChoice } from "@/lib/types";
@@ -95,10 +95,6 @@ function typeLabel(type: BookingType) {
   if (type === "course") return "Course";
   if (type === "activity") return "Activity";
   return "Dive Site";
-}
-
-function certLabel(value: string) {
-  return certOptions.find((c) => c.value === value)?.label ?? value;
 }
 
 const ease = "cubic-bezier(0.16, 1, 0.3, 1)";
@@ -223,11 +219,11 @@ function SuccessScreen({ summary }: { summary: SuccessSummary }) {
       </div>
 
       <h2 className="text-charcoal-sea font-display text-2xl font-bold mb-2">
-        Request received — you&apos;re not booked yet
+        Booking received
       </h2>
       <p className="text-charcoal-sea/60 text-sm leading-relaxed mb-8 max-w-xs mx-auto">
-        Our team will WhatsApp you on {summary.phone} within 24 hours to confirm your dates and
-        send the advance payment details. Nothing is charged until then.
+        Our team will contact you shortly on {summary.phone} to confirm your booking and share
+        the advance payment details. Nothing is charged until then.
       </p>
 
       <div className="bg-white border border-charcoal-sea/8 rounded-2xl p-5 text-left mb-6 max-w-sm mx-auto">
@@ -282,19 +278,12 @@ function SuccessScreen({ summary }: { summary: SuccessSummary }) {
   );
 }
 
-/** Numbered heading, so a long single page still reads as three clear stages. */
-function SectionHeading({ n, title, hint }: { n: number; title: string; hint?: string }) {
-  return (
-    <div className="mb-5">
-      <div className="flex items-center gap-3">
-        <span className="flex-shrink-0 w-7 h-7 rounded-full bg-charcoal-sea text-warm-white text-xs font-bold flex items-center justify-center">
-          {n}
-        </span>
-        <h2 className="text-charcoal-sea text-lg font-bold">{title}</h2>
-      </div>
-      {hint && <p className="text-charcoal-sea/55 text-sm mt-2 leading-relaxed">{hint}</p>}
-    </div>
-  );
+/**
+ * Plain section label. The numbered circles and their hint lines went when the form was
+ * shortened — three stages on one screen don't need signposting, and each one cost a row.
+ */
+function SectionHeading({ title }: { title: string }) {
+  return <h2 className="text-charcoal-sea text-lg font-bold mb-3">{title}</h2>;
 }
 
 // ─── Main form ────────────────────────────────────────────────────────────────
@@ -384,7 +373,6 @@ export default function BookingForm({
     defaultValues: {
       ...bookingFormDefaults,
       item: lockedItem?.name ?? initialItem ?? "",
-      certificationLevel: "none",
     },
   });
   const {
@@ -403,7 +391,6 @@ export default function BookingForm({
   const quantity = useWatch({ control, name: "quantity" });
   // The slot pickers refetch on this, so it has to be watched rather than read at submit.
   const bookingDate = useWatch({ control, name: "date" });
-  const certLevel = useWatch({ control, name: "certificationLevel" });
 
   useEffect(() => {
     const base = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000/api";
@@ -602,7 +589,6 @@ export default function BookingForm({
           name: values.name,
           email: values.email,
           ...splitPhone(values.phone),
-          nationality: values.nationality,
           date: values.date,
           // The backend wants an integer, and "7+" is a real option in the select.
           people: headcount(values.people),
@@ -621,7 +607,6 @@ export default function BookingForm({
               ...(choice.seats.length ? { seats: choice.seats } : {}),
             };
           }),
-          certificationLevel: values.certificationLevel,
           // The sites they picked have nowhere else to go — the backend books the fun dive,
           // the crew reads the sites here.
           notes: [
@@ -754,7 +739,7 @@ export default function BookingForm({
       }
       onFocusCapture={funnel.noteFocus}
       noValidate
-      className="max-w-lg mx-auto px-6 py-10 scroll-mt-20 space-y-10"
+      className="max-w-lg mx-auto px-6 py-8 scroll-mt-20 space-y-6"
     >
       {discountLink && (
         <DiscountBanner
@@ -769,14 +754,10 @@ export default function BookingForm({
 
       {/* ── 1. What ── */}
       <section>
-        <SectionHeading
-          n={1}
-          title="What would you like to book?"
-          hint="Pick one and it goes straight into your booking — no extra step."
-        />
+        <SectionHeading title="What would you like to book?" />
 
         {!lockedItem && (
-          <div className="mb-5">
+          <div className="mb-4">
             <p className={labelClass}>I want to book a</p>
             <div className="flex gap-2">
               {tabs.map(({ value, label }) => (
@@ -945,16 +926,11 @@ export default function BookingForm({
       </section>
 
       {/* ── 2. Details ── */}
-      <section className="space-y-5">
-        <SectionHeading
-          n={2}
-          title="Your details"
-          hint="We'll use these to confirm your booking and get in touch."
-        />
+      <section className="space-y-4">
+        <SectionHeading title="Your details" />
         <BookingFields
           form={form}
           maxQuantity={pickerOption?.maxQuantity ?? null}
-          extras
           quantityKey={pickerOption?.slug}
           slotPicker={
             pickerLine ? (
@@ -975,16 +951,16 @@ export default function BookingForm({
 
       {/* ── 3. Review & send ── */}
       <section>
-        <SectionHeading n={3} title="Anything else?" />
+        <SectionHeading title="Anything else?" />
 
-        <div className="mb-5">
+        <div className="mb-4">
           <label htmlFor="notes" className={labelClass}>
             Questions or special requests{" "}
             <span className="text-charcoal-sea/40 font-normal">(optional)</span>
           </label>
           <textarea
             id="notes"
-            rows={4}
+            rows={2}
             placeholder="Medical conditions, allergies, specific questions, dates to avoid…"
             {...register("notes")}
             className={`${inputClass} resize-none`}
@@ -994,8 +970,8 @@ export default function BookingForm({
         {/* Estimate. The server recalculates on submit and its number wins — which is why
             this says "estimate" rather than quoting a total as final. */}
         {sub > 0 && (
-          <div className="bg-charcoal-sea rounded-2xl p-6 mb-5">
-            <p className="text-warm-white/40 text-xs uppercase tracking-widest mb-4">
+          <div className="bg-charcoal-sea rounded-2xl p-5 mb-4">
+            <p className="text-warm-white/40 text-xs uppercase tracking-widest mb-3">
               Your booking
             </p>
             <div className="space-y-2 text-sm">
@@ -1025,14 +1001,6 @@ export default function BookingForm({
                   {money(previewTotal, itemCurrency)}
                 </span>
               </div>
-              {certLevel && (
-                <div className="flex justify-between border-t border-white/10 pt-2">
-                  <span className="text-warm-white/50">Level</span>
-                  <span className="text-warm-white/80 text-right max-w-[60%]">
-                    {certLabel(certLevel ?? "none")}
-                  </span>
-                </div>
-              )}
               {depositLabel && (
                 <p className="text-warm-white/40 text-xs pt-1">
                   You can pay {depositLabel} now and the rest on arrival.
@@ -1087,11 +1055,7 @@ export default function BookingForm({
           disabled={status === "submitting"}
           className="w-full min-h-[52px] bg-tropic-coral text-white font-bold rounded-full text-base hover:bg-sunrise transition-colors disabled:opacity-60"
         >
-          {status === "submitting"
-            ? "Sending…"
-            : hasAnyGateway
-            ? "Continue to payment →"
-            : "Send booking request →"}
+          {status === "submitting" ? "Booking…" : "Book"}
         </button>
 
         <p className="text-xs text-charcoal-sea/45 text-center mt-3">

@@ -32,10 +32,8 @@ export interface BookingFormValues {
    */
   slot_id?: string;
 
-  // /book only. Optional so the ad forms, which never render them, still validate.
-  nationality?: string;
+  // /book only. Optional so the ad forms, which never render it, still validate.
   notes?: string;
-  certificationLevel?: string;
 }
 
 /**
@@ -61,7 +59,5 @@ export const bookingFormDefaults: BookingFormValues = {
   people: "1",
   quantity: "1",
   slot_id: "",
-  nationality: "",
   notes: "",
-  certificationLevel: "",
 };

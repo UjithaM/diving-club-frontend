@@ -2,9 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
-import { AD_ROUTES } from "@/lib/ads";
 
 export interface NavItem {
   slug: string;
@@ -127,7 +125,6 @@ interface HeaderProps {
 }
 
 export default function Header({ courseItems, experienceItems, diveSiteItems }: HeaderProps) {
-  const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileSection, setMobileSection] = useState<string | null>(null);
   const [hidden, setHidden] = useState(false);
@@ -196,18 +193,6 @@ export default function Header({ courseItems, experienceItems, diveSiteItems }: 
       ? "bg-warm-white/95 backdrop-blur-md border-b border-charcoal-sea/10"
       : "bg-charcoal-sea/95 backdrop-blur-sm border-b border-transparent"
   }`;
-
-  // Ad landers get the logo and nothing else — same 64px sticky bar, so the
-  // #book scroll offsets stay right, but no link to leak a paid click.
-  if (AD_ROUTES.has(pathname)) {
-    return (
-      <header className={barClass}>
-        <div className="max-w-6xl mx-auto px-4 flex items-center gap-2.5 h-16">
-          <LogoMark scrolled={scrolled} />
-        </div>
-      </header>
-    );
-  }
 
   return (
     <header className={barClass}>

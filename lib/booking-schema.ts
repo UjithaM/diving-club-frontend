@@ -96,7 +96,7 @@ interface BookingPayload {
  * `{ field: message }` map — empty when the payload is fine.
  *
  * Validation only: the route still forwards the original body, because the backend also reads
- * `people`, `nationality`, `notes`, `certificationLevel` and `attribution`.
+ * `people`, `notes` and `attribution`.
  */
 export function validateBookingPayload(body: BookingPayload): Record<string, string> {
   const fields: Record<string, string> = {};
