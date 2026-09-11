@@ -18,13 +18,12 @@ import { headcount } from "@/lib/discount";
 import WhatsAppCta from "./WhatsAppCta";
 
 /**
- * Price, duration and inclusions, straight from the API. Sells the item and confirms the
- * choice.
+ * Price and duration, straight from the API. Confirms the choice at the point of commitment.
  *
- * The inclusions sit in a `<details>` rather than an always-open list. Fully expanded this
- * card ran ~350px, and it's the first thing inside the form — so "Book your spot" landed the
- * visitor on a price with every input below the fold. Collapsed, the price still lands but
- * the first fields come with it. Native disclosure, so it works before hydration.
+ * The inclusions used to hang off this card in a `<details>`. They now have their own section
+ * on the page, above the objections, so repeating them here would only push the first input
+ * further down — which is the thing the collapsed disclosure existed to avoid in the first
+ * place. It also took a 24px tap target with it.
  */
 function ItemSummary({ item }: { item: BookableItem }) {
   const saving = item.originalPrice && item.originalPrice > item.price
@@ -36,63 +35,30 @@ function ItemSummary({ item }: { item: BookableItem }) {
       <p className="text-warm-white font-bold text-lg leading-snug mb-3">{item.name}</p>
 
       <div className="flex items-end gap-3 flex-wrap mb-2">
+        {/* tropic-coral on charcoal-sea is 3.26:1 — fine for a 36px numeral, which is why the
+            price reads coral here and coral-deep on the warm-white sections. */}
         <span className="text-tropic-coral text-4xl font-extrabold leading-none">
           ${item.price}
         </span>
-        <span className="text-warm-white/40 text-sm mb-1">{item.currency} per person</span>
+        <span className="text-warm-white/75 text-sm mb-1">{item.currency} per person</span>
         {saving > 0 && (
           <>
-            <span className="text-warm-white/40 text-lg line-through mb-0.5">
+            <span className="text-warm-white/75 text-lg line-through mb-0.5">
               ${item.originalPrice}
             </span>
-            <span className="bg-tropic-coral text-white text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full mb-1">
+            {/* Coral text on warm-white, not white on coral: at 12px the white-on-coral chip
+                measured 3.09:1 and failed AA. */}
+            <span className="bg-warm-white text-coral-deep text-xs font-bold px-2.5 py-1 rounded-full mb-1">
               Save ${saving}
             </span>
           </>
         )}
       </div>
 
-      <p className="text-warm-white/50 text-sm">
+      <p className="text-warm-white/75 text-sm">
         {item.duration}
         {item.minAge ? ` · Ages ${item.minAge}+` : ""}
       </p>
-
-      {item.includes?.length ? (
-        <details className="mt-4 pt-4 border-t border-white/10 group">
-          <summary className="cursor-pointer list-none text-warm-white/70 text-sm font-semibold flex items-center justify-between gap-2 min-h-[24px]">
-            What&apos;s included ({item.includes.length})
-            <span
-              className="text-warm-white/40 transition-transform group-open:rotate-180"
-              aria-hidden="true"
-            >
-              ▾
-            </span>
-          </summary>
-          <ul className="mt-3 space-y-2">
-            {item.includes.map((line) => (
-              <li key={line} className="flex gap-2.5 text-warm-white/75 text-sm leading-relaxed">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  aria-hidden="true"
-                  className="flex-shrink-0 mt-0.5"
-                >
-                  <path
-                    d="M4 10.5l4 4 8-9"
-                    stroke="#2A9D8F"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                {line}
-              </li>
-            ))}
-          </ul>
-        </details>
-      ) : null}
     </div>
   );
 }
@@ -257,13 +223,13 @@ export default function AdBookingForm({
         <h3 className="text-xl font-bold text-charcoal-sea mb-2">
           Request received — you&apos;re not booked yet
         </h3>
-        <p className="text-charcoal-sea/70 leading-relaxed mb-6">
+        <p className="text-charcoal-sea/75 leading-relaxed mb-6">
           Our team will WhatsApp you within 24 hours to confirm your dates and send the advance
           payment details. Nothing is charged until then.
         </p>
 
         {reference && (
-          <p className="text-sm text-charcoal-sea/50 mb-6">
+          <p className="text-sm text-charcoal-sea/75 mb-6">
             Your reference: <span className="font-bold text-charcoal-sea">{reference}</span>
           </p>
         )}
@@ -273,9 +239,9 @@ export default function AdBookingForm({
         <div className="mt-6">
           <Link
             href="/"
-            className="text-sm text-charcoal-sea/50 hover:text-charcoal-sea transition-colors"
+            className="text-sm text-charcoal-sea/75 hover:text-charcoal-sea transition-colors inline-flex items-center min-h-[48px]"
           >
-            ← Back to Diving Club
+            Back to Diving Club
           </Link>
         </div>
       </div>
@@ -379,10 +345,13 @@ export default function AdBookingForm({
         </p>
       )}
 
+      {/* 19px, not 16: white on tropic-coral is 3.09:1, which clears AA only at the large-text
+          threshold (18.66px bold). Hover goes to coral-deep rather than sunrise — sunrise under
+          white text measures 1.96:1. */}
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="w-full bg-tropic-coral text-white font-bold py-3.5 rounded-full hover:bg-sunrise transition-colors disabled:opacity-60 text-base"
+        className="w-full bg-tropic-coral text-white font-bold py-4 rounded-full hover:bg-coral-deep transition-colors duration-200 disabled:opacity-60 text-[19px]"
       >
         {/* Not "Book Now" — nothing is booked, and the word makes people brace for a
             card form that never comes. The success screen already says as much. */}
@@ -392,16 +361,16 @@ export default function AdBookingForm({
       {/* Baymard: trust markers do the most work at the point of commitment, not in a
           section further down the page. */}
       <div className="text-center space-y-2">
-        <p className="text-xs text-charcoal-sea/45">
+        <p className="text-xs text-charcoal-sea/75">
           No card needed. Nothing is charged now — we confirm your dates and the advance on
           WhatsApp first.
         </p>
-        <p className="text-xs text-charcoal-sea/45">
+        <p className="text-xs text-charcoal-sea/75">
           PADI dive centre in Trincomalee since 2010
         </p>
         {/* Consent has to be visible at the point of commitment for the 48-hour rule and
             the late-arrival rule to hold. */}
-        <p className="text-xs text-charcoal-sea/40 leading-relaxed">
+        <p className="text-xs text-charcoal-sea/75 leading-relaxed">
           By sending this you agree to our{" "}
           <Link href="/terms" className="underline hover:text-shallow-water">terms</Link> and{" "}
           <Link href="/refund-policy" className="underline hover:text-shallow-water">refund policy</Link>.

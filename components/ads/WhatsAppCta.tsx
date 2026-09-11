@@ -4,19 +4,37 @@ import { CONVERSIONS, trackConversion } from "@/lib/ads";
 
 const WHATSAPP_NUMBER = "94743945010";
 
+/**
+ * WhatsApp green stays — it's the whole point of the button being recognisable — but the label
+ * on it is charcoal-sea, not white.
+ *
+ * White on #25D366 measures 1.98:1, which is a straight WCAG failure and was sitting on the
+ * primary CTA of every paid page. Charcoal on the same green is 5.08:1 and passes AA at any
+ * size. #128C4A, the old inline/outline green, is 4.09:1 on warm-white — just short — so the
+ * text-weight variants use #0F7A40 (5.14:1) instead.
+ *
+ * Labels are 19px: at that size the coral and green fills clear WCAG's large-text threshold,
+ * and on an ad page the CTA being the biggest text in its block is the intent anyway.
+ */
+/* #25D366 is WhatsApp's green, #0F7A40 the darkened one for text weight. Written out in full
+   on every line on purpose: Tailwind scans this file as text, so an interpolated
+   `bg-[${GREEN}]` would never generate a rule. */
 const VARIANTS = {
-  pill: "gap-3 bg-[#25D366] text-white font-semibold px-8 py-4 rounded-full hover:brightness-95 transition text-base whatsapp-glow",
+  pill: "gap-3 bg-[#25D366] text-charcoal-sea font-bold px-8 py-4 rounded-full hover:brightness-95 transition-[filter] duration-200 text-[19px]",
+  /** The closing CTA — deliberately the biggest button on the page. */
+  pillLarge:
+    "gap-3 bg-[#25D366] text-charcoal-sea font-bold px-10 py-5 rounded-full hover:brightness-95 transition-[filter] duration-200 text-[21px]",
   /** Text-weight, for sitting inside a sentence rather than owning its own block. */
   inline:
-    "gap-1.5 text-[#128C4A] font-bold underline underline-offset-2 hover:no-underline text-sm",
+    "gap-1.5 text-[#0F7A40] font-bold underline underline-offset-2 hover:no-underline text-sm",
   /** Secondary weight on a light background, where booking is the primary action. */
   outline:
-    "gap-3 bg-transparent text-[#128C4A] font-semibold px-8 py-4 rounded-full border-2 border-[#25D366] hover:bg-[#25D366]/10 transition text-base",
-  /** Same, on charcoal-sea — #128C4A on dark navy fails contrast, so this goes light. */
+    "gap-3 bg-transparent text-[#0F7A40] font-bold px-8 py-4 rounded-full border-2 border-[#0F7A40] hover:bg-[#0F7A40]/10 transition-colors duration-200 text-[19px]",
+  /** Same, on charcoal-sea — the ink green on dark navy fails contrast, so this goes light. */
   outlineDark:
-    "gap-3 bg-transparent text-warm-white font-semibold px-8 py-4 rounded-full border-2 border-[#25D366] hover:bg-[#25D366]/20 transition text-base",
+    "gap-3 bg-transparent text-warm-white font-bold px-8 py-4 rounded-full border-2 border-[#25D366] hover:bg-[#25D366]/20 transition-colors duration-200 text-[19px]",
   /** Compact fill for the mobile sticky bar, where two buttons share the width. */
-  bar: "gap-2 w-full min-h-[48px] bg-[#25D366] text-white font-semibold px-4 py-3 rounded-full text-sm",
+  bar: "gap-2 w-full min-h-[48px] bg-[#25D366] text-charcoal-sea font-bold px-4 py-3 rounded-full text-[15px]",
 } as const;
 
 interface WhatsAppCtaProps {
@@ -47,8 +65,7 @@ export default function WhatsAppCta({
       onClick={() => trackConversion("whatsapp_click", CONVERSIONS.whatsapp, { data: { source } })}
       className={`inline-flex items-center justify-center ${VARIANTS[variant]} ${className}`}
     >
-      {/* currentColor so the inline variant can tint it — the pill sets text-white, so it
-          renders exactly as it did when this was hardcoded. */}
+      {/* currentColor, so the glyph tracks whatever the variant sets the label to. */}
       <svg
         width={isInline ? 15 : 22}
         height={isInline ? 15 : 22}

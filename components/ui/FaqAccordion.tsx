@@ -6,10 +6,48 @@ import type { PageFaq } from "@/lib/types";
 interface FaqAccordionProps {
   faqs: PageFaq[];
   heading?: string;
+  /**
+   * Render every answer open, with no toggles.
+   *
+   * The ad pages pass this. A visitor who came from an ad has one question in mind and won't
+   * hunt for it behind eight closed rows — and an answer that's already on screen is one the
+   * crawler reads too. Everywhere else the accordion stays, because those pages carry far more
+   * FAQs and the list is a navigation aid rather than the objection handling itself.
+   */
+  defaultOpen?: boolean;
 }
 
-export default function FaqAccordion({ faqs, heading = "Frequently asked questions" }: FaqAccordionProps) {
+export default function FaqAccordion({
+  faqs,
+  heading = "Frequently asked questions",
+  defaultOpen = false,
+}: FaqAccordionProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  if (defaultOpen) {
+    return (
+      <section className="bg-warm-white py-16 px-6">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-charcoal-sea font-display text-3xl font-extrabold mb-10">
+            {heading}
+          </h2>
+
+          {/* Hairline rules, not bordered cards — nine identical rounded boxes was the look
+              this redesign is getting away from. */}
+          <dl className="divide-y divide-border-medium border-t border-border-medium">
+            {faqs.map((faq) => (
+              <div key={faq.question} className="py-7">
+                <dt className="text-charcoal-sea font-semibold text-lg leading-snug mb-2.5">
+                  {faq.question}
+                </dt>
+                <dd className="text-charcoal-sea/75 leading-relaxed">{faq.answer}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="bg-warm-white py-16 px-6">
@@ -53,7 +91,7 @@ export default function FaqAccordion({ faqs, heading = "Frequently asked questio
               </dt>
               {openIndex === i && (
                 <dd className="px-6 pb-5">
-                  <p className="text-charcoal-sea/65 text-sm leading-relaxed">{faq.answer}</p>
+                  <p className="text-charcoal-sea/75 text-sm leading-relaxed">{faq.answer}</p>
                 </dd>
               )}
             </div>

@@ -32,9 +32,10 @@ export default function StickyCta({ message, source }: StickyCtaProps) {
           variant="bar"
           className="flex-1"
         />
+        {/* Border at /40, not /25: a 2px control boundary needs 3:1 against the bar behind it. */}
         <BookCta
           source={`${source}_sticky`}
-          className="flex-1 inline-flex items-center justify-center min-h-[48px] px-4 py-3 rounded-full border-2 border-charcoal-sea/25 text-charcoal-sea font-semibold text-sm"
+          className="flex-1 inline-flex items-center justify-center min-h-[48px] px-4 py-3 rounded-full border-2 border-charcoal-sea/40 text-charcoal-sea font-bold text-[15px]"
         >
           Book
         </BookCta>

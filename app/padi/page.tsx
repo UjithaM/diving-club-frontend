@@ -33,27 +33,24 @@ export default async function PadiPage() {
       bookingFor="course"
       items={courses}
       bookingHeading="Start your PADI course"
-      eyebrow="PADI centre · Trincomalee · since 2010"
-      heading={`Get PADI certified in Trincomalee${fromPrice(courses)}`}
-      subheading="Open Water in four days, in 28°C water, on reefs with turtles and WWII wrecks. Your card is recognised at every dive centre in the world, for life."
-      image="/assets/J-rockshan-with-open-water-students.webp"
-      imageAlt="PADI instructor Rockshan briefing Open Water students in Trincomalee, Sri Lanka"
-      points={[
+      // No fixedItem on this page — the form offers the whole course list. The hero price and
+      // the What's-included section follow the headline course, which is already the one whose
+      // price the ads quote.
+      summaryItem={courses.find((c) => c.slug === HEADLINE_COURSE)}
+      heading="Get PADI certified in Trincomalee"
+      subheading="Open Water in two days, in 28°C water, on reefs with turtles and WWII wrecks. Your card is recognised at every dive centre in the world, for life."
+      objections={[
         {
-          title: "Four days to Open Water",
-          body: "Theory, pool-style skills in a shallow bay, then four open-water dives. You finish with a PADI Open Water certification that lets you dive anywhere in the world to 18 metres.",
+          title: "Do I need to be able to swim?",
+          body: "For the full Open Water course, yes. PADI requires a 200 metre swim (no time limit, any stroke) and a 10 minute float. It's not a fitness test, but you do need to be comfortable in water. If you're not sure, do a try dive with us first and see how you feel.",
         },
         {
-          title: "Classes stay small",
-          body: "Four students to one instructor at most. Enough attention that nobody gets left behind on a skill, and enough time that you're not rushing through the bits you find hard.",
+          title: "How old do you have to be?",
+          body: "Ten for Junior Open Water, with some depth limits until you turn twelve, then fifteen. For the try dive the minimum is ten as well. Parents are welcome on the boat.",
         },
         {
-          title: "Rockshan has taught here since 2010",
-          body: "Same instructors, same boats, same base at Sandy Cove. Students regularly come back for their Advanced with us, which is the part we're actually proud of.",
-        },
-        {
-          title: "Somewhere worth learning",
-          body: "You could learn in a swimming pool somewhere. Or you could do your first four dives on a reef with hawksbill turtles, sea fans, and a Hindu temple on the cliff above you.",
+          title: "I don't know which course I need",
+          body: "Pick \"not sure yet\" in the form, or just message us. Never dived at all? The try dive is the place to start. Want the certification that works everywhere, for life? That's Open Water. Already certified and after the deeper wrecks? Advanced.",
         },
       ]}
       steps={[
@@ -70,21 +67,27 @@ export default async function PadiPage() {
           body: "Sandy Cove, Trincomalee. A short tuk-tuk from Uppuveli or Nilaveli. We handle the gear, the boat, and the paperwork.",
         },
       ]}
+      // Swim requirement and age moved up into `objections`.
       faqs={[
         {
           question: "How long does the Open Water course take?",
           answer:
-            "Four days, though we can sometimes stretch it over five if you'd rather go slower. There's theory you can knock out online before you arrive, which frees up more water time once you're here. If you're short on days, the two-day PADI Scuba Diver course is a real option and it upgrades to Open Water later.",
+            "Two days, though we can sometimes stretch it over three if you'd rather go slower. There's theory you can knock out online before you arrive, which frees up more water time once you're here. If you're short on days, the PADI Scuba Diver course is a real option and it upgrades to Open Water later.",
         },
         {
-          question: "Do I need to be able to swim?",
+          question: "How small are the classes?",
           answer:
-            "For the full Open Water course, yes. PADI requires a 200 metre swim (no time limit, any stroke) and a 10 minute float. It's not a fitness test, but you do need to be comfortable in water. If you're not sure, do a try dive with us first and see how you feel.",
+            "Four students to one instructor at most. Enough attention that nobody gets left behind on a skill, and enough time that you're not rushing through the bits you find hard.",
         },
         {
-          question: "How old do you have to be?",
+          question: "Who teaches the courses?",
           answer:
-            "Ten for Junior Open Water, with some depth limits until you turn twelve, then fifteen. For the try dive the minimum is ten as well. Parents are welcome on the boat.",
+            "Rockshan has taught here since 2010 — same instructors, same boats, same base at Sandy Cove. Students regularly come back for their Advanced with us, which is the part we're actually proud of.",
+        },
+        {
+          question: "Where will I do my training dives?",
+          answer:
+            "You could learn in a swimming pool somewhere. Or you could do your first four dives on a reef with hawksbill turtles, sea fans, and a Hindu temple on the cliff above you. Theory, then pool-style skills in a shallow bay, then four open-water dives.",
         },
         {
           question: "Is the certification valid everywhere?",

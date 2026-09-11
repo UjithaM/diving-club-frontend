@@ -7,7 +7,7 @@
  * clears the target on every field and matches the tallest of the three, so nothing shrinks.
  */
 export const inputClass =
-  "w-full min-h-[52px] border border-charcoal-sea/20 rounded-xl px-4 py-3 text-charcoal-sea placeholder:text-charcoal-sea/40 focus:outline-none focus:ring-2 focus:ring-shallow-water text-sm bg-white";
+  "w-full min-h-[52px] border border-charcoal-sea/60 rounded-xl px-4 py-3 text-charcoal-sea placeholder:text-charcoal-sea/75 focus:outline-none focus:ring-2 focus:ring-shallow-water text-sm bg-white";
 
 export const labelClass = "block text-sm font-semibold text-charcoal-sea mb-1.5";
 
@@ -15,7 +15,7 @@ export const labelClass = "block text-sm font-semibold text-charcoal-sea mb-1.5"
 export const errorInputClass =
   "border-tropic-coral focus:ring-tropic-coral bg-tropic-coral/[0.03]";
 
-export const hintClass = "text-xs text-charcoal-sea/45 mt-1.5";
+export const hintClass = "text-xs text-charcoal-sea/75 mt-1.5";
 
 /** `field` → `field-error`, the id an input points its aria-describedby at. */
 export const errorId = (field: string) => `${field}-error`;

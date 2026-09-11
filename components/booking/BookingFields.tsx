@@ -141,7 +141,7 @@ export default function BookingFields({
         <div data-field="date">
           <label htmlFor="date" className={labelClass}>
             Preferred date{" "}
-            <span className="text-charcoal-sea/40 font-normal">(optional)</span>
+            <span className="text-charcoal-sea/75 font-normal">(optional)</span>
           </label>
           <input
             id="date"

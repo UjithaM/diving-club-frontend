@@ -12,7 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     // No "| Diving Club" — the root layout's title.template already appends it.
     title: `Try Scuba Diving in Trincomalee${fromPrice(course)}`,
-    description: `Try scuba diving in Trincomalee${fromPrice(course)} — no experience needed and all gear included. One day on the reef with a PADI instructor. Book in a minute.`,
+    description: `Try scuba diving in Trincomalee${fromPrice(course)} — no experience needed and all gear included. Two hours on the reef with a PADI instructor. Book in a minute.`,
     robots: { index: false, follow: false },
   };
 }
@@ -31,30 +31,29 @@ export default async function DivePage() {
       items={[]}
       fixedItem={course}
       bookingHeading="Your first dive, all in"
-      eyebrow="PADI centre · Trincomalee · since 2010"
+      summaryItem={course}
       // "Scuba" earns its place: search terms containing it convert ~4.5x better than
       // those without, and this matches the ad headline and the QS-8 keyword
-      // "scuba diving in trincomalee" word for word.
-      heading={`Scuba diving in Trincomalee${fromPrice(course)}`}
-      subheading="Turtles on nearly every dive, WWII wrecks in the bay, and water warm enough that nobody wants a wetsuit. Never dived before? That's most of the people who message us."
-      image="/assets/couple-scuba-diving-trincomalee.webp"
-      imageAlt="Two divers swimming over a coral reef in Trincomalee, Sri Lanka"
-      points={[
+      // "scuba diving in trincomalee" word for word. The price is no longer appended here —
+      // it gets its own line in the hero, and the keyword match is unaffected.
+      heading="Scuba diving in Trincomalee"
+      // "water warm enough that nobody wants a wetsuit" went with the wrecks: we hand every try
+      // diver a wetsuit, so the old line argued against the kit we provide.
+      subheading="Turtles on nearly every dive, in water that stays warm and clear right through the season. Never dived before? That's most of the people who message us."
+      // The three things that actually stop a first-timer booking, promoted out of the FAQ so
+      // they're answered before anyone has to go looking.
+      objections={[
         {
-          title: "You don't need any experience",
-          body: "Our try dive takes about three hours. Half of it is us teaching you to breathe underwater in shallow water, then you're on the reef at around 10 metres with an instructor right beside you the whole time.",
+          title: "I can't really swim. Can I still try diving?",
+          body: "Yes. For a try dive you don't need to be a strong swimmer, just comfortable enough not to panic when your face is in the water. Your instructor holds onto you for the whole dive if you want. Tell us on WhatsApp and we'll plan around it. The full PADI Open Water course does have a swim requirement, but the try dive doesn't.",
         },
         {
-          title: "Small groups, always",
-          body: "Four divers to one guide, maximum. On a try dive it's just you and the instructor. You're not going to lose anyone in a crowd of twenty down there.",
+          title: "I've never dived before. Is that a problem?",
+          body: "Not at all. Most people who message us have never breathed off a tank in their life. The try dive exists exactly for that. We teach you in shallow water first, and you don't go anywhere until you're ready. Two students to one instructor at most, and they're right beside you the whole time.",
         },
         {
-          title: "Gear is included",
-          body: "Mask, fins, wetsuit, BCD, regulator, tanks, weights. Bring a swimsuit and a towel. That's genuinely it.",
-        },
-        {
-          title: "We know these reefs",
-          body: "We've been diving this bay since 2010 and we run 12 sites around it. We'll pick the one that suits your level and the conditions that morning, not the one on a poster.",
+          title: "What should I bring?",
+          body: "Come in whatever you're comfortable in — you don't need a swimsuit, we give you a wetsuit to change into. Bring a towel and some sunscreen. All the diving gear is ours: mask, fins, wetsuit, BCD, regulator, tanks, weights. Leave your valuables at the hotel, and eat something light rather than a big breakfast if you're prone to seasickness.",
         },
       ]}
       steps={[
@@ -68,24 +67,27 @@ export default async function DivePage() {
         },
         {
           title: "Show up at Sandy Cove",
-          body: "We're a short tuk-tuk from Uppuveli and Nilaveli. Come in a swimsuit, we do the paperwork and the briefing, and you're on the boat.",
+          body: "We're a short tuk-tuk from Uppuveli and Nilaveli. Come as you are — we hand you a wetsuit, do the paperwork and the briefing, and you're on the boat.",
         },
       ]}
+      // The swim / never-dived / what-to-bring questions moved up into `objections`. What's
+      // left here is the detail people ask second, carried over from the old trust points so
+      // none of that copy is lost.
       faqs={[
         {
-          question: "I can't really swim. Can I still try diving?",
+          question: "How long does the try dive take?",
           answer:
-            "Yes. For a try dive you don't need to be a strong swimmer, just comfortable enough not to panic when your face is in the water. Your instructor holds onto you for the whole dive if you want. Tell us on WhatsApp and we'll plan around it. The full PADI Open Water course does have a swim requirement, but the try dive doesn't.",
+            "An hour and a half to two hours from start to finish. Part of that is us teaching you to breathe underwater in shallow water, then you're on the reef with an instructor right beside you the whole time.",
         },
         {
-          question: "I've never dived before. Is that a problem?",
+          question: "How big are the groups?",
           answer:
-            "Not at all. Most people who message us have never breathed off a tank in their life. The try dive exists exactly for that. You'll get about an hour of instruction in shallow water first, and you don't go anywhere until you're ready.",
+            "Two students to one instructor, maximum. You're not going to get lost in a crowd of twenty down there, and nobody has to wait their turn for attention.",
         },
         {
-          question: "What should I bring?",
+          question: "Which dive site will we go to?",
           answer:
-            "A swimsuit, a towel, and sunscreen. We provide all the diving gear. Leave your valuables at the hotel, and skip breakfast if you're prone to seasickness, or eat something light.",
+            "We've been diving this bay since 2010 and we run 12 sites around it. We'll pick the one that suits your level and the conditions that morning, not the one on a poster.",
         },
         {
           question: "When is the diving season?",

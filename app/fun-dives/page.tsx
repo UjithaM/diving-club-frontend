@@ -37,29 +37,26 @@ export default async function FunDivesPage() {
       items={[]}
       fixedItem={course}
       bookingHeading="Book your dives"
-      eyebrow="PADI centre · Trincomalee · since 2010"
+      summaryItem={course}
       // Certified divers already know what scuba is — this page sells the sites and the
-      // boat, not the sport. /dive handles first-timers.
-      heading={`Fun dives in Trincomalee${fromPrice(course)}`}
+      // boat, not the sport. /dive handles first-timers. The price moved out of the heading
+      // and into its own hero line.
+      heading="Fun dives in Trincomalee"
       subheading="Twelve sites around the bay — coral gardens, Swami Rock, and the WWII wrecks. Bring your card, we'll handle the rest. Turtles on nearly every dive."
-      image="/assets/scuba-diver-exploring-shipwreck-trincomalee.webp"
-      imageAlt="Certified scuba diver exploring a WWII shipwreck in Trincomalee, Sri Lanka"
-      points={[
+      // A certified diver hesitates over different things than a first-timer: whether their
+      // card counts, whether a long layoff matters, and what they have to carry.
+      objections={[
         {
-          title: "Twelve sites, matched to you",
-          body: "Shallow coral gardens at 8 metres through to the SS British Sergeant at 18 to 24. We pick the site for your level and what the sea is doing that morning, not what's on a poster.",
+          title: "What certification do I need?",
+          body: "PADI Open Water or any equivalent from SSI, NAUI, CMAS, BSAC and so on. Bring the card or have it on the app. Open Water gets you to 18 metres, Advanced opens up the deeper wrecks and the outer walls.",
         },
         {
-          title: "The wrecks are the real draw",
-          body: "Trincomalee bay holds genuine WWII history. Irarakandy sits at 6 to 10 metres and suits any certified diver. The British Sergeant at 18 to 24 is the one people come back for.",
+          title: "I haven't dived in a few years. Is that a problem?",
+          body: "Not at all, it's common. Tell us when you book and we'll start you somewhere shallow and easy, and run through the basics on the boat before you get in. If you'd rather do a proper refresher first, we can do that too.",
         },
         {
-          title: "Four divers to one guide, maximum",
-          body: "You're diving with someone who knows every reef in the bay, not following a crowd of twenty and hoping the guide notices when you're low on air.",
-        },
-        {
-          title: "Gear is included",
-          body: "BCD, regulator, wetsuit, fins, mask, tanks and weights. Bring your certification card and a swimsuit. If you've got your own kit, bring that instead — no problem either way.",
+          title: "What do I need to bring?",
+          body: "Your certification card and a swimsuit. BCD, regulator, wetsuit, fins, mask, tanks and weights are all included. If you've got your own kit, bring that instead — no problem either way.",
         },
       ]}
       steps={[
@@ -76,16 +73,18 @@ export default async function FunDivesPage() {
           body: "A short tuk-tuk from Uppuveli or Nilaveli. Bring your card, we do the check-in and briefing, and you're on the boat.",
         },
       ]}
+      // Certification and the layoff question moved up into `objections`. The site-specific
+      // detail stays here, with the old trust-point copy folded in so none of it is lost.
       faqs={[
         {
-          question: "What certification do I need?",
+          question: "Which sites will we dive?",
           answer:
-            "PADI Open Water or any equivalent from SSI, NAUI, CMAS, BSAC and so on. Bring the card or have it on the app. Open Water gets you to 18 metres, Advanced opens up the deeper wrecks and the outer walls.",
+            "Shallow coral gardens at 8 metres through to the SS British Sergeant at 18 to 24. We pick the site for your level and what the sea is doing that morning, not what's on a poster. Four divers to one guide, maximum — you're diving with someone who knows every reef in the bay.",
         },
         {
-          question: "I haven't dived in a few years. Is that a problem?",
+          question: "Are the wrecks worth it?",
           answer:
-            "Not at all, it's common. Tell us when you book and we'll start you somewhere shallow and easy, and run through the basics on the boat before you get in. If you'd rather do a proper refresher first, we can do that too.",
+            "Trincomalee bay holds genuine WWII history. Irarakandy sits at 6 to 10 metres and suits any certified diver. The British Sergeant at 18 to 24 is the one people come back for.",
         },
         {
           question: "Can I dive the HMS Hermes?",

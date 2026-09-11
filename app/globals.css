@@ -10,6 +10,12 @@
   --color-charcoal-sea: #264653;
   --color-shallow-water: #2A9D8F;
 
+  /* Tropic coral, deepened until it passes AA as text. #E76F51 measures 2.94:1 on warm-white,
+     which fails even the 3:1 graphical threshold — so the brand coral is a fill, a large
+     numeral and a rule, never small type. This is the same hue for the places coral has to BE
+     the text: 4.88:1 on warm-white, 5.14:1 under white. */
+  --color-coral-deep: #C43F24;
+
   --color-surface-dark: #0f1e25;
   --color-surface-muted: #f7f3ee;
   --color-border-subtle: rgba(38, 70, 83, 0.08);
@@ -19,12 +25,30 @@
 body {
   background: var(--color-warm-white);
   color: var(--color-charcoal-sea);
-  font-family: var(--font-dm-sans), sans-serif;
+  font-family: var(--font-sans), sans-serif;
 }
 
+/* No font-family here on purpose. This used to set `var(--font-bricolage)`, which is defined
+   nowhere — an invalid declaration, so headings silently inherited the body sans all along.
+   Naming --font-display here instead would flip every heading on the site to Fraunces, which is
+   a change nobody asked for; components opt in with the `font-display` class where they want it. */
 h1, h2, h3, h4, h5 {
-  font-family: var(--font-bricolage), sans-serif;
   font-optical-sizing: auto;
+}
+
+/* Keyboard focus, once, for everything. There was no :focus-visible rule anywhere outside the
+   form fields, so every CTA, review card and FAQ control was invisible to keyboard users.
+   One rule here beats a ring class on each of them — and catches the next one too. */
+:focus-visible {
+  outline: 2px solid var(--color-shallow-water);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* On the dark bands teal-on-navy is too quiet to find, so those switch to the page ground. */
+.bg-charcoal-sea :focus-visible,
+.bg-surface-dark :focus-visible {
+  outline-color: var(--color-warm-white);
 }
 
 .parallax-layer {
@@ -84,6 +108,22 @@ h1, h2, h3, h4, h5 {
   50%       { transform: scale(1.2); }
 }
 
+/* Bubbles drifting up behind the ad-page hero. Each one carries its own --rise/--drift/--dur
+   so the set never marches in step. transform and opacity only, so it stays off the main
+   thread; with reduced motion they simply sit where they are as a static underwater texture. */
+@keyframes bubble-rise {
+  from { transform: translate3d(0, 0, 0); opacity: 0; }
+  14%  { opacity: var(--peak, 0.5); }
+  86%  { opacity: var(--peak, 0.5); }
+  to   { transform: translate3d(var(--drift, 10px), calc(-1 * var(--rise, 620px)), 0); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dc-bubble {
+    animation: bubble-rise var(--dur, 12s) linear var(--delay, 0s) infinite;
+  }
+}
+
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(24px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -92,17 +132,6 @@ h1, h2, h3, h4, h5 {
 @keyframes stat-reveal {
   from { opacity: 0; transform: translateY(16px) scaleY(0.85); transform-origin: bottom; }
   to   { opacity: 1; transform: translateY(0) scaleY(1); }
-}
-
-@keyframes whatsapp-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.55); }
-  50%       { box-shadow: 0 0 0 10px rgba(37, 211, 102, 0); }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .whatsapp-glow {
-    animation: whatsapp-glow 2s ease-in-out infinite;
-  }
 }
 
 .gallery-grid {

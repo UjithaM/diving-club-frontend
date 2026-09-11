@@ -127,22 +127,42 @@ function GoogleMark() {
 export default function GoogleReviewsSection({
   heading = "What our divers say on Google",
   limit,
+  plainHeading = false,
 }: {
   heading?: string;
   /** Ad pages pass 4 — the form matters more there than scroll depth. Default shows all. */
   limit?: number;
+  /**
+   * Render the heading as a real section heading instead of the small letterspaced label.
+   *
+   * The ad pages pass this: their redesign drops the all-caps eyebrow everywhere, and an 11px
+   * uppercase label is the wrong weight for a section that now sits below the offer rather
+   * than above it. Everywhere else the label style is what matches the surrounding page.
+   */
+  plainHeading?: boolean;
 }) {
   const shown = limit ? reviews.slice(0, limit) : reviews;
 
   return (
     <section className="bg-warm-white py-14 px-6">
       <div className="max-w-6xl mx-auto">
-        <div className="flex items-center gap-3 mb-8">
-          <span className="h-px w-6 bg-tropic-coral" aria-hidden="true" />
-          <h2 className="text-tropic-coral text-[11px] font-semibold tracking-[0.22em] uppercase">
-            {heading}
-          </h2>
-        </div>
+        {plainHeading ? (
+          <div className="mb-9">
+            <span className="block h-1 w-10 bg-tropic-coral rounded-full" aria-hidden="true" />
+            <h2 className="mt-5 font-display text-[clamp(1.75rem,4.5vw,2.5rem)] font-extrabold leading-tight tracking-tight text-charcoal-sea">
+              {heading}
+            </h2>
+          </div>
+        ) : (
+          <div className="flex items-center gap-3 mb-8">
+            <span className="h-px w-6 bg-tropic-coral" aria-hidden="true" />
+            {/* coral-deep, not tropic-coral: #E76F51 as 11px text on warm-white measures
+                2.94:1 and fails AA. Same hue, deepened to 4.88:1. */}
+            <h2 className="text-coral-deep text-[11px] font-semibold tracking-[0.22em] uppercase">
+              {heading}
+            </h2>
+          </div>
+        )}
 
         {/* Mobile is a swipe carousel, desktop is a grid — CSS scroll-snap does both, so
             this stays a server component with no JS. The negative margin lets cards run to
@@ -170,7 +190,7 @@ export default function GoogleReviewsSection({
                 </div>
 
                 <blockquote className="flex-1">
-                  <p className="text-charcoal-sea/70 text-sm leading-relaxed">
+                  <p className="text-charcoal-sea/75 text-sm leading-relaxed">
                     &ldquo;{r.text}&rdquo;
                   </p>
                 </blockquote>
@@ -183,13 +203,13 @@ export default function GoogleReviewsSection({
                     <p className="text-charcoal-sea font-semibold text-sm leading-tight truncate">
                       {r.name}
                     </p>
-                    <p className="text-charcoal-sea/40 text-xs">
+                    <p className="text-charcoal-sea/75 text-xs">
                       {r.localGuide ? "Local Guide · " : ""}
                       {r.date}
                     </p>
                     {/* Say whose words these are: Google's translation, not the reviewer's. */}
                     {r.translatedFrom && (
-                      <p className="text-charcoal-sea/30 text-[11px] mt-0.5">
+                      <p className="text-charcoal-sea/75 text-[11px] mt-0.5">
                         Translated from {r.translatedFrom}
                       </p>
                     )}
@@ -205,7 +225,7 @@ export default function GoogleReviewsSection({
           href={GOOGLE_LISTING}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 mt-8 text-charcoal-sea/60 hover:text-shallow-water text-sm font-medium transition-colors"
+          className="inline-flex items-center gap-2 mt-8 text-charcoal-sea/75 hover:text-shallow-water text-sm font-medium transition-colors"
         >
           <GoogleMark />
           Read every review on our Google listing
