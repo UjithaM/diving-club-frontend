@@ -32,7 +32,7 @@ function ItemSummary({ item }: { item: BookableItem }) {
 
   return (
     <div className="bg-charcoal-sea rounded-2xl p-5">
-      <p className="text-warm-white font-bold text-lg leading-snug mb-3">{item.name}</p>
+      <p className="text-sub font-bold text-warm-white mb-3">{item.name}</p>
 
       <div className="flex items-end gap-3 flex-wrap mb-2">
         {/* tropic-coral on charcoal-sea is 3.26:1 — fine for a 36px numeral, which is why the
@@ -40,10 +40,10 @@ function ItemSummary({ item }: { item: BookableItem }) {
         <span className="text-tropic-coral text-4xl font-extrabold leading-none">
           ${item.price}
         </span>
-        <span className="text-warm-white/75 text-sm mb-1">{item.currency} per person</span>
+        <span className="text-meta text-warm-white/75 mb-1">{item.currency} per person</span>
         {saving > 0 && (
           <>
-            <span className="text-warm-white/75 text-lg line-through mb-0.5">
+            <span className="text-sub text-warm-white/75 line-through mb-0.5">
               ${item.originalPrice}
             </span>
             {/* Coral text on warm-white, not white on coral: at 12px the white-on-coral chip
@@ -55,7 +55,7 @@ function ItemSummary({ item }: { item: BookableItem }) {
         )}
       </div>
 
-      <p className="text-warm-white/75 text-sm">
+      <p className="text-meta text-warm-white/75">
         {item.duration}
         {item.minAge ? ` · Ages ${item.minAge}+` : ""}
       </p>
@@ -220,16 +220,16 @@ export default function AdBookingForm({
           </svg>
         </div>
 
-        <h3 className="text-xl font-bold text-charcoal-sea mb-2">
+        <h3 className="type-display text-section font-extrabold text-charcoal-sea mb-3">
           Request received — you&apos;re not booked yet
         </h3>
-        <p className="text-charcoal-sea/75 leading-relaxed mb-6">
+        <p className="text-body text-charcoal-sea/75 mb-6">
           Our team will WhatsApp you within 24 hours to confirm your dates and send the advance
           payment details. Nothing is charged until then.
         </p>
 
         {reference && (
-          <p className="text-sm text-charcoal-sea/75 mb-6">
+          <p className="text-meta text-charcoal-sea/75 mb-6">
             Your reference: <span className="font-bold text-charcoal-sea">{reference}</span>
           </p>
         )}
@@ -239,7 +239,7 @@ export default function AdBookingForm({
         <div className="mt-6">
           <Link
             href="/"
-            className="text-sm text-charcoal-sea/75 hover:text-charcoal-sea transition-colors inline-flex items-center min-h-[48px]"
+            className="text-meta text-charcoal-sea/75 hover:text-charcoal-sea transition-colors inline-flex items-center min-h-[48px]"
           >
             Back to Diving Club
           </Link>
@@ -330,7 +330,7 @@ export default function AdBookingForm({
       {status === "error" && (
         <p
           role="alert"
-          className="text-tropic-coral text-sm bg-tropic-coral/10 border border-tropic-coral/20 rounded-xl px-4 py-3"
+          className="text-meta text-coral-deep bg-tropic-coral/10 border border-tropic-coral/40 rounded-xl px-4 py-3"
         >
           Something went wrong. Please try again, or WhatsApp us on{" "}
           <a
@@ -361,16 +361,16 @@ export default function AdBookingForm({
       {/* Baymard: trust markers do the most work at the point of commitment, not in a
           section further down the page. */}
       <div className="text-center space-y-2">
-        <p className="text-xs text-charcoal-sea/75">
+        <p className="text-meta text-charcoal-sea/75">
           No card needed. Nothing is charged now — we confirm your dates and the advance on
           WhatsApp first.
         </p>
-        <p className="text-xs text-charcoal-sea/75">
+        <p className="text-meta text-charcoal-sea/75">
           PADI dive centre in Trincomalee since 2010
         </p>
         {/* Consent has to be visible at the point of commitment for the 48-hour rule and
             the late-arrival rule to hold. */}
-        <p className="text-xs text-charcoal-sea/75 leading-relaxed">
+        <p className="text-meta text-charcoal-sea/75">
           By sending this you agree to our{" "}
           <Link href="/terms" className="underline hover:text-shallow-water">terms</Link> and{" "}
           <Link href="/refund-policy" className="underline hover:text-shallow-water">refund policy</Link>.

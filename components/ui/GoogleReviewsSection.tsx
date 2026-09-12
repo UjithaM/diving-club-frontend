@@ -144,15 +144,12 @@ export default function GoogleReviewsSection({
   const shown = limit ? reviews.slice(0, limit) : reviews;
 
   return (
-    <section className="bg-warm-white py-14 px-6">
+    <section className="bg-warm-white border-t border-border-subtle py-16 lg:py-24 px-6">
       <div className="max-w-6xl mx-auto">
         {plainHeading ? (
-          <div className="mb-9">
-            <span className="block h-1 w-10 bg-tropic-coral rounded-full" aria-hidden="true" />
-            <h2 className="mt-5 font-display text-[clamp(1.75rem,4.5vw,2.5rem)] font-extrabold leading-tight tracking-tight text-charcoal-sea">
-              {heading}
-            </h2>
-          </div>
+          <h2 className="type-display text-section font-extrabold text-charcoal-sea mb-9">
+            {heading}
+          </h2>
         ) : (
           <div className="flex items-center gap-3 mb-8">
             <span className="h-px w-6 bg-tropic-coral" aria-hidden="true" />
@@ -190,9 +187,7 @@ export default function GoogleReviewsSection({
                 </div>
 
                 <blockquote className="flex-1">
-                  <p className="text-charcoal-sea/75 text-sm leading-relaxed">
-                    &ldquo;{r.text}&rdquo;
-                  </p>
+                  <p className="text-meta text-charcoal-sea/75">&ldquo;{r.text}&rdquo;</p>
                 </blockquote>
 
                 <figcaption className="mt-5 pt-5 border-t border-charcoal-sea/8 flex items-center gap-3">

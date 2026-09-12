@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
+import { Bricolage_Grotesque, Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -23,6 +23,20 @@ const fraunces = Fraunces({
   subsets: ["latin"],
   display: "swap",
   axes: ["opsz", "SOFT", "WONK"],
+});
+
+/**
+ * The ad pages' headline face, set through `.type-display` in globals.css.
+ *
+ * `opsz` only. The other axes Bricolage ships — wdth, and wght which comes along automatically —
+ * are either unused here (the headline sits at the default width of 100) or already covered, and
+ * every axis in the request is payload on a page whose LCP element is now a text node.
+ */
+const bricolage = Bricolage_Grotesque({
+  variable: "--font-bricolage-grotesque",
+  subsets: ["latin"],
+  display: "swap",
+  axes: ["opsz"],
 });
 
 const jakarta = Plus_Jakarta_Sans({
@@ -109,7 +123,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${jakarta.variable} antialiased`}
+      className={`${fraunces.variable} ${jakarta.variable} ${bricolage.variable} antialiased`}
     >
       <head>
         <script src="https://analytics.ahrefs.com/analytics.js" data-key="JUJD0Ce1iIv72G6QYuIKdg" async />

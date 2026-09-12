@@ -26,9 +26,9 @@ export default function FaqAccordion({
 
   if (defaultOpen) {
     return (
-      <section className="bg-warm-white py-16 px-6">
+      <section className="bg-warm-white border-t border-border-subtle py-16 lg:py-24 px-6">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-charcoal-sea font-display text-3xl font-extrabold mb-10">
+          <h2 className="type-display text-section font-extrabold text-charcoal-sea mb-10">
             {heading}
           </h2>
 
@@ -37,10 +37,8 @@ export default function FaqAccordion({
           <dl className="divide-y divide-border-medium border-t border-border-medium">
             {faqs.map((faq) => (
               <div key={faq.question} className="py-7">
-                <dt className="text-charcoal-sea font-semibold text-lg leading-snug mb-2.5">
-                  {faq.question}
-                </dt>
-                <dd className="text-charcoal-sea/75 leading-relaxed">{faq.answer}</dd>
+                <dt className="text-sub font-bold text-charcoal-sea mb-2">{faq.question}</dt>
+                <dd className="text-body text-charcoal-sea/75">{faq.answer}</dd>
               </div>
             ))}
           </dl>

@@ -3,6 +3,40 @@
 @theme inline {
   --font-sans: var(--font-jakarta);
   --font-display: var(--font-fraunces);
+  /* The ad pages' headline face. See .type-display below for why it needs its own class. */
+  --font-bricolage: var(--font-bricolage-grotesque);
+
+  /* One type scale for the ad pages, replacing five hand-written clamps and nine ad-hoc sizes
+     that each component had invented for itself. Line-height and tracking travel with the size,
+     so `text-hero` is the whole decision rather than three classes that have to agree. Weight
+     stays on the font-* utilities, which keeps these composable. */
+  --text-hero: clamp(2.5rem, 8.5vw, 4.5rem);
+  --text-hero--line-height: 0.95;
+  --text-hero--letter-spacing: -0.03em;
+
+  /* The price, and nothing else. */
+  --text-figure: clamp(2.75rem, 9vw, 3.75rem);
+  --text-figure--line-height: 1;
+  --text-figure--letter-spacing: -0.035em;
+
+  --text-section: clamp(1.625rem, 4.5vw, 2.25rem);
+  --text-section--line-height: 1.1;
+  --text-section--letter-spacing: -0.02em;
+
+  --text-sub: 1.125rem;
+  --text-sub--line-height: 1.35;
+  --text-sub--letter-spacing: -0.01em;
+
+  /* Clamped rather than fixed: at a flat 19px the hero paragraph ran to five lines on a 390px
+     phone and pushed the price a third of a screen down. 17px there, 19px once there's room. */
+  --text-lead: clamp(1.0625rem, 1rem + 0.6vw, 1.1875rem);
+  --text-lead--line-height: 1.6;
+
+  --text-body: 1rem;
+  --text-body--line-height: 1.65;
+
+  --text-meta: 0.875rem;
+  --text-meta--line-height: 1.55;
 
   --color-warm-white: #FFF8F0;
   --color-sunrise: #F4A261;
@@ -28,12 +62,23 @@ body {
   font-family: var(--font-sans), sans-serif;
 }
 
-/* No font-family here on purpose. This used to set `var(--font-bricolage)`, which is defined
-   nowhere — an invalid declaration, so headings silently inherited the body sans all along.
-   Naming --font-display here instead would flip every heading on the site to Fraunces, which is
-   a change nobody asked for; components opt in with the `font-display` class where they want it. */
+/* No font-family here on purpose. This used to set `var(--font-bricolage)`, which at the time was
+   defined nowhere — an invalid declaration, so headings silently inherited the body sans all
+   along. The variable now exists, but naming it (or --font-display) here would flip every heading
+   on the site in one go, which is a change nobody asked for. Components opt in per heading with
+   `font-display` or `type-display`. */
 h1, h2, h3, h4, h5 {
   font-optical-sizing: auto;
+}
+
+/* The ad pages' headline face, at the optical size it is actually drawn for.
+   Bricolage Grotesque's opsz axis defaults to 14 — a body-copy setting — so a 72px headline left
+   at the default renders with body proportions: loose spacing, heavy joints, too much stroke
+   contrast. 96 is the top of its range and what display sizes want. "wght" is deliberately absent
+   from the settings string, so font-bold / font-extrabold still work on top of it. */
+.type-display {
+  font-family: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  font-variation-settings: "opsz" 96;
 }
 
 /* Keyboard focus, once, for everything. There was no :focus-visible rule anywhere outside the
@@ -56,17 +101,6 @@ h1, h2, h3, h4, h5 {
   backface-visibility: hidden;
 }
 
-@keyframes hero-rotate-in {
-  from {
-    opacity: 0;
-    transform: perspective(1000px) rotateX(22deg) translateY(50px);
-  }
-  to {
-    opacity: 1;
-    transform: perspective(1000px) rotateX(0deg) translateY(0);
-  }
-}
-
 @keyframes hero-slide-up {
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -77,61 +111,9 @@ h1, h2, h3, h4, h5 {
   to   { transform: translateY(0); }
 }
 
-@keyframes float-a {
-  0%, 100% { transform: translate(0, 0); }
-  33%       { transform: translate(-18px, -25px); }
-  66%       { transform: translate(8px, -12px); }
-}
-
-@keyframes float-b {
-  0%, 100% { transform: translate(0, 0); }
-  50%       { transform: translate(22px, 18px); }
-}
-
-@keyframes float-c {
-  0%, 100% { transform: translate(0, 0); }
-  50%       { transform: translate(-12px, 14px); }
-}
-
 @keyframes scroll-line {
   0%, 100% { transform: scaleY(0); }
   50%       { transform: scaleY(1); }
-}
-
-@keyframes orb-pulse-1 {
-  0%, 100% { transform: scale(1) rotate(0deg); }
-  50%       { transform: scale(1.15) rotate(20deg); }
-}
-
-@keyframes orb-pulse-2 {
-  0%, 100% { transform: scale(1); }
-  50%       { transform: scale(1.2); }
-}
-
-/* Bubbles drifting up behind the ad-page hero. Each one carries its own --rise/--drift/--dur
-   so the set never marches in step. transform and opacity only, so it stays off the main
-   thread; with reduced motion they simply sit where they are as a static underwater texture. */
-@keyframes bubble-rise {
-  from { transform: translate3d(0, 0, 0); opacity: 0; }
-  14%  { opacity: var(--peak, 0.5); }
-  86%  { opacity: var(--peak, 0.5); }
-  to   { transform: translate3d(var(--drift, 10px), calc(-1 * var(--rise, 620px)), 0); opacity: 0; }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .dc-bubble {
-    animation: bubble-rise var(--dur, 12s) linear var(--delay, 0s) infinite;
-  }
-}
-
-@keyframes fade-up {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes stat-reveal {
-  from { opacity: 0; transform: translateY(16px) scaleY(0.85); transform-origin: bottom; }
-  to   { opacity: 1; transform: translateY(0) scaleY(1); }
 }
 
 .gallery-grid {

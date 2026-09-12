@@ -26,7 +26,7 @@ const VARIANTS = {
     "gap-3 bg-[#25D366] text-charcoal-sea font-bold px-10 py-5 rounded-full hover:brightness-95 transition-[filter] duration-200 text-[21px]",
   /** Text-weight, for sitting inside a sentence rather than owning its own block. */
   inline:
-    "gap-1.5 text-[#0F7A40] font-bold underline underline-offset-2 hover:no-underline text-sm",
+    "gap-1.5 text-[#0F7A40] font-bold underline underline-offset-2 hover:no-underline text-meta",
   /** Secondary weight on a light background, where booking is the primary action. */
   outline:
     "gap-3 bg-transparent text-[#0F7A40] font-bold px-8 py-4 rounded-full border-2 border-[#0F7A40] hover:bg-[#0F7A40]/10 transition-colors duration-200 text-[19px]",
