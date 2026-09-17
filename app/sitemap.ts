@@ -2,15 +2,18 @@ import type { MetadataRoute } from "next";
 import { getCourses } from "@/lib/api/courses";
 import { getExperiences } from "@/lib/api/experiences";
 import { getDiveSites } from "@/lib/api/dive-sites";
+import { getPackages } from "@/lib/api/packages";
 import { getBlogPosts } from "@/lib/data/blog-posts";
 
 const BASE = "https://divingclub.lk";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [courses, experiences, diveSites] = await Promise.all([
+  const [courses, experiences, diveSites, packages] = await Promise.all([
     getCourses(),
     getExperiences(),
     getDiveSites(),
+    // A packages outage shouldn't take the whole sitemap down with it.
+    getPackages().catch(() => []),
   ]);
   const blogPosts = getBlogPosts();
 
@@ -19,6 +22,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/about`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/courses`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE}/activities`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
+    { url: `${BASE}/packages`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE}/dive-sites`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE}/scuba-diving-in-sri-lanka`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE}/scuba-diving-in-trincomalee`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.95 },
@@ -46,6 +50,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
+  const packageRoutes: MetadataRoute.Sitemap = packages.map((p) => ({
+    url: `${BASE}/packages/${p.slug}`,
+    lastModified: p.updatedAt ? new Date(p.updatedAt) : new Date(),
+    changeFrequency: "monthly",
+    priority: 0.85,
+  }));
+
   const diveSiteRoutes: MetadataRoute.Sitemap = diveSites.map((d) => ({
     url: `${BASE}/dive-sites/${d.slug}`,
     lastModified: new Date(),
@@ -60,5 +71,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.75,
   }));
 
-  return [...staticRoutes, ...courseRoutes, ...activityRoutes, ...diveSiteRoutes, ...blogRoutes];
+  return [...staticRoutes, ...courseRoutes, ...activityRoutes, ...packageRoutes, ...diveSiteRoutes, ...blogRoutes];
 }

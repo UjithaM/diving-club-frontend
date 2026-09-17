@@ -1,11 +1,13 @@
 import Link from "next/link";
+import { Arrow } from "@/components/ui/Button";
+import { toneClass, type Tone } from "@/components/ui/DetailHero";
 
 interface RelatedItem {
   slug: string;
   name: string;
   description: string;
   badge?: string;
-  badgeColor?: string;
+  badgeTone?: Tone;
   href: string;
 }
 
@@ -18,43 +20,31 @@ export default function RelatedGrid({ items, heading = "You might also like" }: 
   if (!items || items.length === 0) return null;
 
   return (
-    <section className="bg-charcoal-sea py-16 px-6">
+    <section className="zone-deep py-14 lg:py-20 px-5 sm:px-8 border-t border-rule">
       <div className="max-w-6xl mx-auto">
-        <div className="flex items-center gap-3 mb-10">
-          <span className="h-px w-6 bg-tropic-coral" aria-hidden="true" />
-          <h2 className="text-warm-white font-display text-2xl font-extrabold">{heading}</h2>
-        </div>
+        <h2 className="text-section font-extrabold mb-8 lg:mb-10 reveal">{heading}</h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <ul className="rail md:grid-cols-3 md:gap-6">
           {items.map((item) => (
-            <Link
-              key={item.slug}
-              href={item.href}
-              className="group bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/8 hover:border-white/20 transition-all duration-200"
-            >
-              {item.badge && (
-                <span
-                  className="inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full mb-4"
-                  style={{ background: item.badgeColor ?? "#2A9D8F", color: "#fff" }}
-                >
-                  {item.badge}
+            <li key={item.slug} className="reveal">
+              <Link
+                href={item.href}
+                className="group flex h-full flex-col rounded-[14px] bg-warm-white/[0.06] p-6 ring-1 ring-warm-white/10 transition-[background-color,translate] duration-300 hover:-translate-y-1 hover:bg-warm-white/[0.1]"
+              >
+                {item.badge && (
+                  <span className={`mb-4 w-fit rounded-full px-2.5 py-1 text-label uppercase font-semibold ${toneClass[item.badgeTone ?? "shallow"]}`}>
+                    {item.badge}
+                  </span>
+                )}
+                <h3 className="text-sub font-extrabold mb-2 group-hover:underline underline-offset-4">{item.name}</h3>
+                <p className="text-muted text-sm leading-relaxed line-clamp-3 flex-1">{item.description}</p>
+                <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-sunrise">
+                  Learn more <Arrow />
                 </span>
-              )}
-              <h3 className="text-warm-white font-bold text-lg mb-2 group-hover:text-tropic-coral transition-colors">
-                {item.name}
-              </h3>
-              <p className="text-warm-white/45 text-sm leading-relaxed line-clamp-3">
-                {item.description}
-              </p>
-              <span className="inline-flex items-center gap-1.5 text-tropic-coral/70 text-xs font-semibold mt-4 group-hover:text-tropic-coral transition-colors">
-                Learn more
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-                  <path d="M2.5 6h7M6.5 3l3 3-3 3" />
-                </svg>
-              </span>
-            </Link>
+              </Link>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </section>
   );

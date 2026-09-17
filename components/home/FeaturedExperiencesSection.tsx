@@ -1,49 +1,32 @@
-"use client";
-
-import Link from "next/link";
 import type { HomeActivity } from "@/lib/types";
 import ExperienceCard from "@/components/ui/ExperienceCard";
-import AnimatedSection from "@/components/ui/AnimatedSection";
+import Section from "@/components/ui/Section";
+import Button from "@/components/ui/Button";
+import { Mask } from "@/components/illustrations/Sea";
 
 export default function FeaturedExperiencesSection({ experiences }: { experiences: HomeActivity[] }) {
   return (
-    <section className="bg-warm-white py-16 lg:py-28 px-6">
-      <div className="max-w-6xl mx-auto">
-        {/* Section header */}
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-14">
-          <AnimatedSection>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-6 h-px bg-tropic-coral" />
-              <span className="text-[11px] uppercase tracking-[0.22em] font-semibold text-tropic-coral">
-                Get in the Water
-              </span>
-            </div>
-            <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-extrabold leading-tight text-charcoal-sea font-display">
-              Dive Right In
-            </h2>
-            <p className="text-charcoal-sea/55 text-base leading-relaxed mt-3 max-w-lg">
-              First-timers and experienced divers alike, there&apos;s something in these waters for everyone.
-            </p>
-          </AnimatedSection>
-          <AnimatedSection delay={0.1}>
-            <Link
-              href="/activities"
-              className="text-sm font-semibold text-charcoal-sea/40 hover:text-charcoal-sea transition-colors whitespace-nowrap"
-            >
-              See all activities →
-            </Link>
-          </AnimatedSection>
+    <Section zone="surface" depth={3} log="Get in the Water" className="relative">
+      <div className="relative flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8 lg:mb-16 reveal">
+        <div>
+          <h2 className="text-section font-extrabold">Dive Right In</h2>
+          <p className="text-lead text-muted mt-4 max-w-[46ch]">
+            First-timers and experienced divers alike, there&apos;s something in these waters for everyone.
+          </p>
         </div>
-
-        {/* Cards */}
-        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 p-0">
-          {experiences.map((experience, i) => (
-            <AnimatedSection key={experience.slug} delay={i * 0.1} className="list-none">
-              <ExperienceCard experience={experience} />
-            </AnimatedSection>
-          ))}
-        </ul>
+        <Button href="/activities" variant="ghost" arrow className="shrink-0">
+          See all activities
+        </Button>
+        <Mask className="bob absolute -top-4 right-0 w-20 sm:w-24 lg:right-[30%] lg:-top-10 lg:w-32 -rotate-12" />
       </div>
-    </section>
+
+      <ul className="rail md:grid-cols-3 lg:grid-cols-[minmax(0,6fr)_minmax(0,7fr)] lg:grid-rows-2 md:gap-8 lg:gap-x-10 lg:gap-y-10 list-none">
+        {experiences.map((experience, i) => (
+          <li key={experience.slug} className={`list-none reveal ${i === 0 ? "lg:row-span-2" : ""}`}>
+            <ExperienceCard experience={experience} lead={i === 0} />
+          </li>
+        ))}
+      </ul>
+    </Section>
   );
 }

@@ -1,13 +1,6 @@
 "use client";
 
-import type Lenis from "lenis";
 import { trackConversion } from "@/lib/ads";
-
-declare global {
-  interface Window {
-    __lenis?: Lenis;
-  }
-}
 
 /** Breathing room above the form once the header question is settled. */
 const GAP = 16;
@@ -65,8 +58,8 @@ function onScreen(el: HTMLElement) {
  * No Ads conversion here either way: the form's own submit fires the real one. The dataLayer
  * event is only so the funnel is readable in GTM.
  *
- * Lenis owns the scroll on desktop and is skipped on mobile, so both paths are given the same
- * absolute target rather than one using an offset and the other a CSS scroll-margin.
+ * The target is an absolute position rather than a CSS scroll-margin, because the header's
+ * height only matters in one scroll direction (see headerOffset).
  */
 export default function BookCta({ source, children, className = "" }: BookCtaProps) {
   return (
@@ -101,11 +94,8 @@ export default function BookCta({ source, children, className = "" }: BookCtaPro
         );
         const y = Math.max(top - lead, 0);
 
-        if (window.__lenis) {
-          window.__lenis.scrollTo(y);
-        } else {
-          window.scrollTo({ top: y, behavior: "smooth" });
-        }
+        const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        window.scrollTo({ top: y, behavior: still ? "auto" : "smooth" });
         // The hash is what makes Back work and the link shareable.
         history.replaceState(null, "", "#book");
       }}

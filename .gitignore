@@ -41,3 +41,6 @@ yarn-error.log*
 next-env.d.ts
 
 .claude
+
+# design review screenshots (regenerated, not source)
+.impeccable/review/

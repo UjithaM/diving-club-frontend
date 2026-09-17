@@ -25,16 +25,26 @@ function Row({
   mono?: boolean;
 }) {
   return (
-    <div className="flex justify-between gap-4">
-      <span className="text-charcoal-sea/50 shrink-0">{label}</span>
+    <div className="flex justify-between gap-4 py-2 border-b border-dashed border-charcoal-sea/15 last:border-0">
+      <span className="text-charcoal-sea/80 shrink-0">{label}</span>
       <span
-        className={`font-semibold text-charcoal-sea text-right ${mono ? "font-mono text-xs" : ""}`}
+        className={`font-semibold text-charcoal-sea text-right break-all ${mono ? "tabular bg-sunrise/35 px-1.5 rounded-[4px]" : ""}`}
       >
         {value}
       </span>
     </div>
   );
 }
+
+/** A two-way choice, shared by the amount and method pickers. */
+const option = (on: boolean) =>
+  `flex-1 min-h-12 rounded-[12px] px-3 text-sm font-bold border-2 transition-[background-color,border-color,scale] duration-200 active:scale-[0.98] cursor-pointer ${
+    on
+      ? "bg-shallow-water text-surface-dark border-surface-dark"
+      : "bg-white text-charcoal-sea border-charcoal-sea/20 hover:border-shallow-water"
+  }`;
+
+const PANEL = "rounded-[18px] bg-white p-5 sm:p-6 ring-1 ring-charcoal-sea/10 shadow-[0_18px_40px_-30px_rgba(15,30,37,0.5)] mb-5";
 
 export default function PaymentStep({
   bookingRef,
@@ -139,36 +149,39 @@ export default function PaymentStep({
 
   return (
     <div>
-      <h2 className="text-charcoal-sea text-xl font-bold mb-1">Payment</h2>
-      <p className="text-charcoal-sea/55 text-sm mb-6 leading-relaxed">
+      <h2 className="flex items-center gap-3 text-charcoal-sea text-section font-extrabold mb-2">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface-dark font-display text-lg text-warm-white tabular" aria-hidden="true">4</span>
+        Payment
+      </h2>
+      <p className="text-charcoal-sea/80 text-body mb-7">
         Choose how you&apos;d like to pay to confirm your spot.
       </p>
 
       {/* Booking ref + price badge */}
-      <div className="bg-shallow-water/10 border border-shallow-water/20 rounded-xl px-4 py-3 mb-5 space-y-2">
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-charcoal-sea/50 uppercase tracking-widest">Booking ref</span>
-          <span className="font-mono text-sm font-semibold text-charcoal-sea">{bookingRef}</span>
+      <div className="zone-deep rounded-[18px] px-5 py-5 mb-5 space-y-3 tabular">
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-label uppercase font-semibold text-sunrise">Booking ref</span>
+          <span className="font-display font-extrabold text-warm-white">{bookingRef}</span>
         </div>
         {discountAmount > 0 && (
-          <div className="flex items-center justify-between border-t border-shallow-water/20 pt-2">
-            <span className="text-xs text-charcoal-sea/50 uppercase tracking-widest">Discount</span>
-            <span className="text-sm font-semibold text-shallow-water">
+          <div className="flex items-center justify-between border-t border-dashed border-rule pt-3">
+            <span className="text-label uppercase font-semibold text-muted">Discount</span>
+            <span className="text-sm font-semibold text-sunrise">
               −{cur} {discountAmount.toFixed(2)}
             </span>
           </div>
         )}
         {total != null && (
-          <div className="flex items-center justify-between border-t border-shallow-water/20 pt-2">
-            <span className="text-xs text-charcoal-sea/50 uppercase tracking-widest">Total</span>
-            <span className="text-sm font-semibold text-charcoal-sea">{cur} {total.toFixed(2)}</span>
+          <div className="flex items-baseline justify-between border-t-2 border-warm-white/40 pt-3">
+            <span className="text-label uppercase font-semibold text-muted">Total</span>
+            <span className="font-display text-readout font-extrabold text-warm-white">{cur} {total.toFixed(2)}</span>
           </div>
         )}
       </div>
 
       {/* Deposit toggle. Every figure here comes from the server — nothing is derived. */}
       {depositEnabled && depositAmount != null && (
-        <div className="mb-5 bg-white border border-charcoal-sea/10 rounded-xl p-4">
+        <div className={PANEL}>
           <p className="text-sm font-semibold text-charcoal-sea mb-3">
             Payment amount
           </p>
@@ -176,27 +189,21 @@ export default function PaymentStep({
             <button
               type="button"
               onClick={() => setDepositOnly(false)}
-              className={`flex-1 min-h-[44px] rounded-xl text-sm font-semibold border transition-all ${
-                !depositOnly
-                  ? "bg-charcoal-sea text-warm-white border-charcoal-sea"
-                  : "bg-white text-charcoal-sea/55 border-charcoal-sea/20 hover:border-charcoal-sea/40"
-              }`}
+              aria-pressed={!depositOnly}
+              className={option(!depositOnly)}
             >
               Pay full amount
             </button>
             <button
               type="button"
               onClick={() => setDepositOnly(true)}
-              className={`flex-1 min-h-[44px] rounded-xl text-sm font-semibold border transition-all ${
-                depositOnly
-                  ? "bg-charcoal-sea text-warm-white border-charcoal-sea"
-                  : "bg-white text-charcoal-sea/55 border-charcoal-sea/20 hover:border-charcoal-sea/40"
-              }`}
+              aria-pressed={depositOnly}
+              className={option(depositOnly)}
             >
               Pay advance ({cur} {depositAmount.toFixed(2)})
             </button>
           </div>
-          <p className="text-xs text-charcoal-sea/40 mt-2">
+          <p className="text-xs text-charcoal-sea/80 mt-3" aria-live="polite">
             {depositOnly
               ? `Pay ${cur} ${depositAmount.toFixed(2)} now to secure your spot. Remaining balance due on arrival.`
               : "Pay the full amount now. All equipment and guide fees included."}
@@ -206,30 +213,24 @@ export default function PaymentStep({
 
       {/* Gateway selector — only shown when multiple options available */}
       {hasPayPal && hasBankTransfer && (
-        <div className="mb-5">
+        <div className={PANEL}>
           <p className="text-sm font-semibold text-charcoal-sea mb-3">
             Payment method
           </p>
           <div className="flex gap-2">
             <button
               type="button"
+              aria-pressed={gateway === "paypal"}
               onClick={() => { setGateway("paypal"); setError(null); }}
-              className={`flex-1 min-h-[48px] rounded-xl text-sm font-semibold border transition-all ${
-                gateway === "paypal"
-                  ? "bg-charcoal-sea text-warm-white border-charcoal-sea"
-                  : "bg-white text-charcoal-sea/55 border-charcoal-sea/20 hover:border-charcoal-sea/40"
-              }`}
+              className={option(gateway === "paypal")}
             >
               PayPal
             </button>
             <button
               type="button"
+              aria-pressed={gateway === "bank_transfer"}
               onClick={() => { setGateway("bank_transfer"); setError(null); }}
-              className={`flex-1 min-h-[48px] rounded-xl text-sm font-semibold border transition-all ${
-                gateway === "bank_transfer"
-                  ? "bg-charcoal-sea text-warm-white border-charcoal-sea"
-                  : "bg-white text-charcoal-sea/55 border-charcoal-sea/20 hover:border-charcoal-sea/40"
-              }`}
+              className={option(gateway === "bank_transfer")}
             >
               Bank Transfer
             </button>
@@ -239,7 +240,7 @@ export default function PaymentStep({
 
       {/* PayPal panel */}
       {gateway === "paypal" && paypal && (
-        <div className="bg-white border border-charcoal-sea/10 rounded-xl p-4 mb-4">
+        <div className={`${PANEL} pop-in`}>
           <PayPalScriptProvider
             options={{
               clientId: paypal.client_id,
@@ -285,31 +286,34 @@ export default function PaymentStep({
 
       {/* Bank Transfer panel */}
       {gateway === "bank_transfer" && bt && (
-        <div className="bg-white border border-charcoal-sea/10 rounded-xl p-5 mb-4 space-y-3">
-          <p className="text-sm font-semibold text-charcoal-sea">Bank details</p>
-          <div className="space-y-2 text-sm">
+        <div className={`${PANEL} pop-in space-y-3`}>
+          <p className="text-sub font-extrabold text-charcoal-sea">Bank details</p>
+          <div className="text-sm">
             <Row label="Bank" value={bt.bank_name} />
             <Row label="Account name" value={bt.account_name} />
             <Row label="Account number" value={bt.account_number} />
             <Row label="IBAN" value={bt.iban} />
             <Row label="Reference" value={bookingRef} mono />
           </div>
-          <p className="text-xs text-charcoal-sea/40 pt-2 border-t border-charcoal-sea/8">
+          <p className="text-xs text-charcoal-sea/80 pt-3 border-t-2 border-charcoal-sea/10">
             Use your booking reference as the payment description so we can match your transfer.
           </p>
           <button
             type="button"
             disabled={bankConfirming}
             onClick={handleBankTransfer}
-            className="w-full min-h-[52px] bg-tropic-coral text-white font-bold rounded-full text-sm hover:bg-sunrise transition-colors disabled:opacity-50"
+            className="w-full min-h-14 inline-flex items-center justify-center gap-3 bg-action text-action-ink font-bold rounded-[12px] text-base hover:bg-action-hover active:scale-[0.99] transition-[background-color,scale] disabled:opacity-70 cursor-pointer"
           >
+            {bankConfirming && (
+              <span className="h-5 w-5 rounded-full border-2 border-action-ink/30 border-t-action-ink motion-safe:animate-spin" aria-hidden="true" />
+            )}
             {bankConfirming ? "Confirming…" : "I've transferred the funds →"}
           </button>
         </div>
       )}
 
       {error && (
-        <p className="text-tropic-coral text-sm bg-tropic-coral/10 border border-tropic-coral/20 rounded-xl px-4 py-3 mb-4">
+        <p role="alert" className="text-coral-deep text-sm font-semibold bg-tropic-coral/10 border-2 border-tropic-coral/40 rounded-[12px] px-4 py-3 mb-4">
           {error}
         </p>
       )}
@@ -317,7 +321,7 @@ export default function PaymentStep({
       <button
         type="button"
         onClick={onBack}
-        className="w-full min-h-[48px] border border-charcoal-sea/20 text-charcoal-sea/70 font-semibold rounded-full text-sm hover:border-charcoal-sea/40 transition-colors"
+        className="w-full min-h-12 border-2 border-charcoal-sea/25 text-charcoal-sea font-semibold rounded-[12px] text-sm hover:border-charcoal-sea hover:bg-white transition-colors cursor-pointer"
       >
         ← Back to review
       </button>

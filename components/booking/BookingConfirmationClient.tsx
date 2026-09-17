@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
+import { Bubbles } from "@/components/illustrations/Sea";
 import type { BookingConfirmation } from "@/lib/types";
 
 interface Props {
@@ -21,10 +23,10 @@ function SummaryRow({
   mono?: boolean;
 }) {
   return (
-    <div className="flex justify-between border-t border-white/10 pt-3 first:border-0 first:pt-0">
-      <span className="text-warm-white/50">{label}</span>
+    <div className="flex justify-between gap-4 border-t border-dashed border-rule pt-3 first:border-0 first:pt-0">
+      <span className="text-muted shrink-0">{label}</span>
       <span
-        className={`text-warm-white font-semibold text-right ${mono ? "font-mono text-xs" : ""}`}
+        className={`text-warm-white font-semibold text-right ${mono ? "font-display font-extrabold text-sunrise" : ""}`}
       >
         {value}
       </span>
@@ -77,10 +79,10 @@ export default function BookingConfirmationClient({ bookingRef }: Props) {
   if (!bookingRef) {
     return (
       <div className="text-center py-20">
-        <p className="text-charcoal-sea/60 text-sm">No booking reference found.</p>
+        <p className="text-charcoal-sea/80 text-body">No booking reference found.</p>
         <Link
           href="/book"
-          className="mt-4 inline-block text-shallow-water font-semibold hover:underline text-sm"
+          className="mt-5 inline-flex items-center min-h-12 px-6 rounded-[12px] bg-action text-action-ink font-bold hover:bg-action-hover transition-colors"
         >
           Make a booking
         </Link>
@@ -91,7 +93,7 @@ export default function BookingConfirmationClient({ bookingRef }: Props) {
   if (error) {
     return (
       <div className="text-center py-20">
-        <p className="text-tropic-coral text-sm mb-4">
+        <p role="alert" className="text-coral-deep text-sm font-semibold mb-4">
           Could not load booking details. Please{" "}
           <a
             href="https://wa.me/94743945010"
@@ -102,7 +104,7 @@ export default function BookingConfirmationClient({ bookingRef }: Props) {
             WhatsApp us
           </a>{" "}
           with your reference:{" "}
-          <span className="font-mono font-semibold">{bookingRef}</span>
+          <span className="font-display font-extrabold tabular">{bookingRef}</span>
         </p>
       </div>
     );
@@ -111,8 +113,8 @@ export default function BookingConfirmationClient({ bookingRef }: Props) {
   if (!booking) {
     return (
       <div className="text-center py-20">
-        <div className="w-8 h-8 rounded-full border-2 border-shallow-water border-t-transparent animate-spin mx-auto mb-4" />
-        <p className="text-charcoal-sea/50 text-sm">Loading your booking…</p>
+        <div className="w-10 h-10 rounded-full border-[3px] border-shallow-water/25 border-t-shallow-water motion-safe:animate-spin mx-auto mb-4" aria-hidden="true" />
+        <p className="text-charcoal-sea/80 text-sm" role="status">Loading your booking…</p>
       </div>
     );
   }
@@ -127,21 +129,22 @@ export default function BookingConfirmationClient({ bookingRef }: Props) {
       {/* Status heading */}
       {(isPaid || isPartial) && (
         <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-full bg-shallow-water/10 border-2 border-shallow-water flex items-center justify-center mx-auto mb-4">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <div className="pop-in relative w-20 h-20 rounded-full bg-shallow-water flex items-center justify-center mx-auto mb-5">
+            <span className="absolute -inset-8 text-shallow-water/60" aria-hidden="true"><Bubbles count={7} /></span>
+            <svg className="draw-check" width="36" height="36" viewBox="0 0 32 32" fill="none" aria-hidden="true">
               <path
                 d="M8 16l6 6 10-10"
-                stroke="#2A9D8F"
+                stroke="var(--color-surface-dark)"
                 strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
             </svg>
           </div>
-          <h1 className="text-charcoal-sea font-bold text-2xl mb-1">
+          <h1 className="text-charcoal-sea text-section font-extrabold mb-2">
             {isPaid ? "Payment confirmed!" : "Deposit received!"}
           </h1>
-          <p className="text-charcoal-sea/55 text-sm">
+          <p className="text-charcoal-sea/80 text-body">
             {isPaid
               ? "You're all set. See you in the water."
               : "Deposit received. Remaining balance due on arrival."}
@@ -151,11 +154,11 @@ export default function BookingConfirmationClient({ bookingRef }: Props) {
 
       {isPending && (
         <div className="text-center mb-8">
-          <div className="w-8 h-8 rounded-full border-2 border-sunrise border-t-transparent animate-spin mx-auto mb-4" />
-          <h1 className="text-charcoal-sea font-bold text-xl mb-1">
+          <div className="w-10 h-10 rounded-full border-[3px] border-sunrise/30 border-t-sunrise motion-safe:animate-spin mx-auto mb-4" aria-hidden="true" />
+          <h1 className="text-charcoal-sea text-sub font-extrabold mb-1" role="status">
             Confirming payment…
           </h1>
-          <p className="text-charcoal-sea/55 text-sm">
+          <p className="text-charcoal-sea/80 text-sm">
             This usually takes a few seconds.
           </p>
         </div>
@@ -163,15 +166,15 @@ export default function BookingConfirmationClient({ bookingRef }: Props) {
 
       {isTimedOut && (
         <div className="text-center mb-8">
-          <h1 className="text-charcoal-sea font-bold text-xl mb-2">
+          <h1 className="text-charcoal-sea text-sub font-extrabold mb-2">
             Payment pending
           </h1>
-          <p className="text-charcoal-sea/55 text-sm mb-4">
+          <p className="text-charcoal-sea/80 text-sm mb-4">
             We haven&apos;t received payment confirmation yet. If you&apos;ve
             paid, please{" "}
             <a
               href="https://wa.me/94743945010"
-              className="font-semibold text-shallow-water underline"
+              className="font-semibold text-whatsapp-deep underline"
             >
               WhatsApp us
             </a>
@@ -181,8 +184,8 @@ export default function BookingConfirmationClient({ bookingRef }: Props) {
       )}
 
       {/* Booking summary card */}
-      <div className="bg-charcoal-sea rounded-2xl p-6 mb-6">
-        <p className="text-warm-white/40 text-xs uppercase tracking-widest mb-4">
+      <div className="zone-deep rounded-[18px] p-6 mb-6 tabular">
+        <p className="text-label uppercase font-semibold text-sunrise mb-4">
           Booking summary
         </p>
         <div className="space-y-3 text-sm">
@@ -239,7 +242,7 @@ export default function BookingConfirmationClient({ bookingRef }: Props) {
       <div className="flex flex-col gap-3">
         <Link
           href="/"
-          className="w-full min-h-[52px] flex items-center justify-center bg-tropic-coral text-white font-bold rounded-full text-sm hover:bg-sunrise transition-colors"
+          className="w-full min-h-14 flex items-center justify-center bg-action text-action-ink font-bold rounded-[12px] text-base hover:bg-action-hover transition-colors"
         >
           Back to home
         </Link>
@@ -247,8 +250,9 @@ export default function BookingConfirmationClient({ bookingRef }: Props) {
           href="https://wa.me/94743945010"
           target="_blank"
           rel="noopener noreferrer"
-          className="w-full min-h-[52px] flex items-center justify-center gap-2 border border-charcoal-sea/20 text-charcoal-sea/70 font-semibold rounded-full text-sm hover:border-charcoal-sea/40 transition-colors"
+          className="w-full min-h-14 flex items-center justify-center gap-2 bg-whatsapp text-surface-dark font-bold rounded-[12px] text-base hover:bg-whatsapp-hover transition-colors"
         >
+          <WhatsAppIcon size={20} />
           Questions? WhatsApp us
         </a>
       </div>

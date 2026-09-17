@@ -3,11 +3,7 @@
 import { useState } from "react";
 import PhoneInput from "@/components/ui/PhoneInput";
 import { splitPhone } from "@/lib/phone";
-
-const inputClass =
-  "w-full border border-charcoal-sea/20 rounded-xl px-4 py-2.5 text-charcoal-sea placeholder:text-charcoal-sea/40 focus:outline-none focus:ring-2 focus:ring-shallow-water text-sm bg-white";
-
-const labelClass = "block text-sm font-medium text-charcoal-sea mb-1.5";
+import { inputClass, labelClass } from "@/components/ui/fieldStyles";
 
 export default function ContactForm() {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
@@ -47,15 +43,17 @@ export default function ContactForm() {
 
   if (status === "success") {
     return (
-      <div className="bg-shallow-water/10 border border-shallow-water/30 rounded-2xl p-8 text-center">
-        <p className="text-5xl mb-4">✉️</p>
-        <h3 className="text-xl font-bold text-charcoal-sea mb-2">Message sent!</h3>
-        <p className="text-charcoal-sea/70 leading-relaxed">
+      <div role="status" className="relative overflow-hidden bg-shallow-water/12 border-2 border-shallow-water rounded-[18px] p-8 text-center">
+        <div className="pop-in mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-shallow-water" aria-hidden="true">
+          <svg className="draw-check" width="30" height="30" viewBox="0 0 20 20" fill="none"><path d="M4 10.5l4 4 8-9" stroke="var(--color-surface-dark)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        </div>
+        <h3 className="text-sub font-extrabold text-charcoal-sea mb-2">Message sent!</h3>
+        <p className="text-charcoal-sea/85 leading-relaxed">
           Thanks for getting in touch. We&apos;ll reply within 24 hours — usually much faster.
         </p>
         <button
           onClick={() => setStatus("idle")}
-          className="mt-5 text-sm text-shallow-water underline underline-offset-2 hover:text-charcoal-sea transition-colors"
+          className="mt-5 min-h-11 text-sm font-semibold text-charcoal-sea underline underline-offset-4 hover:no-underline cursor-pointer"
         >
           Send another message
         </button>
@@ -70,7 +68,7 @@ export default function ContactForm() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label htmlFor="name" className={labelClass}>
-            Full Name <span className="text-tropic-coral">*</span>
+            Full Name <span className="text-coral-deep">*</span>
           </label>
           <input
             id="name"
@@ -84,7 +82,7 @@ export default function ContactForm() {
 
         <div>
           <label htmlFor="email" className={labelClass}>
-            Email <span className="text-tropic-coral">*</span>
+            Email <span className="text-coral-deep">*</span>
           </label>
           <input
             id="email"
@@ -101,13 +99,13 @@ export default function ContactForm() {
       <div>
         <label className={labelClass}>Phone / WhatsApp</label>
         <PhoneInput value={phone} onChange={setPhone} />
-        <p className="text-xs text-charcoal-sea/40 mt-1.5">Optional — helpful if you&apos;d like us to WhatsApp you back</p>
+        <p className="text-xs text-charcoal-sea/80 mt-2">Optional — helpful if you&apos;d like us to WhatsApp you back</p>
       </div>
 
       {/* Subject */}
       <div>
         <label htmlFor="subject" className={labelClass}>
-          Subject <span className="text-tropic-coral">*</span>
+          Subject <span className="text-coral-deep">*</span>
         </label>
         <select id="subject" name="subject" required className={inputClass}>
           <option value="">What&apos;s this about?</option>
@@ -123,7 +121,7 @@ export default function ContactForm() {
       {/* Message */}
       <div>
         <label htmlFor="message" className={labelClass}>
-          Message <span className="text-tropic-coral">*</span>
+          Message <span className="text-coral-deep">*</span>
         </label>
         <textarea
           id="message"
@@ -136,7 +134,7 @@ export default function ContactForm() {
       </div>
 
       {status === "error" && (
-        <p className="text-tropic-coral text-sm bg-tropic-coral/10 border border-tropic-coral/20 rounded-xl px-4 py-3">
+        <p role="alert" className="text-coral-deep text-sm font-semibold bg-tropic-coral/10 border-2 border-tropic-coral/40 rounded-[12px] px-4 py-3">
           Something went wrong. Please try again or WhatsApp us on{" "}
           <a href="https://wa.me/94743945010" target="_blank" rel="noopener noreferrer" className="font-semibold underline">0743 945 010</a>.
         </p>
@@ -145,12 +143,12 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="w-full bg-charcoal-sea text-warm-white font-bold py-3.5 rounded-full hover:bg-shallow-water transition-colors disabled:opacity-60 text-base"
+        className="w-full min-h-14 bg-action text-action-ink font-bold rounded-[12px] hover:bg-action-hover active:scale-[0.99] transition-[background-color,scale] disabled:opacity-70 text-lg cursor-pointer"
       >
         {status === "submitting" ? "Sending…" : "Send Message"}
       </button>
 
-      <p className="text-xs text-charcoal-sea/45 text-center">
+      <p className="text-xs text-charcoal-sea/80 text-center">
         We reply within 24 hours — usually much sooner.
       </p>
     </form>

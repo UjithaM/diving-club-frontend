@@ -71,4 +71,6 @@ SEO is the top priority on every page and piece of content. Follow these rules w
 | Charcoal Sea | `#264653` | Navy / primary text |
 | Shallow Water | `#2A9D8F` | Teal / secondary accent |
 
+The full design system (zones, type, components, contrast rules) lives in `DESIGN.md`; read it before any UI work.
+
 Define these inside `globals.css` `@theme` block as CSS custom properties (e.g. `--color-warm-white: #FFF8F0;`) so they are available as Tailwind utilities (`bg-warm-white`, `text-charcoal-sea`, etc.).

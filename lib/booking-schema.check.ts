@@ -113,6 +113,14 @@ assert.strictEqual(
   "Required"
 );
 
+assert.strictEqual(
+  validateBookingPayload({ ...valid, items: [{ item: "Explorer Pack", bookingFor: "package" }] })[
+    "items.0.bookingFor"
+  ],
+  undefined,
+  "packages are a bookable type"
+);
+
 // An over-long discount code never reaches the backend.
 assert.ok(
   validateBookingPayload({ ...valid, discount_code: "x".repeat(17) }).discount_code,

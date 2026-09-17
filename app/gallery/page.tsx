@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
+import Image, { type StaticImageData } from "next/image";
+import { galleryFallback, photos } from "@/lib/photos";
 import { getGalleryImages } from "@/lib/api/gallery";
 import type { ImageGallery, WithContext } from "schema-dts";
 import { safeJsonLd } from "@/lib/jsonld";
+
+import PageHero from "@/components/ui/PageHero";
+import Waterline from "@/components/illustrations/Waterline";
+import CtaBand, { BandLink } from "@/components/ui/CtaBand";
+import Button from "@/components/ui/Button";
 
 export const metadata: Metadata = {
   title: "Gallery | Diving Club",
@@ -20,6 +25,9 @@ export const metadata: Metadata = {
 export default async function GalleryPage() {
   const apiImages = await getGalleryImages().catch(() => []);
   const images = apiImages.map((img) => ({ src: img.url, alt: img.title, caption: img.title }));
+  const shown: { src: string | StaticImageData; alt: string; caption?: string }[] = images.length
+    ? images
+    : galleryFallback.concat([photos.instructor, photos.diver, photos.boatSunrise, photos.jetSki]).map((p) => ({ src: p.src, alt: p.alt }));
 
   const galleryJsonLd: WithContext<ImageGallery> = {
     "@context": "https://schema.org",
@@ -42,78 +50,66 @@ export default async function GalleryPage() {
         dangerouslySetInnerHTML={{ __html: safeJsonLd(galleryJsonLd) }}
       />
 
-      {/* Hero */}
-      <section className="bg-charcoal-sea py-16 lg:py-24 px-6">
+      <PageHero
+        crumbs={[{ label: "Home", href: "/" }, { label: "Gallery" }]}
+        notes="Sandy Cove · Trincomalee"
+        title={<>Gallery</>}
+        lead={<>A few frames from the water. Reef dives, whale watches, freshly certified students, and the light you only get in Trincomalee in June.</>}
+      />
+      <Waterline from="surface" to="shallow" />
+
+      {/* Gallery grid. When the admin gallery is empty, the centre's own photos fill it rather
+          than a "coming soon" line — the structured data above still lists only admin images. */}
+      <section className="zone-shallow py-12 lg:py-16 px-5 sm:px-8">
         <div className="max-w-6xl mx-auto">
-          <nav className="flex items-center gap-2 text-warm-white/35 text-xs mb-8">
-            <Link href="/" className="hover:text-warm-white/60 transition-colors">Home</Link>
-            <span>/</span>
-            <span className="text-warm-white/60">Gallery</span>
-          </nav>
-
-          <div className="flex items-center gap-3 mb-5">
-            <span className="h-px w-6 bg-tropic-coral" aria-hidden="true" />
-            <span className="text-tropic-coral text-[11px] font-semibold tracking-[0.22em] uppercase">
-              Sandy Cove · Trincomalee
-            </span>
-          </div>
-
-          <h1 className="text-warm-white font-display text-[clamp(2.5rem,6vw,5rem)] font-extrabold leading-tight mb-5">
-            Gallery
-          </h1>
-          <p className="text-warm-white/55 text-base leading-relaxed max-w-xl">
-            A few frames from the water. Reef dives, whale watches, freshly certified students, and the light you only get in Trincomalee in June.
-          </p>
-        </div>
-      </section>
-
-      {/* Gallery grid */}
-      <section className="bg-warm-white py-16 px-6">
-        <div className="max-w-6xl mx-auto">
-          {images.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {images.map((img, i) => (
+          {shown.length > 0 ? (
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 [grid-auto-flow:dense]">
+              {shown.map((img, i) => (
                 <figure
                   key={i}
-                  className={`relative overflow-hidden rounded-2xl bg-charcoal-sea/10 group ${
-                    i === 0 ? "sm:col-span-2 lg:col-span-2 aspect-[16/9]" : "aspect-[4/3]"
+                  className={`plate group rise-in m-0 rounded-[12px] ${
+                    i % 5 === 0 ? "col-span-2 aspect-[16/10]" : i % 5 === 3 ? "row-span-2 aspect-[3/4] lg:aspect-auto" : "aspect-square"
                   }`}
+                  style={{ "--i": i % 6 } as React.CSSProperties}
                 >
                   <Image
                     src={img.src}
                     alt={img.alt}
                     fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    sizes={i === 0 ? "(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 66vw" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"}
+                    className="object-cover"
+                    placeholder={typeof img.src === "string" ? "empty" : "blur"}
+                    sizes={i % 5 === 0 ? "(max-width: 1024px) 100vw, 66vw" : "(max-width: 1024px) 50vw, 33vw"}
                     loading={i === 0 ? "eager" : "lazy"}
                     priority={i === 0}
                   />
-                  <figcaption className="absolute bottom-0 left-0 right-0 px-5 py-3 bg-gradient-to-t from-charcoal-sea/70 to-transparent">
-                    <span className="text-warm-white/90 text-sm font-medium">{img.caption}</span>
-                  </figcaption>
+                  {img.caption && (
+                    <figcaption className="absolute bottom-0 left-0 zone-abyss px-3 py-2 text-label uppercase font-semibold">
+                      {img.caption}
+                    </figcaption>
+                  )}
                 </figure>
               ))}
             </div>
           ) : (
-            <p className="text-charcoal-sea/40 text-sm text-center py-16">Photos coming soon.</p>
+            <p className="text-sm text-center py-16">Photos coming soon.</p>
           )}
 
-          <p className="text-charcoal-sea/40 text-sm text-center mt-10">
+          <p className="text-sm text-center mt-10">
             More photos on our{" "}
             <a
-              href="https://www.facebook.com/"
+              href="https://www.facebook.com/profile.php?id=100092324331693"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-tropic-coral hover:text-tropic-coral/80 transition-colors"
+              className="font-semibold underline underline-offset-4 hover:no-underline"
             >
               Facebook page
             </a>{" "}
             and{" "}
             <a
-              href="https://www.instagram.com/"
+              href="https://www.instagram.com/diving_club_s30212/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-tropic-coral hover:text-tropic-coral/80 transition-colors"
+              className="font-semibold underline underline-offset-4 hover:no-underline"
             >
               Instagram
             </a>
@@ -122,35 +118,14 @@ export default async function GalleryPage() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="bg-charcoal-sea py-20 px-6">
-        <div className="max-w-2xl mx-auto text-center">
-          <div className="w-12 h-px bg-tropic-coral mx-auto mb-8" />
-          <span className="block text-[11px] uppercase tracking-[0.25em] font-semibold text-tropic-coral/70 mb-4">
-            Ready to make your own?
-          </span>
-          <h2 className="text-warm-white font-display text-[clamp(2rem,5vw,3.5rem)] font-extrabold leading-tight mb-5">
-            Come dive with us
-          </h2>
-          <p className="text-warm-white/50 text-base leading-relaxed max-w-lg mx-auto mb-10">
-            The photos only tell part of it. The rest happens underwater.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="/courses"
-              className="inline-flex items-center gap-2 bg-tropic-coral text-white font-bold px-8 py-3.5 rounded-full hover:bg-[#d4603f] transition-colors text-sm"
-            >
-              Browse courses
-            </Link>
-            <Link
-              href="/dive-sites"
-              className="inline-flex items-center gap-2 text-warm-white/50 font-semibold text-sm hover:text-warm-white transition-colors"
-            >
-              See dive sites →
-            </Link>
-          </div>
-        </div>
-      </section>
+      <CtaBand
+        notes="Ready to make your own?"
+        title={<>Come dive with us</>}
+        body={<p>The photos only tell part of it. The rest happens underwater.</p>}
+      >
+        <Button href="/courses" size="lg">Browse courses</Button>
+        <BandLink href="/dive-sites">See dive sites →</BandLink>
+      </CtaBand>
     </>
   );
 }

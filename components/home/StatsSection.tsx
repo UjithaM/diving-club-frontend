@@ -1,4 +1,4 @@
-import AnimatedSection from "@/components/ui/AnimatedSection";
+import Readout from "@/components/ui/Readout";
 
 const stats = [
   { value: "15+", label: "Years in Business" },
@@ -7,34 +7,12 @@ const stats = [
   { value: "9", label: "PADI Courses" },
 ];
 
+/** The instrument strip on the fold line, still at the surface. */
 export default function StatsSection() {
   return (
-    <section className="bg-warm-white py-10 lg:py-16 px-6">
+    <section className="hidden sm:block zone-surface px-5 sm:px-8 pt-2 pb-6 lg:pt-0 lg:pb-10" aria-label="Diving Club in numbers">
       <div className="max-w-6xl mx-auto">
-        <hr className="border-t border-charcoal-sea/10 mb-8 lg:mb-12" />
-        <div className="grid grid-cols-2 lg:grid-cols-4">
-          {stats.map((stat, i) => (
-            <AnimatedSection key={stat.label} delay={i * 0.08}>
-              <div
-                className={`px-4 sm:px-6 py-6 text-center${
-                  i % 2 === 0
-                    ? " border-r border-charcoal-sea/10"
-                    : i < stats.length - 1
-                    ? " lg:border-r lg:border-charcoal-sea/10"
-                    : ""
-                }`}
-              >
-                <span className="block text-[clamp(2.5rem,5vw,4rem)] font-extrabold font-display leading-none text-charcoal-sea">
-                  {stat.value}
-                </span>
-                <span className="block text-[11px] uppercase tracking-[0.2em] text-charcoal-sea/45 mt-2">
-                  {stat.label}
-                </span>
-              </div>
-            </AnimatedSection>
-          ))}
-        </div>
-        <hr className="border-t border-charcoal-sea/10 mt-8 lg:mt-12" />
+        <Readout size="section" cells={stats} />
       </div>
     </section>
   );

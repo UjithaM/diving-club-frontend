@@ -16,7 +16,7 @@ export default async function BookingConfirmationPage({
   const { ref } = await searchParams;
 
   return (
-    <section className="bg-warm-white min-h-screen py-16 px-6">
+    <section className="zone-surface min-h-[80vh] py-16 px-5 sm:px-6">
       <div className="max-w-lg mx-auto">
         <BookingConfirmationClient bookingRef={ref ?? null} />
       </div>

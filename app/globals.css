@@ -1,15 +1,34 @@
 @import "tailwindcss";
 
+/*
+ * The Descent. Every page is a dive: it starts at the surface and goes down.
+ *
+ * Sections are depth zones, in this order and never back up:
+ *   surface  — warm-white ground, sunrise fields
+ *   shallow  — shallow-water (teal) fields
+ *   deep     — charcoal-sea
+ *   abyss    — surface-dark
+ * Tropic coral means "act": buttons, the gauge marker. Nothing else wears it.
+ *
+ * Contrast, measured, so nobody has to re-derive it:
+ *   charcoal-sea on warm-white 9.57   · keep secondary text at /80 or above
+ *   surface-dark on shallow-water 5.13 · charcoal-sea on teal is 3.03 and FAILS — never use it
+ *   surface-dark on sunrise 8.26       · charcoal-sea on sunrise 4.89
+ *   warm-white on charcoal-sea 9.57    · keep secondary at /72 or above (5.84)
+ *   surface-dark on tropic-coral 5.51  · white on tropic-coral fails, hence dark button text
+ *   tropic-coral as text on charcoal-sea is 3.26: large type only. Use sunrise (4.89) instead.
+ */
+
 @theme inline {
-  --font-sans: var(--font-jakarta);
-  --font-display: var(--font-fraunces);
-  /* The ad pages' headline face. See .type-display below for why it needs its own class. */
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-bricolage-grotesque), ui-sans-serif, system-ui, sans-serif;
   --font-bricolage: var(--font-bricolage-grotesque);
 
-  /* One type scale for the ad pages, replacing five hand-written clamps and nine ad-hoc sizes
-     that each component had invented for itself. Line-height and tracking travel with the size,
-     so `text-hero` is the whole decision rather than three classes that have to agree. Weight
-     stays on the font-* utilities, which keeps these composable. */
+  /* One type scale for the whole site. Line-height and tracking travel with the size. */
+  --text-display: clamp(3rem, 10vw, 6rem);
+  --text-display--line-height: 0.9;
+  --text-display--letter-spacing: -0.035em;
+
   --text-hero: clamp(2.5rem, 8.5vw, 4.5rem);
   --text-hero--line-height: 0.95;
   --text-hero--letter-spacing: -0.03em;
@@ -19,16 +38,20 @@
   --text-figure--line-height: 1;
   --text-figure--letter-spacing: -0.035em;
 
-  --text-section: clamp(1.625rem, 4.5vw, 2.25rem);
-  --text-section--line-height: 1.1;
-  --text-section--letter-spacing: -0.02em;
+  --text-section: clamp(2rem, 5vw, 3.25rem);
+  --text-section--line-height: 1;
+  --text-section--letter-spacing: -0.025em;
 
-  --text-sub: 1.125rem;
-  --text-sub--line-height: 1.35;
+  /* Dive-computer numerals: depth, time, group size, price. */
+  --text-readout: clamp(1.75rem, 3.2vw, 2.5rem);
+  --text-readout--line-height: 1;
+  --text-readout--letter-spacing: -0.02em;
+
+  --text-sub: 1.25rem;
+  --text-sub--line-height: 1.25;
   --text-sub--letter-spacing: -0.01em;
 
-  /* Clamped rather than fixed: at a flat 19px the hero paragraph ran to five lines on a 390px
-     phone and pushed the price a third of a screen down. 17px there, 19px once there's room. */
+  /* 17px on a phone, 19px once there's room. */
   --text-lead: clamp(1.0625rem, 1rem + 0.6vw, 1.1875rem);
   --text-lead--line-height: 1.6;
 
@@ -38,102 +61,542 @@
   --text-meta: 0.875rem;
   --text-meta--line-height: 1.55;
 
+  /* Small caps-style instrument labels under readouts and on the depth log. */
+  --text-label: 0.75rem;
+  --text-label--line-height: 1.3;
+  --text-label--letter-spacing: 0.14em;
+
+  /* Brand */
   --color-warm-white: #FFF8F0;
   --color-sunrise: #F4A261;
   --color-tropic-coral: #E76F51;
   --color-charcoal-sea: #264653;
   --color-shallow-water: #2A9D8F;
 
-  /* Tropic coral, deepened until it passes AA as text. #E76F51 measures 2.94:1 on warm-white,
-     which fails even the 3:1 graphical threshold — so the brand coral is a fill, a large
-     numeral and a rule, never small type. This is the same hue for the places coral has to BE
-     the text: 4.88:1 on warm-white, 5.14:1 under white. */
+  /* Tropic coral deepened until it passes AA as text on warm-white (4.88:1). */
   --color-coral-deep: #C43F24;
-
   --color-surface-dark: #0f1e25;
   --color-surface-muted: #f7f3ee;
   --color-border-subtle: rgba(38, 70, 83, 0.08);
   --color-border-medium: rgba(38, 70, 83, 0.15);
+
+  /* Roles */
+  --color-action: #E76F51;
+  --color-action-hover: #D4603F;
+  --color-action-ink: #0f1e25;
+
+  /* WhatsApp's own green. #25D366 is the brand fill; #0F7A40 is the AA-safe text/fill. */
+  --color-whatsapp: #25D366;
+  --color-whatsapp-deep: #0F7A40;
+  --color-whatsapp-hover: #1FC05B;
+
+  --radius-plate: 2px;
+
+  --ease-surface: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+/* ---------- Base ---------- */
+
+html {
+  scrollbar-color: var(--color-charcoal-sea) var(--color-warm-white);
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
   background: var(--color-warm-white);
   color: var(--color-charcoal-sea);
-  font-family: var(--font-sans), sans-serif;
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01";
+  caret-color: var(--color-tropic-coral);
 }
 
-/* No font-family here on purpose. This used to set `var(--font-bricolage)`, which at the time was
-   defined nowhere — an invalid declaration, so headings silently inherited the body sans all
-   along. The variable now exists, but naming it (or --font-display) here would flip every heading
-   on the site in one go, which is a change nobody asked for. Components opt in per heading with
-   `font-display` or `type-display`. */
+::selection {
+  background: var(--color-sunrise);
+  color: var(--color-surface-dark);
+}
+
 h1, h2, h3, h4, h5 {
+  font-family: var(--font-display);
+  /* Bricolage's opsz axis follows the rendered size, so a 96px heading is drawn as display
+     type and a 20px one as text. */
   font-optical-sizing: auto;
+  text-wrap: balance;
 }
 
-/* The ad pages' headline face, at the optical size it is actually drawn for.
-   Bricolage Grotesque's opsz axis defaults to 14 — a body-copy setting — so a 72px headline left
-   at the default renders with body proportions: loose spacing, heavy joints, too much stroke
-   contrast. 96 is the top of its range and what display sizes want. "wght" is deliberately absent
-   from the settings string, so font-bold / font-extrabold still work on top of it. */
+p {
+  text-wrap: pretty;
+}
+
+a {
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+
+}
+
+@layer components {
+/* Kept for the ad pages, which pin opsz 96 on every headline. */
 .type-display {
-  font-family: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-display);
   font-variation-settings: "opsz" 96;
 }
 
-/* Keyboard focus, once, for everything. There was no :focus-visible rule anywhere outside the
-   form fields, so every CTA, review card and FAQ control was invisible to keyboard users.
-   One rule here beats a ring class on each of them — and catches the next one too. */
-:focus-visible {
-  outline: 2px solid var(--color-shallow-water);
-  outline-offset: 2px;
-  border-radius: 2px;
+.tabular {
+  font-variant-numeric: tabular-nums;
 }
 
-/* On the dark bands teal-on-navy is too quiet to find, so those switch to the page ground. */
+/* Keyboard focus, once, for everything. */
+:focus-visible {
+  outline: 2px solid var(--color-shallow-water);
+  outline-offset: 3px;
+  border-radius: var(--radius-plate);
+}
+
+/* ---------- Depth zones ---------- */
+
+.zone-surface {
+  background: var(--color-warm-white);
+  color: var(--color-charcoal-sea);
+  --zone-rule: rgba(38, 70, 83, 0.16);
+  --zone-muted: rgba(38, 70, 83, 0.8);
+}
+
+.zone-sunrise {
+  background: var(--color-sunrise);
+  color: var(--color-surface-dark);
+  --zone-rule: rgba(15, 30, 37, 0.22);
+  --zone-muted: rgba(15, 30, 37, 0.82);
+}
+
+.zone-shallow {
+  background: var(--color-shallow-water);
+  color: var(--color-surface-dark);
+  --zone-rule: rgba(15, 30, 37, 0.25);
+  /* Teal leaves no room for dimmed text: secondary copy stays full ink. */
+  --zone-muted: var(--color-surface-dark);
+}
+
+.zone-deep {
+  background: var(--color-charcoal-sea);
+  color: var(--color-warm-white);
+  --zone-rule: rgba(255, 248, 240, 0.16);
+  --zone-muted: rgba(255, 248, 240, 0.74);
+}
+
+.zone-abyss {
+  background: var(--color-surface-dark);
+  color: var(--color-warm-white);
+  --zone-rule: rgba(255, 248, 240, 0.12);
+  --zone-muted: rgba(255, 248, 240, 0.7);
+}
+
+.zone-shallow :focus-visible,
+.zone-sunrise :focus-visible {
+  outline-color: var(--color-surface-dark);
+}
+
+.zone-deep :focus-visible,
+.zone-abyss :focus-visible,
 .bg-charcoal-sea :focus-visible,
 .bg-surface-dark :focus-visible {
   outline-color: var(--color-warm-white);
 }
 
-.parallax-layer {
-  will-change: transform;
-  backface-visibility: hidden;
 }
 
-@keyframes hero-slide-up {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
+@utility text-muted {
+  color: var(--zone-muted, rgba(38, 70, 83, 0.8));
 }
 
-@keyframes hero-slide-up-only {
-  from { transform: translateY(20px); }
-  to   { transform: translateY(0); }
+@utility border-rule {
+  border-color: var(--zone-rule, rgba(38, 70, 83, 0.16));
 }
 
-@keyframes scroll-line {
-  0%, 100% { transform: scaleY(0); }
-  50%       { transform: scaleY(1); }
+@utility bg-rule {
+  background-color: var(--zone-rule, rgba(38, 70, 83, 0.16));
+}
+
+@layer components {
+/* ---------- Depth log ---------- */
+
+/* The stop marker in a section's margin: "09 m" over the section's log label. */
+.depth-stop {
+  font-variant-numeric: tabular-nums;
+}
+
+/* The gauge. Fixed in the left margin on wide screens; its marker and readout follow the
+   scroll position with no JavaScript. Browsers without scroll-driven animations get a static,
+   still-readable scale. */
+.depth-rail {
+  position: fixed;
+  top: 6rem;
+  bottom: 2rem;
+  left: 1.25rem;
+  z-index: 30;
+  width: 2.5rem;
+  pointer-events: none;
+  display: none;
+  mix-blend-mode: difference;
+  color: #fff;
+}
+
+/* The marker lives in its own fixed layer: blending is isolated per stacking context, so a
+   coral marker inside the difference-blended scale would render as its inverse. */
+.depth-rail--marker {
+  mix-blend-mode: normal;
+}
+
+@media (min-width: 1280px) {
+  .depth-rail {
+    display: block;
+  }
+}
+
+.depth-rail__scale {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 1px;
+  background: currentColor;
+  opacity: 0.35;
+}
+
+.depth-rail__tick {
+  position: absolute;
+  left: 0;
+  width: 0.5rem;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+.depth-rail__tick span {
+  position: absolute;
+  left: 0.75rem;
+  top: -0.45rem;
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.depth-rail__marker {
+  position: absolute;
+  left: -15px;
+  top: 0;
+  width: 30px;
+  height: 64px;
+  opacity: 0;
+}
+
+.depth-rail__marker svg {
+  width: 64px;
+  height: 30px;
+  transform: translate(-17px, 17px) rotate(90deg);
+}
+
+.depth-progress {
+  height: 2px;
+  background: var(--color-tropic-coral);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  opacity: 0;
+}
+
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .depth-rail__marker {
+      opacity: 1;
+      animation: depth-descend linear both;
+      animation-timeline: scroll(root block);
+    }
+
+    .depth-progress {
+      opacity: 1;
+      animation: depth-fill linear both;
+      animation-timeline: scroll(root block);
+    }
+
+    /* Content fades up as it enters, from an already-legible start so nothing is ever
+       invisible to a reader or a crawler that doesn't scroll. */
+    .reveal {
+      animation: reveal-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+  }
+}
+
+@keyframes depth-descend {
+  from { top: 0; }
+  to { top: calc(100% - 64px); }
+}
+
+@keyframes depth-fill {
+  to { transform: scaleX(1); }
+}
+
+@keyframes descend {
+  0% { transform: scaleY(0); transform-origin: top; }
+  50% { transform: scaleY(1); transform-origin: top; }
+  51% { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
+
+@keyframes reveal-rise {
+  from { opacity: 0.35; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ---------- Sea life ----------
+   All motion is transform/opacity on small absolutely-positioned layers, which the compositor
+   runs without layout or paint. Every loop is removed under reduced motion (the illustrations
+   stay, still, at their --rest spot). */
+
+.ambient {
+  position: absolute;
+  pointer-events: none;
+}
+
+.bubbles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.bubble {
+  position: absolute;
+  bottom: -12px;
+  border-radius: 999px;
+  border: 2px solid currentColor;
+  background: color-mix(in srgb, currentColor 22%, transparent);
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .bubble { animation: bubble-rise 6s var(--ease-surface) infinite; }
+  .swim { animation: swim var(--swim-time, 26s) linear infinite; }
+  .swim-right { animation: swim-right var(--swim-time, 30s) linear infinite; }
+  .bob { animation: bob 4.5s ease-in-out infinite alternate; }
+  .sway { transform-origin: 50% 100%; animation: sway var(--sway-time, 5s) ease-in-out infinite alternate; }
+  .enter-swim { animation: enter-swim 1.6s var(--ease-surface) both; }
+  .rise-in { animation: rise-in 0.8s var(--ease-surface) both; animation-delay: calc(var(--i, 0) * 90ms); }
+  .marquee__track { animation: marquee var(--marquee-time, 60s) linear infinite; }
+  .cta-pulse::after { animation: cta-pulse 1.8s var(--ease-surface) 1.2s 3; }
+  .live-dot::after { animation: live-dot 2s ease-out infinite; }
+  .pop-in { animation: pop-in 0.6s var(--ease-surface) both; }
+  details[open] > .faq-answer { animation: faq-open 0.35s var(--ease-surface) both; }
+  .draw-check path { stroke-dasharray: 40; animation: draw-check 0.7s var(--ease-surface) 0.25s both; }
+}
+
+@keyframes bubble-rise {
+  0% { transform: translateY(0) scale(0.6); opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: translate(8px, -260px) scale(1); opacity: 0; }
+}
+
+/* Swims right-to-left across its whole container, with a gentle vertical drift. */
+@keyframes swim {
+  0% { transform: translate(calc(var(--lane, 100cqw) + 10%), 0); }
+  25% { transform: translate(calc(var(--lane, 100cqw) * 0.7), -10px); }
+  50% { transform: translate(calc(var(--lane, 100cqw) * 0.4), 6px); }
+  75% { transform: translate(calc(var(--lane, 100cqw) * 0.1), -6px); }
+  100% { transform: translate(-120%, 0); }
+}
+
+@keyframes swim-right {
+  0% { transform: translate(-120%, 0); }
+  50% { transform: translate(calc(var(--lane, 100cqw) * 0.5), -12px); }
+  100% { transform: translate(calc(var(--lane, 100cqw) + 10%), 0); }
+}
+
+@keyframes bob {
+  from { transform: translateY(-6px) rotate(-1.5deg); }
+  to { transform: translateY(6px) rotate(1.5deg); }
+}
+
+@keyframes sway {
+  from { transform: rotate(-4deg); }
+  to { transform: rotate(4deg); }
+}
+
+@keyframes enter-swim {
+  from { transform: translateX(-60vw); }
+  to { transform: none; }
+}
+
+/* Transform only — the headline is the LCP element and must paint opaque on frame one. */
+@keyframes rise-in {
+  from { transform: translateY(0.35em); }
+  to { transform: none; }
+}
+
+/* A ring that breathes out from the primary CTA a few times after load, then rests. */
+.cta-pulse::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-whatsapp) 55%, transparent);
+  pointer-events: none;
+}
+
+@keyframes cta-pulse {
+  from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-whatsapp) 55%, transparent); }
+  to { box-shadow: 0 0 0 16px color-mix(in srgb, var(--color-whatsapp) 0%, transparent); }
+}
+
+/* "We're around": a small dot with a ripple, for the same-day prompt. */
+.live-dot {
+  position: relative;
+  display: inline-block;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 999px;
+  background: var(--color-whatsapp-deep);
+}
+
+.live-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--color-whatsapp);
+}
+
+@keyframes live-dot {
+  from { transform: scale(1); opacity: 0.7; }
+  to { transform: scale(2.6); opacity: 0; }
+}
+
+@keyframes faq-open {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes pop-in {
+  from { transform: scale(0.6); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+@keyframes draw-check {
+  from { stroke-dashoffset: 40; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+
+.lane {
+  container-type: inline-size;
+}
+
+.marquee__track {
+  display: flex;
+  width: max-content;
+}
+
+/* Without motion, swimmers rest at a fixed spot in their lane instead of piling up at the edge. */
+@media (prefers-reduced-motion: reduce) {
+  .swim, .swim-right { left: var(--rest, 72%) !important; }
+}
+
+/* The ad pages' fixed bottom bar must never sit on the footer's last lines. */
+@media (max-width: 639px) {
+  body:has(.sticky-cta) footer { padding-bottom: calc(5rem + env(safe-area-inset-bottom)); }
+}
+
+/* Reviews: the first card lines up with the page grid; the scrollbar is thin and on-palette so
+   the strip visibly scrolls. */
+.review-strip {
+  --gutter: 1.25rem;
+  padding-inline: max(var(--gutter), calc((100% - 72rem) / 2));
+  scroll-padding-inline: max(var(--gutter), calc((100% - 72rem) / 2));
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-sunrise) transparent;
+}
+
+@media (min-width: 640px) {
+  .review-strip { --gutter: 2rem; }
+}
+
+/* A horizontal swipe rail on phones; an ordinary grid from `md` up (the grid is set per use). */
+.rail {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  margin-inline: -1.25rem;
+  padding-inline: 1.25rem;
+  scroll-padding-inline: 1.25rem;
+}
+
+.rail::-webkit-scrollbar { display: none; }
+
+.rail > * {
+  flex: 0 0 min(82%, 20rem);
+  scroll-snap-align: start;
+}
+
+@media (min-width: 640px) {
+  .rail { margin-inline: -2rem; padding-inline: 2rem; scroll-padding-inline: 2rem; }
+}
+
+@media (min-width: 768px) {
+  .rail {
+    display: grid;
+    overflow: visible;
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+  .rail > * { flex: none; }
+}
+
+/* A photograph plate: square shoulders, a hairline frame, never a drop shadow. */
+.plate {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-plate);
+  background: var(--color-charcoal-sea);
+}
+
+.plate img {
+  transition: transform 0.9s var(--ease-surface);
+}
+
+@media (hover: hover) {
+  .group:hover .plate img {
+    transform: scale(1.035);
+  }
 }
 
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem;
+  gap: 2px;
 }
 
 @media (min-width: 1024px) {
-  .gallery-grid { grid-template-columns: repeat(3, 1fr); }
-  .gallery-grid > *:first-child { grid-row: span 2; }
+  /* First photo spans two columns: 2 + 5 photos + the "See More" tile fills two rows of four. */
+  .gallery-grid { grid-template-columns: repeat(4, 1fr); }
+  .gallery-grid > *:first-child { grid-column: span 2; aspect-ratio: auto; }
 }
 
-/* Form controls — two iOS Safari fixes, applied globally so every form gets them.
-   Both are element-level browser behaviours, not per-component styling. */
+}
 
-/* iOS zooms the viewport when a focused field's font-size is under 16px, which
-   breaks the layout mid-typing. Our inputs are text-sm (14px), so force 16px on
-   small screens. !important because Tailwind's .text-sm utility outranks an
-   element selector. Desktop keeps 14px. */
+@layer base {
+/* ---------- Forms ---------- */
+
+/* iOS zooms the viewport when a focused field's font-size is under 16px. */
 @media (max-width: 767px) {
   input,
   select,
@@ -142,8 +605,7 @@ h1, h2, h3, h4, h5 {
   }
 }
 
-/* iOS gives date/time inputs an intrinsic width that ignores width:100%, so they
-   overflow their container and push the page sideways. */
+/* iOS gives date/time inputs an intrinsic width that ignores width:100%. */
 input[type="date"],
 input[type="time"] {
   -webkit-appearance: none;
@@ -152,24 +614,24 @@ input[type="time"] {
   -webkit-min-logical-width: calc(100% - 2px);
 }
 
-/* Same class of fix, for <select>. Left as menulist, iOS sizes a select to its own native
-   control metrics and under-applies our min-height and padding — so "How many of you?"
-   rendered visibly shorter than the inputs beside it, on phones only. Resetting the
-   appearance makes it lay out like every other field; the chevron is redrawn here because
-   the reset removes the native one. */
+/* Left as menulist, iOS sizes a select to its own metrics and ignores our min-height, so the
+   appearance is reset and the chevron redrawn here. */
 select {
   -webkit-appearance: none;
   appearance: none;
-  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23264653' stroke-opacity='0.5' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23264653' stroke-opacity='0.7' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 1rem center;
   background-size: 12px 8px;
-  /* Clears the chevron so a long option label never runs underneath it. */
   padding-right: 2.5rem;
 }
 
-/* The field that blocked submit, once revealField has scrolled it into view. Colour alone is
-   already on the input via errorInputClass — this is the movement that says "here". */
+::placeholder {
+  color: rgba(38, 70, 83, 0.62);
+  opacity: 1;
+}
+
+/* The field that blocked submit, once revealField has scrolled it into view. */
 @keyframes field-flash {
   0%, 100% { box-shadow: 0 0 0 0 rgba(231, 111, 81, 0); }
   25%, 75% { box-shadow: 0 0 0 4px rgba(231, 111, 81, 0.35); }
@@ -177,7 +639,7 @@ select {
 
 @media (prefers-reduced-motion: no-preference) {
   .field-flash {
-    border-radius: 0.75rem;
+    border-radius: var(--radius-plate);
     animation: field-flash 1s ease-in-out;
   }
 }
@@ -196,17 +658,15 @@ select {
   flex-shrink: 0;
 }
 
-/* The country picker is components/ui/CountrySelect.tsx, not the library's <select>. It
-   draws its own flag and chevron, so the library's are hidden rather than stacked under it.
-   The old rules here made the select an invisible overlay (inset:0, opacity:0) — leave any
-   of that in place and the replacement disappears too. */
+/* The country picker is components/ui/CountrySelect.tsx, which draws its own flag and
+   chevron, so the library's are hidden rather than stacked under it. */
 .phone-input-wrapper .PhoneInputCountryIcon,
 .phone-input-wrapper .PhoneInputCountrySelectArrow {
   display: none;
 }
 
-/* The panel is absolutely positioned against .PhoneInputCountry, so it must not be clipped
-   by the field's rounded border. */
+/* The panel is positioned against .PhoneInputCountry and must not be clipped by the field. */
 .phone-input-wrapper .PhoneInputCountry {
   position: relative;
+}
 }

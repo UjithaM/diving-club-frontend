@@ -1,181 +1,97 @@
-"use client";
-
-import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import Button from "@/components/ui/Button";
+import { photos } from "@/lib/photos";
+import { Bubbles, Diver, Fish, Tang } from "@/components/illustrations/Sea";
 
-const ease = "cubic-bezier(0.16, 1, 0.3, 1)";
-
+/**
+ * 0 m. The surface: the headline, the boat that takes you out, and a diver already heading in.
+ * Server-rendered with no client JS; every movement here is CSS and stops under reduced motion.
+ */
 export default function HeroSection() {
-  const [isMobile, setIsMobile] = useState(false);
-  const bgRef = useRef<HTMLDivElement>(null);
-  const textRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 767px)");
-    const check = () => setIsMobile(mq.matches);
-    check();
-    mq.addEventListener("change", check);
-    return () => mq.removeEventListener("change", check);
-  }, []);
-
-  useEffect(() => {
-    if (isMobile) return;
-    let rafId: number;
-    let ticking = false;
-
-    function update() {
-      const scrollY = window.scrollY;
-      if (bgRef.current) {
-        const pct = Math.min((scrollY / 700) * 12, 12);
-        bgRef.current.style.transform = `scale(1.05) translateY(${pct}%)`;
-      }
-      if (textRef.current) {
-        const pct = Math.min((scrollY / 500) * 5, 5);
-        textRef.current.style.transform = `translateY(${pct}%)`;
-      }
-      ticking = false;
-    }
-
-    function onScroll() {
-      if (!ticking) {
-        rafId = requestAnimationFrame(update);
-        ticking = true;
-      }
-    }
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      cancelAnimationFrame(rafId);
-    };
-  }, [isMobile]);
-
   return (
-    <section className="relative min-h-[100svh] bg-charcoal-sea overflow-hidden flex items-center">
-      {/* Subtle background gradient layer */}
-      <div
-        ref={bgRef}
-        className="parallax-layer absolute inset-0"
-        style={{ transform: "scale(1.05)" }}
-      >
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(ellipse at 70% 40%, #1e4a5a 0%, #264653 50%, #1a3540 100%)",
-          }}
-        />
+    <section className="zone-surface lane relative overflow-hidden px-5 sm:px-8">
+      {/* Two reef fish crossing low behind the photo and headline. Desktop only: on a phone the
+          diver already fills the hero and the fish would sit on the buttons. */}
+      <div className="ambient hidden lg:block inset-x-0 bottom-16 h-20" aria-hidden="true">
+        <Fish className="swim absolute left-0 top-0 w-10 lg:w-14" style={{ "--swim-time": "34s", "--rest": "40%" } as React.CSSProperties} />
+        <Tang className="swim absolute left-0 top-9 w-8 lg:w-11" style={{ "--swim-time": "43s", animationDelay: "-17s", "--rest": "50%" } as React.CSSProperties} />
       </div>
 
-      {/* Content grid */}
-      <div
-        ref={textRef}
-        className="relative z-10 w-full max-w-6xl mx-auto px-6 pt-24 pb-16 lg:py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center"
-      >
-        {/* Left — heading + CTAs */}
-        <div>
-          {/* Label */}
+      <div className="relative max-w-6xl mx-auto grid lg:grid-cols-12 gap-x-10 lg:min-h-[min(calc(100svh-4rem-7.5rem),46rem)]">
+        {/* The log line: where this dive starts. */}
+        <div className="lg:col-span-12 flex items-baseline justify-between gap-4 border-b-2 border-current pt-5 pb-3 self-start">
+          <span className="font-display font-bold text-sub tabular" aria-hidden="true">00&thinsp;m</span>
+          <span className="text-label uppercase font-semibold">Trincomalee · Sri Lanka</span>
+        </div>
+
+        <div className="relative lg:col-span-7 pt-8 pb-4 sm:pb-16 lg:py-14 flex flex-col justify-center">
+          {/* The diver swims in on load and treads water beside "Dive into". */}
           <div
-            className="flex items-center gap-3 mb-5 lg:mb-8"
-            style={{ animation: `hero-slide-up 0.7s 0.2s ${ease} both` }}
+            className="absolute z-10 left-[40%] top-[3.75rem] w-40 sm:left-[36%] sm:w-52 lg:left-[34%] lg:top-auto lg:bottom-[58%] lg:w-72 pointer-events-none"
+            aria-hidden="true"
           >
-            <span className="h-px w-6 bg-tropic-coral/60" />
-            <span className="text-[11px] uppercase tracking-[0.25em] font-semibold text-tropic-coral/80">
-              Trincomalee · Sri Lanka
-            </span>
+            <div className="enter-swim">
+              <div className="bob relative">
+                <Diver className="block w-full h-auto" />
+                <div className="absolute right-[2%] bottom-[60%] h-40 w-10 text-shallow-water">
+                  <Bubbles count={6} />
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* H1 */}
-          <h1
-            className="font-display leading-[1.05] mb-6"
-            // LCP element: slide only, no opacity fade and no delay, so the headline
-            // is painted opaque on the very first frame.
-            style={{
-              fontSize: "clamp(2.8rem, 8vw, 7rem)",
-              animation: `hero-slide-up-only 0.9s ${ease} both`,
-            }}
-          >
-            <span className="block font-light text-warm-white/40">Dive</span>
-            <span className="block font-bold text-warm-white">into</span>
-            <span className="block font-extrabold italic text-shallow-water">
-              Trincomalee
+          <h1 className="relative text-display font-extrabold mb-6 lg:mb-8">
+            <span className="block font-light text-shallow-water rise-in">Dive</span>
+            <span className="block font-bold rise-in" style={{ "--i": 1 } as React.CSSProperties}>into</span>
+            <span className="block rise-in" style={{ "--i": 2 } as React.CSSProperties}>
+              <span className="relative inline-block">
+                Trincomalee
+                {/* The waterline under the name. */}
+                <span className="absolute left-0 right-0 -bottom-1 h-2 bg-tropic-coral" aria-hidden="true" />
+              </span>
             </span>
           </h1>
 
-          {/* Fine rule */}
-          <div
-            className="w-24 border-t border-warm-white/15 mb-6"
-            style={{ animation: `hero-slide-up 0.6s 0.3s ${ease} both` }}
-          />
-
-          {/* Subtitle */}
-          <p
-            className="text-warm-white/55 text-base leading-relaxed max-w-[38ch] mb-8 lg:mb-10"
-            style={{ animation: `hero-slide-up 0.8s 0.35s ${ease} both` }}
-          >
+          <p className="text-lead text-muted max-w-[40ch] mb-7 lg:mb-9">
             PADI courses, guided reef dives, and whale watching. No experience necessary.
             The Indian Ocean is waiting right outside our door.
           </p>
 
-          {/* CTAs */}
-          <div
-            className="flex flex-col sm:flex-row gap-4"
-            style={{ animation: `hero-slide-up 0.7s 0.45s ${ease} both` }}
-          >
-            <Link
-              href="/courses"
-              className="inline-flex items-center justify-center bg-tropic-coral text-white font-semibold px-8 py-3.5 rounded-full text-sm hover:bg-[#d4603f] transition-colors duration-200"
-            >
+          <div className="flex flex-wrap items-center gap-x-7 gap-y-3">
+            <Button href="/courses" size="lg">
               Explore Courses
-            </Link>
-            <Link
-              href="/contact"
-              className="inline-flex items-center justify-center gap-1.5 text-warm-white/60 text-sm font-semibold hover:text-tropic-coral transition-colors"
-            >
+            </Button>
+            <Button href="/contact" variant="ghost" size="lg" arrow>
               Book a Dive
-              <span aria-hidden="true">→</span>
-            </Link>
+            </Button>
           </div>
         </div>
 
-        {/* Right — photo placeholder + stat card */}
-        <div
-          className="hidden lg:block relative"
-          style={{ animation: `hero-slide-up 0.9s 0.3s ${ease} both` }}
-        >
-          {/* Hero photo */}
-          <div className="rounded-3xl overflow-hidden aspect-[3/4] bg-[#1a3540] relative">
+        {/* The surface photo bleeds off the right edge of the page on wide screens. */}
+        <div className="hidden lg:block lg:col-span-5 relative lg:-mr-[max(2rem,calc((100vw_-_72rem)/2))] lg:mt-6">
+          <div className="plate absolute inset-0 rounded-none">
             <Image
-              src="/assets/couple-scuba-diving-trincomalee.webp"
-              alt="Couple scuba diving together in the clear waters of Trincomalee, Sri Lanka"
+              src={photos.boatSunrise.src}
+              alt={photos.boatSunrise.alt}
               fill
-              className="object-cover"
               priority
-              sizes="(max-width: 1024px) 0px, 45vw"
+              placeholder="blur"
+              className="object-cover object-[50%_70%]"
+              // Hidden below lg, so phones fetch the smallest candidate rather than a full photo.
+              sizes="(max-width: 1023px) 16px, 42vw"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-charcoal-sea/40 to-transparent" />
           </div>
 
-          {/* Floating stat card */}
-          <div className="absolute bottom-8 -left-6 bg-warm-white rounded-2xl p-5 shadow-xl">
-            <p className="text-charcoal-sea font-extrabold font-display text-2xl leading-none">15+</p>
-            <p className="text-charcoal-sea/40 text-[11px] uppercase tracking-widest mt-1">Years · Trincomalee</p>
-            <div className="w-8 h-0.5 bg-tropic-coral mt-3" />
+          <div className="zone-surface absolute -left-8 bottom-10 px-5 py-4 border-t-2 border-tropic-coral">
+            <p className="font-display font-extrabold text-readout tabular">15+</p>
+            <p className="text-label uppercase font-semibold text-muted mt-1">Years · Trincomalee</p>
           </div>
         </div>
       </div>
 
-      {/* Scroll indicator */}
-      <div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5"
-        style={{ animation: `hero-slide-up 0.6s 1.5s ${ease} both` }}
-      >
-        <span className="text-warm-white/30 text-[10px] tracking-[0.2em] uppercase">Scroll</span>
-        <div
-          className="w-px h-8 bg-gradient-to-b from-warm-white/40 to-transparent"
-          style={{ transformOrigin: "top", animation: "scroll-line 1.8s ease-in-out infinite" }}
-        />
+      <div className="hidden lg:flex absolute bottom-5 left-[max(2rem,calc((100vw_-_72rem)/2))] items-center gap-3 text-charcoal-sea" aria-hidden="true">
+        <span className="text-label uppercase font-semibold">Scroll</span>
+        <span className="block w-0.5 h-8 bg-current origin-top motion-safe:animate-[descend_2s_var(--ease-surface)_infinite]" />
       </div>
     </section>
   );

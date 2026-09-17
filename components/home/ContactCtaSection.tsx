@@ -1,48 +1,52 @@
-"use client";
+import Button from "@/components/ui/Button";
+import { Bubbles, Diver, Fish } from "@/components/illustrations/Sea";
 
-import Link from "next/link";
-import AnimatedSection from "@/components/ui/AnimatedSection";
-
+/** The bottom of the dive: the one thing left to do. */
 export default function ContactCtaSection() {
   return (
-    <section className="bg-charcoal-sea py-20 lg:py-32 px-6">
-      <div className="max-w-2xl mx-auto text-center">
-        <AnimatedSection>
-          {/* Decorative rule */}
-          <div className="w-16 h-px bg-tropic-coral mx-auto mb-8 lg:mb-12" />
-
-          <span className="block text-[11px] uppercase tracking-[0.25em] font-semibold text-tropic-coral/60 mb-5">
-            Book Your Dive Today
-          </span>
-
-          <h2 className="text-warm-white text-[clamp(2.5rem,6vw,5rem)] font-extrabold font-display leading-[1.05] mb-6">
+    <section className="zone-abyss lane relative overflow-hidden px-5 sm:px-8 pb-40 lg:pb-44">
+      <div className="ambient inset-x-0 bottom-8 h-24" aria-hidden="true">
+        <div className="swim-right absolute left-0 top-0 w-40 lg:w-56" style={{ "--swim-time": "38s", "--rest": "58%" } as React.CSSProperties}>
+          <Diver className="block w-full h-auto" suit="var(--color-shallow-water)" line="var(--color-surface-dark)" />
+        </div>
+        <Fish className="swim absolute left-0 top-2 w-8" style={{ "--swim-time": "30s", animationDelay: "-9s", "--rest": "40%" } as React.CSSProperties} />
+      </div>
+      <div className="ambient left-[8%] bottom-24 h-[70%] w-32 text-sunrise/50" aria-hidden="true">
+        <Bubbles count={7} />
+      </div>
+      <div className="relative max-w-6xl mx-auto flex items-baseline justify-between gap-4 border-t-2 border-tropic-coral pt-3">
+        <span className="font-display font-bold text-sub tabular text-sunrise" aria-hidden="true">18&thinsp;m</span>
+        <p className="text-label uppercase font-semibold text-sunrise">Book Your Dive Today</p>
+      </div>
+      <div className="relative max-w-6xl mx-auto pt-12 lg:pt-20 grid gap-10 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-16 items-end">
+        <div className="reveal">
+          <h2 className="text-display font-extrabold">
             Ready to Dive?
           </h2>
+        </div>
 
-          <p className="text-warm-white/50 text-lg leading-relaxed max-w-lg mx-auto mb-8 lg:mb-12">
+        <div className="reveal">
+          <p className="text-lead text-muted max-w-[40ch] mb-8">
             The water is warm, the viz is clear, and your instructor is waiting.
             Join us any day of the week. No experience necessary.
           </p>
 
-          <Link
-            href="/book"
-            className="inline-block bg-tropic-coral text-white font-bold px-10 py-4 rounded-full text-base hover:bg-[#d4603f] transition-colors duration-200"
-          >
+          <Button href="/book" size="lg" className="w-full sm:w-auto">
             Book a Dive
-          </Link>
+          </Button>
 
-          <p className="text-warm-white/30 text-sm mt-6">
+          <p className="text-muted text-meta mt-6">
             Or WhatsApp us:{" "}
             <a
               href="https://wa.me/94743945010"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-warm-white/50 hover:text-warm-white transition-colors underline underline-offset-2"
+              className="text-warm-white font-semibold underline hover:text-sunrise tabular"
             >
               0743 945 010
             </a>
           </p>
-        </AnimatedSection>
+        </div>
       </div>
     </section>
   );

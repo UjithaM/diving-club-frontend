@@ -23,7 +23,7 @@ interface StickyCtaProps {
  */
 export default function StickyCta({ message, source }: StickyCtaProps) {
   return (
-    <div className="sm:hidden fixed bottom-0 inset-x-0 z-40 bg-warm-white/95 backdrop-blur-sm border-t border-border-subtle pb-[env(safe-area-inset-bottom)]">
+    <div className="sticky-cta sm:hidden fixed bottom-0 inset-x-0 z-40 bg-warm-white border-t-2 border-charcoal-sea pb-[env(safe-area-inset-bottom)] shadow-[0_-12px_30px_-18px_rgba(15,30,37,0.45)]">
       <div className="flex gap-2.5 px-4 py-3">
         <WhatsAppCta
           message={message}
@@ -32,10 +32,10 @@ export default function StickyCta({ message, source }: StickyCtaProps) {
           variant="bar"
           className="flex-1"
         />
-        {/* Border at /40, not /25: a 2px control boundary needs 3:1 against the bar behind it. */}
+        {/* Coral fill with ink text: the site's one "act" colour, 5.51:1. */}
         <BookCta
           source={`${source}_sticky`}
-          className="flex-1 inline-flex items-center justify-center min-h-[48px] px-4 py-3 rounded-full border-2 border-charcoal-sea/40 text-charcoal-sea font-bold text-[15px]"
+          className="flex-1 inline-flex items-center justify-center min-h-12 px-4 rounded-full bg-action text-action-ink font-bold text-[15px] active:scale-[0.98] transition-[scale]"
         >
           Book
         </BookCta>

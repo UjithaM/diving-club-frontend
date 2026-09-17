@@ -108,6 +108,6 @@ export const faqs: Faq[] = [
     category: "safety-eco",
     question: "What safety measures are in place on boats and dives?",
     answer:
-      "We carry oxygen on every dive boat, along with a first aid kit and emergency contact information for the nearest decompression facility. Every guide dives with a surface marker buoy (SMB). We do a dive brief before every single dive: conditions, site layout, emergency signals, and planned depth/time. We keep group sizes small (max 5 divers per guide) so everyone gets proper attention.",
+      "We carry oxygen on every dive boat, along with a first aid kit and emergency contact information for the nearest decompression facility. Every guide dives with a surface marker buoy (SMB). We do a dive brief before every single dive: conditions, site layout, emergency signals, and planned depth/time. We keep group sizes small (max 2 divers per guide) so everyone gets proper attention.",
   },
 ];

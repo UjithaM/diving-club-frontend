@@ -25,7 +25,11 @@ const rule = (check: (v: unknown) => string) => (v: unknown) => check(v) || true
 export function FieldError({ id, message }: { id: string; message?: string }) {
   if (!message) return null;
   return (
-    <p id={id} role="alert" className="text-tropic-coral text-xs mt-1.5">
+    <p id={id} role="alert" className="flex items-start gap-1.5 text-coral-deep text-xs font-semibold mt-2">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true" className="mt-px shrink-0">
+        <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.6" />
+        <path d="M8 4.5v4.2M8 11.2v.3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      </svg>
       {message}
     </p>
   );
@@ -33,7 +37,7 @@ export function FieldError({ id, message }: { id: string; message?: string }) {
 
 /** Marks a required field for sighted users; the input's own `aria-required` does the rest. */
 export function Req() {
-  return <span className="text-tropic-coral">*</span>;
+  return <span className="text-coral-deep">*</span>;
 }
 
 interface BookingFieldsProps {

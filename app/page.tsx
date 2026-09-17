@@ -12,6 +12,7 @@ import DiveSitesSection from "@/components/home/DiveSitesSection";
 import GoogleReviewsSection from "@/components/ui/GoogleReviewsSection";
 import GallerySection from "@/components/home/GallerySection";
 import ContactCtaSection from "@/components/home/ContactCtaSection";
+import Waterline from "@/components/illustrations/Waterline";
 
 export const metadata: Metadata = {
   title: "Scuba Diving Trincomalee | PADI Courses & Dive Experiences | Diving Club",
@@ -105,10 +106,11 @@ export default async function HomePage() {
       <HeroSection />
       <StatsSection />
       <FeaturedExperiencesSection experiences={featuredExperiences} />
+      <Waterline from="surface" to="shallow" />
       <FeaturedCoursesSection courses={featuredCourses} />
       <WhyChooseUsSection />
       <DiveSitesSection sites={featuredDiveSites} />
-      <GoogleReviewsSection />
+      <GoogleReviewsSection zone="deep" depth={14} />
       <GallerySection images={galleryImages} />
       <ContactCtaSection />
     </>

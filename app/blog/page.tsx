@@ -2,6 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getBlogPosts } from "@/lib/data/blog-posts";
 import type { Blog, WithContext } from "schema-dts";
+import PageHero from "@/components/ui/PageHero";
+import Waterline from "@/components/illustrations/Waterline";
+import CtaBand, { BandLink } from "@/components/ui/CtaBand";
+import Button from "@/components/ui/Button";
+import { toneClass, type Tone } from "@/components/ui/DetailHero";
+import { Turtle } from "@/components/illustrations/Sea";
 import { safeJsonLd } from "@/lib/jsonld";
 
 export const metadata: Metadata = {
@@ -39,13 +45,13 @@ const categoryLabels: Record<string, string> = {
   destination: "Destination",
 };
 
-const categoryColors: Record<string, string> = {
-  "dive-sites": "#2A9D8F",
-  beginner: "#E76F51",
-  "marine-life": "#264653",
-  courses: "#F4A261",
-  planning: "#2A9D8F",
-  destination: "#E76F51",
+const categoryTones: Record<string, Tone> = {
+  "dive-sites": "shallow",
+  beginner: "coral",
+  "marine-life": "ink",
+  courses: "sunrise",
+  planning: "shallow",
+  destination: "coral",
 };
 
 export default function BlogIndexPage() {
@@ -60,56 +66,39 @@ export default function BlogIndexPage() {
         dangerouslySetInnerHTML={{ __html: safeJsonLd(blogIndexJsonLd) }}
       />
 
-      {/* Hero */}
-      <section className="bg-charcoal-sea py-16 lg:py-24 px-6">
-        <div className="max-w-3xl mx-auto">
-          <nav className="flex items-center gap-2 text-warm-white/35 text-xs mb-8">
-            <Link href="/" className="hover:text-warm-white/60 transition-colors">Home</Link>
-            <span>/</span>
-            <span className="text-warm-white/60">Blog</span>
-          </nav>
-
-          <div className="flex items-center gap-3 mb-5">
-            <span className="h-px w-6 bg-tropic-coral" aria-hidden="true" />
-            <span className="text-tropic-coral text-[11px] font-semibold tracking-[0.22em] uppercase">
-              From the water
-            </span>
-          </div>
-
-          <h1 className="text-warm-white font-display text-[clamp(2.5rem,6vw,5rem)] font-extrabold leading-tight mb-5">
-            Blog
-          </h1>
-          <p className="text-warm-white/55 text-base leading-relaxed max-w-xl">
-            Dive guides, species spotlights, gear notes, and stories from the season. Written by the instructors who actually live on these reefs.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        crumbs={[{ label: "Home", href: "/" }, { label: "Blog" }]}
+        notes="From the water"
+        title="Blog"
+        lead="Dive guides, species spotlights, gear notes, and stories from the season. Written by the instructors who actually live on these reefs."
+      />
+      <Waterline from="surface" to="shallow" />
 
       {/* Featured post */}
       {featured && (
-        <section className="bg-warm-white pt-16 pb-0 px-6">
-          <div className="max-w-3xl mx-auto">
+        <section className="zone-shallow pt-10 lg:pt-14 pb-0 px-5 sm:px-8">
+          <div className="max-w-4xl mx-auto">
             <Link
               href={`/blog/${featured.slug}`}
-              className="group block bg-charcoal-sea rounded-2xl overflow-hidden hover:ring-2 hover:ring-tropic-coral transition-all"
+              className="group zone-deep relative block overflow-hidden rounded-[18px] transition-[translate] duration-300 hover:-translate-y-1 reveal"
             >
-              <div className="p-8 lg:p-10">
+              <Turtle className="bob absolute -right-6 bottom-4 hidden w-40 opacity-90 sm:block" />
+              <div className="relative p-6 sm:p-8 lg:p-10 sm:pr-44">
                 <div className="flex items-center gap-3 mb-4">
                   <span
-                    className="inline-block text-[10px] font-bold px-3 py-1 rounded-full text-white uppercase tracking-widest"
-                    style={{ background: categoryColors[featured.category] ?? "#2A9D8F" }}
+                    className={`inline-block rounded-full px-3 py-1 text-label uppercase font-semibold ${toneClass[categoryTones[featured.category] ?? "shallow"]} ${categoryTones[featured.category] === "ink" ? "ring-1 ring-warm-white/40" : ""}`}
                   >
                     {categoryLabels[featured.category] ?? featured.category}
                   </span>
-                  <span className="text-warm-white/35 text-xs">{featured.readingTime} read</span>
+                  <span className="text-muted text-xs tabular">{featured.readingTime} read</span>
                 </div>
-                <h2 className="text-warm-white font-display text-[clamp(1.5rem,3vw,2.25rem)] font-extrabold leading-tight mb-4 group-hover:text-tropic-coral transition-colors">
+                <h2 className="text-[clamp(1.625rem,3.4vw,2.5rem)] font-extrabold leading-[1.05] mb-4 group-hover:underline underline-offset-4 decoration-sunrise">
                   {featured.title}
                 </h2>
-                <p className="text-warm-white/55 text-sm leading-relaxed max-w-2xl mb-6">
+                <p className="text-muted text-body max-w-2xl mb-6">
                   {featured.excerpt}
                 </p>
-                <span className="text-tropic-coral text-sm font-semibold">
+                <span className="inline-flex min-h-11 items-center rounded-[10px] bg-action px-4 text-sm font-bold text-action-ink">
                   Read the guide →
                 </span>
               </div>
@@ -119,36 +108,35 @@ export default function BlogIndexPage() {
       )}
 
       {/* Post grid */}
-      <section className="bg-warm-white py-16 px-6">
-        <div className="max-w-3xl mx-auto">
+      <section className="zone-shallow py-8 lg:py-12 px-5 sm:px-8">
+        <div className="max-w-4xl mx-auto">
           {rest.length > 0 && (
-            <div className="space-y-5">
+            <div className="grid gap-4 sm:grid-cols-2">
               {rest.map((post) => (
                 <Link
                   key={post.slug}
                   href={`/blog/${post.slug}`}
-                  className="group flex flex-col sm:flex-row sm:items-start gap-4 p-5 rounded-2xl bg-charcoal-sea/4 hover:bg-charcoal-sea/8 transition-colors"
+                  className="group reveal flex flex-col gap-3 p-5 sm:p-6 rounded-[18px] bg-warm-white text-charcoal-sea transition-[translate,background-color] duration-300 hover:-translate-y-1 hover:bg-white"
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2">
                       <span
-                        className="inline-block text-[9px] font-bold px-2 py-0.5 rounded-full text-white uppercase tracking-widest"
-                        style={{ background: categoryColors[post.category] ?? "#2A9D8F" }}
+                        className={`inline-block rounded-full px-2.5 py-1 text-label uppercase font-semibold ${toneClass[categoryTones[post.category] ?? "shallow"]}`}
                       >
                         {categoryLabels[post.category] ?? post.category}
                       </span>
-                      <span className="text-charcoal-sea/35 text-xs">{post.readingTime} read</span>
+                      <span className="text-charcoal-sea/80 text-xs tabular">{post.readingTime} read</span>
                     </div>
-                    <h2 className="text-charcoal-sea font-bold text-base leading-snug mb-1.5 group-hover:text-shallow-water transition-colors">
+                    <h2 className="text-sub font-extrabold leading-snug mb-1.5 group-hover:underline underline-offset-4">
                       {post.title}
                     </h2>
-                    <p className="text-charcoal-sea/55 text-sm leading-relaxed line-clamp-2">
+                    <p className="text-charcoal-sea/80 text-sm leading-relaxed line-clamp-3">
                       {post.excerpt}
                     </p>
                   </div>
                   <time
                     dateTime={post.publishedAt}
-                    className="text-charcoal-sea/35 text-xs whitespace-nowrap sm:mt-1"
+                    className="text-charcoal-sea/80 text-xs whitespace-nowrap tabular mt-auto pt-3 border-t border-charcoal-sea/12"
                   >
                     {new Date(post.publishedAt).toLocaleDateString("en-GB", {
                       day: "numeric",
@@ -164,28 +152,13 @@ export default function BlogIndexPage() {
       </section>
 
       {/* Dive-site CTA */}
-      <section className="bg-charcoal-sea py-16 px-6">
-        <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div>
-            <p className="text-warm-white font-bold text-lg mb-1">Ready to see it in person?</p>
-            <p className="text-warm-white/45 text-sm">Sandy Cove, Trincomalee. Open May to October.</p>
-          </div>
-          <div className="flex flex-col sm:flex-row items-center gap-3">
-            <Link
-              href="/activities/try-diving"
-              className="inline-flex items-center gap-2 bg-tropic-coral text-white font-bold px-6 py-3 rounded-full hover:bg-[#d4603f] transition-colors text-sm"
-            >
-              Try diving →
-            </Link>
-            <Link
-              href="/courses"
-              className="inline-flex items-center gap-2 text-warm-white/50 font-semibold text-sm hover:text-warm-white transition-colors"
-            >
-              View PADI courses
-            </Link>
-          </div>
-        </div>
-      </section>
+      <CtaBand
+        title="Ready to see it in person?"
+        body={<p>Sandy Cove, Trincomalee. Open May to October.</p>}
+      >
+        <Button href="/activities/try-diving" size="lg">Try diving →</Button>
+        <BandLink href="/courses">View PADI courses</BandLink>
+      </CtaBand>
     </>
   );
 }

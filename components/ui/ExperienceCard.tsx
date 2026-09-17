@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { HomeActivity } from "@/lib/types";
+import { activityPhotos } from "@/lib/photos";
+import { Arrow } from "@/components/ui/Button";
 
 const typeLabels: Record<string, string> = {
   "try-diving":     "Try Diving",
@@ -12,69 +14,70 @@ const typeLabels: Record<string, string> = {
   "sunset-tour":    "Sunset Tour",
 };
 
-const typeTints: Record<string, string> = {
-  "try-diving":     "bg-shallow-water/10",
-  "fun-diving":     "bg-sunrise/10",
-  snorkeling:       "bg-tropic-coral/10",
-  "whale-watching": "bg-charcoal-sea/10",
-  "jet-ski":        "bg-sunrise/10",
-  "boat-tour":      "bg-shallow-water/10",
-  "sunset-tour":    "bg-tropic-coral/10",
-};
-
-export default function ExperienceCard({ experience }: { experience: HomeActivity }) {
-  const tint = typeTints[experience.type] ?? "bg-shallow-water/10";
+/**
+ * An activity as a photo plate with its readouts underneath. `lead` is the big one on the left
+ * of the home grid; the others sit beside it as horizontal plates on wide screens.
+ */
+export default function ExperienceCard({ experience, lead = false }: { experience: HomeActivity; lead?: boolean }) {
   const label = typeLabels[experience.type] ?? experience.type;
+  const fallback = activityPhotos[experience.type];
+  const href = `/activities/${experience.slug}`;
 
   return (
-    <article className="bg-white border border-charcoal-sea/10 rounded-2xl overflow-hidden flex flex-col hover:-translate-y-1 hover:border-charcoal-sea/25 transition-all duration-200 cursor-pointer">
-      {/* Image header */}
-      <div className={`aspect-video ${tint} flex-shrink-0 relative overflow-hidden`}>
+    <article className={`group relative flex flex-col h-full ${lead ? "" : "lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-6"}`}>
+      <div className={`plate ${lead ? "aspect-[4/3] lg:aspect-[5/6]" : "aspect-[4/3] lg:aspect-auto lg:min-h-full"}`}>
         {experience.image ? (
           <Image
             src={experience.image}
             alt={`${experience.name} in Trincomalee, Sri Lanka`}
             fill
             className="object-cover"
-            sizes="(max-width: 768px) 100vw, 33vw"
+            sizes={lead ? "(max-width: 1024px) 100vw, 45vw" : "(max-width: 1024px) 100vw, 22vw"}
+          />
+        ) : fallback ? (
+          <Image
+            src={fallback.src}
+            alt={fallback.alt}
+            fill
+            placeholder="blur"
+            className="object-cover"
+            sizes={lead ? "(max-width: 1024px) 100vw, 45vw" : "(max-width: 1024px) 100vw, 22vw"}
           />
         ) : null}
-        <div className="absolute inset-0 bg-gradient-to-t from-charcoal-sea/40 to-transparent" />
-        <span className="absolute top-4 left-4 text-[10px] uppercase tracking-widest font-semibold text-warm-white/80">
+        <span className="absolute top-0 left-0 zone-sunrise text-label uppercase font-semibold px-3 py-2">
           {label}
         </span>
         {experience.divesIncluded ? (
-          <span className="absolute top-4 right-4 text-[10px] uppercase tracking-widest font-semibold text-warm-white/70">
+          <span className="absolute top-0 right-0 zone-abyss text-label uppercase font-semibold px-3 py-2">
             {experience.divesIncluded} dives
           </span>
         ) : null}
       </div>
 
-      <div className="p-5 flex flex-col flex-1">
-        <h3 className="font-bold text-charcoal-sea text-lg leading-tight mb-2">
-          {experience.name}
+      <div className="flex flex-col flex-1 pt-5">
+        <h3 className={`font-extrabold leading-tight mb-2 text-sub ${lead ? "lg:text-section" : ""}`}>
+          <Link href={href} className="after:absolute after:inset-0 hover:underline">
+            {experience.name}
+          </Link>
         </h3>
 
-        <p className="text-charcoal-sea/60 text-sm leading-relaxed mb-5 flex-1 line-clamp-3">
+        <p className="text-muted text-meta mb-5 flex-1 line-clamp-3 max-w-[52ch]">
           {experience.description}
         </p>
 
-        <div className="flex items-end justify-between">
-          <div>
-            <span className="text-[11px] uppercase tracking-widest text-charcoal-sea/40 block mb-0.5">
-              {experience.duration}
-            </span>
-            <span className="text-2xl font-extrabold text-charcoal-sea leading-none">
-              ${experience.price}
-              <span className="text-sm font-normal text-charcoal-sea/40 ml-1">{experience.currency}</span>
-            </span>
+        <div className="flex items-end justify-between gap-4 border-t-2 border-current pt-3">
+          <div className="flex gap-6">
+            <div className="flex flex-col-reverse gap-1">
+              <span className="text-label uppercase font-semibold text-muted">{experience.duration}</span>
+              <span className="font-display font-bold text-readout tabular">
+                ${experience.price}
+                <span className="text-meta font-normal text-muted ml-1">{experience.currency}</span>
+              </span>
+            </div>
           </div>
-          <Link
-            href={`/activities/${experience.slug}`}
-            className="inline-block bg-tropic-coral text-white text-sm font-semibold px-5 py-2 rounded-full hover:bg-[#d4603f] transition-colors duration-200"
-          >
-            View
-          </Link>
+          <span className="inline-flex items-center gap-2 min-h-11 text-sm font-semibold text-coral-deep group-hover:underline" aria-hidden="true">
+            View <Arrow />
+          </span>
         </div>
       </div>
     </article>

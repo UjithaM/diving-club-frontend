@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
     // that candidate could only ever be a wasted re-encode and a second cache entry for the
     // same pixels. Each page's `sizes` is what actually picks the width; this is the backstop.
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
+    // AVIF first: roughly 20% smaller than WebP for the same photo, and browsers that can't
+    // decode it get WebP from the same request.
+    formats: ["image/avif", "image/webp"],
     remotePatterns: [
       { protocol: "http", hostname: "localhost", port: "8000" },
       { protocol: "https", hostname: "admin.divingclub.lk" },

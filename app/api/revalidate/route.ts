@@ -4,7 +4,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 // POST https://divingclub.lk/api/revalidate
 // Body: { "secret": "...", "type": "course", "slug": "open-water-diver" }
 //
-// type values: "course" | "activity" | "dive-site" | "gallery" | "faq" | "promotion" | "all"
+// type values: "course" | "activity" | "package" | "dive-site" | "gallery" | "faq" | "promotion" | "all"
 // slug is optional — omit to revalidate the entire list page for that type
 
 export async function POST(req: Request) {
@@ -57,6 +57,15 @@ export async function POST(req: Request) {
       if (slug) path(`/activities/${slug}`);
       break;
 
+    case "package":
+      tag("packages");
+      path("/packages");
+      if (slug) {
+        tag(`package:${slug}`);
+        path(`/packages/${slug}`);
+      }
+      break;
+
     case "dive-site":
       tag("dive-sites");
       path("/dive-sites");
@@ -80,14 +89,14 @@ export async function POST(req: Request) {
       break;
 
     case "all":
-      ["courses", "activities", "dive-sites", "gallery", "faqs", "promotions"].forEach(tag);
-      ["/", "/courses", "/activities", "/dive-sites", "/gallery", "/faq"].forEach(path);
+      ["courses", "activities", "packages", "dive-sites", "gallery", "faqs", "promotions"].forEach(tag);
+      ["/", "/courses", "/activities", "/packages", "/dive-sites", "/gallery", "/faq"].forEach(path);
       AD_LANDING_PAGES.forEach(path);
       break;
 
     default:
       return NextResponse.json(
-        { error: "Unknown type. Use: course | activity | dive-site | gallery | faq | promotion | all" },
+        { error: "Unknown type. Use: course | activity | package | dive-site | gallery | faq | promotion | all" },
         { status: 400 }
       );
   }

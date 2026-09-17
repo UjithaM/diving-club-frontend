@@ -1,0 +1,585 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-16T20:46:19+00:00",
+  "title": "Design System: Diving Club",
+  "provenance": {
+    "world": "The Descent",
+    "origin": "code-led new world; owner chose from four presented options",
+    "seedKey": null,
+    "seedNote": "concept-seed never ran: the Impeccable launcher was declined this session",
+    "ownerPins": [
+      "five brand colours",
+      "warm-white home hero",
+      "drawn animated sea life"
+    ],
+    "exceptions": [
+      "2px photo plates vs 14–18px radii with soft offset shadows on form/booking panels and certification cards: owner preference, flagged by the finish reviewer as departing from the contract"
+    ],
+    "knownGaps": [
+      "DESIGN.md did not exist before this build"
+    ]
+  },
+  "extensions": {
+    "colorMeta": {
+      "warm-white": {
+        "role": "neutral",
+        "displayName": "Warm White",
+        "tonalRamp": [
+          "#0F0A06",
+          "#28231D",
+          "#443F38",
+          "#625D56",
+          "#827C75",
+          "#A49D96",
+          "#CAC3BB",
+          "#F4EDE5"
+        ]
+      },
+      "sunrise": {
+        "role": "tertiary",
+        "displayName": "Sunrise",
+        "tonalRamp": [
+          "#200000",
+          "#4C0200",
+          "#6E2700",
+          "#904700",
+          "#B46721",
+          "#D98947",
+          "#FFAF6E",
+          "#FFE7D0"
+        ]
+      },
+      "tropic-coral": {
+        "role": "primary",
+        "displayName": "Tropic Coral",
+        "tonalRamp": [
+          "#210000",
+          "#4D0000",
+          "#7E0000",
+          "#A33010",
+          "#C85336",
+          "#EF7658",
+          "#FFA992",
+          "#FFE5DC"
+        ]
+      },
+      "charcoal-sea": {
+        "role": "neutral",
+        "displayName": "Charcoal Sea",
+        "tonalRamp": [
+          "#000E19",
+          "#062834",
+          "#254552",
+          "#426371",
+          "#628391",
+          "#82A5B4",
+          "#A7CBDA",
+          "#D1F5FF"
+        ]
+      },
+      "shallow-water": {
+        "role": "secondary",
+        "displayName": "Shallow-Water Teal",
+        "tonalRamp": [
+          "#00110D",
+          "#002D27",
+          "#004E44",
+          "#006F63",
+          "#149183",
+          "#46B3A4",
+          "#70DACA",
+          "#ABFFF4"
+        ]
+      },
+      "coral-deep": {
+        "role": "primary",
+        "displayName": "Deep Coral (AA text)",
+        "tonalRamp": [
+          "#200000",
+          "#4B0100",
+          "#7B0800",
+          "#AA2302",
+          "#D04A2F",
+          "#F76E52",
+          "#FFAB97",
+          "#FFE5DD"
+        ]
+      },
+      "surface-dark": {
+        "role": "neutral",
+        "displayName": "Abyss",
+        "tonalRamp": [
+          "#020D13",
+          "#17262E",
+          "#32424A",
+          "#506169",
+          "#6F8089",
+          "#8FA2AB",
+          "#B5C8D1",
+          "#DFF2FC"
+        ]
+      },
+      "surface-muted": {
+        "role": "neutral",
+        "displayName": "Surface Muted",
+        "tonalRamp": [
+          "#0D0B08",
+          "#262320",
+          "#423F3B",
+          "#605D59",
+          "#807D78",
+          "#A19E99",
+          "#C7C3BF",
+          "#F2EEE9"
+        ]
+      },
+      "action-hover": {
+        "role": "primary",
+        "displayName": "Coral Pressed",
+        "tonalRamp": [
+          "#200000",
+          "#4C0000",
+          "#7D0300",
+          "#A2310B",
+          "#C75534",
+          "#EE7755",
+          "#FFAA91",
+          "#FFE5DB"
+        ]
+      },
+      "whatsapp": {
+        "role": "brand-external",
+        "displayName": "WhatsApp Green",
+        "tonalRamp": [
+          "#001200",
+          "#003001",
+          "#005015",
+          "#00732B",
+          "#009B2F",
+          "#00BF53",
+          "#45E779",
+          "#BCFFC9"
+        ]
+      },
+      "whatsapp-deep": {
+        "role": "brand-external",
+        "displayName": "WhatsApp Deep (AA)",
+        "tonalRamp": [
+          "#001200",
+          "#002F0A",
+          "#005119",
+          "#007138",
+          "#339257",
+          "#58B577",
+          "#7FDC9C",
+          "#C0FFD1"
+        ]
+      },
+      "action": {
+        "role": "primary",
+        "displayName": "Action (alias of Tropic Coral)",
+        "tonalRamp": [
+          "#210000",
+          "#4D0000",
+          "#7E0000",
+          "#A33010",
+          "#C85336",
+          "#EF7658",
+          "#FFA992",
+          "#FFE5DC"
+        ]
+      },
+      "action-ink": {
+        "role": "neutral",
+        "displayName": "Action Ink (alias of Abyss)",
+        "tonalRamp": [
+          "#020D13",
+          "#17262E",
+          "#32424A",
+          "#506169",
+          "#6F8089",
+          "#8FA2AB",
+          "#B5C8D1",
+          "#DFF2FC"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Home h1 only."
+      },
+      "hero": {
+        "displayName": "Hero",
+        "purpose": "Inner-page h1s, max 16ch."
+      },
+      "section": {
+        "displayName": "Section",
+        "purpose": "Section h2s."
+      },
+      "figure": {
+        "displayName": "Figure",
+        "purpose": "The price, and nothing else."
+      },
+      "readout": {
+        "displayName": "Readout",
+        "purpose": "Dive-computer numerals in readout cells."
+      },
+      "sub": {
+        "displayName": "Sub",
+        "purpose": "Card titles, depth-stop numbers, certification-card cells."
+      },
+      "lead": {
+        "displayName": "Lead",
+        "purpose": "Intro paragraphs, 44–52ch."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Running copy; guides at 68ch."
+      },
+      "meta": {
+        "displayName": "Meta",
+        "purpose": "Card descriptions and secondary facts."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Uppercase instrument labels under readouts, depth-log labels, level bands."
+      }
+    },
+    "shadows": [
+      {
+        "name": "card-rest",
+        "value": "0 22px 40px -26px rgba(15,30,37,0.7)",
+        "purpose": "Certification cards at rest (owner-chosen exception)."
+      },
+      {
+        "name": "card-lift",
+        "value": "0 30px 50px -26px rgba(15,30,37,0.75)",
+        "purpose": "Certification card hover, with an 8px lift."
+      },
+      {
+        "name": "panel",
+        "value": "0 24px 50px -30px rgba(15,30,37,0.55)",
+        "purpose": "Booking and ad form panels; 0.7 alpha on the deep detail panel."
+      },
+      {
+        "name": "panel-quiet",
+        "value": "0 18px 40px -30px rgba(15,30,37,0.5)",
+        "purpose": "Payment-step panels."
+      },
+      {
+        "name": "focus-halo",
+        "value": "0 0 0 4px color-mix(in srgb, var(--color-shallow-water) 22%, transparent)",
+        "purpose": "Input focus; coral at 22% on error."
+      },
+      {
+        "name": "cta-pulse",
+        "value": "0 0 0 16px color-mix(in srgb, var(--color-whatsapp) 0%, transparent)",
+        "purpose": "End state of the WhatsApp ring, pulsed three times after load."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-surface",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Default easing for entrances, lifts, bubbles and menus."
+      },
+      {
+        "name": "depth-descend",
+        "value": "animation-timeline: scroll(root block)",
+        "purpose": "Gauge marker and mobile progress line; no JS, static when unsupported."
+      },
+      {
+        "name": "reveal-rise",
+        "value": "view() entry 0%–60%, opacity 0.35→1, translateY 18px→0",
+        "purpose": "Content rises in from an already-legible start."
+      },
+      {
+        "name": "rise-in",
+        "value": "0.8s ease-surface, 90ms stagger, transform only",
+        "purpose": "Hero h1 lines; LCP paints opaque on frame one."
+      },
+      {
+        "name": "swim",
+        "value": "26–39s linear infinite",
+        "purpose": "Fish and diver crossing a lane (container-query width)."
+      },
+      {
+        "name": "bob",
+        "value": "4.5s ease-in-out infinite alternate",
+        "purpose": "Treading diver, resting drawings."
+      },
+      {
+        "name": "sway",
+        "value": "5s ease-in-out infinite alternate",
+        "purpose": "Reef and seaweed."
+      },
+      {
+        "name": "bubble-rise",
+        "value": "6s ease-surface infinite",
+        "purpose": "Bubbles."
+      },
+      {
+        "name": "state",
+        "value": "200ms colors; 150ms field border/halo; 900ms plate image scale 1.035",
+        "purpose": "Hover and focus transitions."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "prefers-reduced-motion: reduce",
+        "purpose": "All loops removed; swimmers rest at --rest."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px",
+        "note": "rails become grids"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px",
+        "note": "depth gauge appears"
+      }
+    ],
+    "contrast": [
+      {
+        "fg": "charcoal-sea",
+        "bg": "warm-white",
+        "ratio": 9.57,
+        "note": "secondary text /80 or above"
+      },
+      {
+        "fg": "surface-dark",
+        "bg": "shallow-water",
+        "ratio": 5.13
+      },
+      {
+        "fg": "charcoal-sea",
+        "bg": "shallow-water",
+        "ratio": 3.03,
+        "note": "FAILS, never use"
+      },
+      {
+        "fg": "surface-dark",
+        "bg": "sunrise",
+        "ratio": 8.26
+      },
+      {
+        "fg": "charcoal-sea",
+        "bg": "sunrise",
+        "ratio": 4.89
+      },
+      {
+        "fg": "warm-white",
+        "bg": "charcoal-sea",
+        "ratio": 9.57,
+        "note": "secondary /72 or above (5.84)"
+      },
+      {
+        "fg": "surface-dark",
+        "bg": "tropic-coral",
+        "ratio": 5.51,
+        "note": "white on coral fails"
+      },
+      {
+        "fg": "tropic-coral",
+        "bg": "charcoal-sea",
+        "ratio": 3.26,
+        "note": "large type only; use sunrise (4.89)"
+      },
+      {
+        "fg": "coral-deep",
+        "bg": "warm-white",
+        "ratio": 4.88
+      }
+    ],
+    "zones": {
+      "surface": {
+        "bg": "warm-white",
+        "ink": "charcoal-sea",
+        "muted": "rgba(38,70,83,0.8)",
+        "rule": "rgba(38,70,83,0.16)"
+      },
+      "sunrise": {
+        "bg": "sunrise",
+        "ink": "surface-dark",
+        "muted": "rgba(15,30,37,0.82)",
+        "rule": "rgba(15,30,37,0.22)"
+      },
+      "shallow": {
+        "bg": "shallow-water",
+        "ink": "surface-dark",
+        "muted": "surface-dark",
+        "rule": "rgba(15,30,37,0.25)"
+      },
+      "deep": {
+        "bg": "charcoal-sea",
+        "ink": "warm-white",
+        "muted": "rgba(255,248,240,0.74)",
+        "rule": "rgba(255,248,240,0.16)"
+      },
+      "abyss": {
+        "bg": "surface-dark",
+        "ink": "warm-white",
+        "muted": "rgba(255,248,240,0.7)",
+        "rule": "rgba(255,248,240,0.12)"
+      }
+    }
+  },
+  "components": [
+    {
+      "name": "Action Button",
+      "kind": "button",
+      "refersTo": "button-action",
+      "description": "The one coral 'do this' button, dark ink on coral.",
+      "html": "<a class=\"ds-btn ds-btn-action\" href=\"#\">Explore Courses <svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.25\" stroke-linecap=\"square\" aria-hidden=\"true\"><path d=\"M4 12h15M13 6l6 6-6 6\"/></svg></a>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 20px;font:600 14px/1 var(--font-sans,Geist,sans-serif);border-radius:var(--radius-plate,2px);text-decoration:none;transition:background-color .2s,color .2s;cursor:pointer;border:0}.ds-btn:focus-visible{outline:2px solid var(--color-shallow-water,#2A9D8F);outline-offset:3px}.ds-btn-action{background:var(--color-action,#E76F51);color:var(--color-action-ink,#0f1e25)}.ds-btn-action:hover{background:var(--color-action-hover,#D4603F)}"
+    },
+    {
+      "name": "Ink Button",
+      "kind": "button",
+      "refersTo": "button-ink",
+      "description": "Dark fill for sunrise fields, where coral would clash.",
+      "html": "<div class=\"ds-sunrise\"><a class=\"ds-btn ds-btn-ink\" href=\"#\">Book a Dive</a></div>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 20px;font:600 14px/1 var(--font-sans,Geist,sans-serif);border-radius:var(--radius-plate,2px);text-decoration:none;transition:background-color .2s,color .2s;cursor:pointer;border:0}.ds-btn:focus-visible{outline:2px solid var(--color-shallow-water,#2A9D8F);outline-offset:3px}.ds-sunrise{background:#F4A261;padding:24px}.ds-btn-ink{background:var(--color-surface-dark,#0f1e25);color:var(--color-warm-white,#FFF8F0)}.ds-btn-ink:hover{background:var(--color-charcoal-sea,#264653)}.ds-btn-ink:focus-visible{outline-color:#0f1e25}"
+    },
+    {
+      "name": "Ghost Link",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Quiet secondary: text plus arrow in the zone's ink.",
+      "html": "<a class=\"ds-btn ds-btn-ghost\" href=\"#\">Book a Dive <svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.25\" stroke-linecap=\"square\" aria-hidden=\"true\"><path d=\"M4 12h15M13 6l6 6-6 6\"/></svg></a>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 20px;font:600 14px/1 var(--font-sans,Geist,sans-serif);border-radius:var(--radius-plate,2px);text-decoration:none;transition:background-color .2s,color .2s;cursor:pointer;border:0}.ds-btn:focus-visible{outline:2px solid var(--color-shallow-water,#2A9D8F);outline-offset:3px}.ds-btn-ghost{background:none;padding:0;color:var(--color-charcoal-sea,#264653);text-underline-offset:4px}.ds-btn-ghost:hover{text-decoration:underline}"
+    },
+    {
+      "name": "WhatsApp Button",
+      "kind": "button",
+      "refersTo": "button-whatsapp",
+      "description": "WhatsApp's own green pill with dark ink.",
+      "html": "<a class=\"ds-wa\" href=\"#\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2z\"/></svg>Chat on WhatsApp</a>",
+      "css": ".ds-wa{display:inline-flex;align-items:center;gap:10px;min-height:52px;padding:0 24px;border-radius:999px;background:var(--color-whatsapp,#25D366);color:var(--color-surface-dark,#0f1e25);font:700 16px/1 var(--font-sans,Geist,sans-serif);text-decoration:none;transition:background-color .2s}.ds-wa:hover{background:var(--color-whatsapp-hover,#1FC05B)}.ds-wa:focus-visible{outline:2px solid #2A9D8F;outline-offset:3px}"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "52px white field, 2px stroke, teal focus halo.",
+      "html": "<label class=\"ds-label\" for=\"ds-name\">Full name</label><input id=\"ds-name\" class=\"ds-input\" placeholder=\"Your name\"><p class=\"ds-hint\">As it appears on your passport.</p>",
+      "css": ".ds-label{display:block;font:600 14px/1.4 var(--font-sans,Geist,sans-serif);color:#264653;margin-bottom:8px}.ds-input{width:100%;min-height:52px;padding:12px 16px;border:2px solid rgba(38,70,83,.25);border-radius:10px;background:#fff;color:#264653;font:14px var(--font-sans,Geist,sans-serif);transition:border-color .15s,box-shadow .15s}.ds-input::placeholder{color:rgba(38,70,83,.62)}.ds-input:hover{border-color:rgba(38,70,83,.45)}.ds-input:focus{outline:none;border-color:#2A9D8F;box-shadow:0 0 0 4px color-mix(in srgb,#2A9D8F 22%,transparent)}.ds-hint{font-size:12px;color:rgba(38,70,83,.8);margin-top:8px}"
+    },
+    {
+      "name": "Filter Chips",
+      "kind": "chip",
+      "refersTo": "chip-filter",
+      "description": "Listing filters with counts; active is abyss-dark.",
+      "html": "<div class=\"ds-chips\"><button class=\"ds-chip\" aria-pressed=\"true\">All <span>12</span></button><button class=\"ds-chip\" aria-pressed=\"false\">Beginner <span>4</span></button></div>",
+      "css": ".ds-chips{display:flex;gap:8px}.ds-chip{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;border:2px solid transparent;background:#FFF8F0;color:#264653;font:700 14px var(--font-sans,Geist,sans-serif);cursor:pointer;transition:background-color .2s,border-color .2s,scale .2s}.ds-chip span{min-width:24px;border-radius:999px;padding:0 6px;font-size:12px;font-variant-numeric:tabular-nums;background:rgba(38,70,83,.1)}.ds-chip:hover{border-color:#0f1e25}.ds-chip:active{scale:.95}.ds-chip[aria-pressed=true]{background:#0f1e25;color:#FFF8F0;border-color:#0f1e25}.ds-chip[aria-pressed=true] span{background:rgba(255,248,240,.2)}.ds-chip:focus-visible{outline:2px solid #2A9D8F;outline-offset:3px}"
+    },
+    {
+      "name": "Readout Strip",
+      "kind": "custom",
+      "refersTo": "readout-cell",
+      "description": "Dive-computer facts: tabular Bricolage value over a tracked Geist label, ruled cells.",
+      "html": "<dl class=\"ds-readout\"><div><dt>Max depth</dt><dd>18&thinsp;m</dd></div><div><dt>Years diving</dt><dd>15+</dd></div><div><dt>Per instructor</dt><dd>2</dd></div><div><dt>From</dt><dd>$95</dd></div></dl>",
+      "css": ".ds-readout{display:grid;grid-template-columns:repeat(4,1fr);border-top:2px solid currentColor;color:#264653;margin:0}.ds-readout div{display:flex;flex-direction:column-reverse;gap:8px;padding:16px 16px 16px 20px;border-bottom:1px solid rgba(38,70,83,.16);border-left:1px solid rgba(38,70,83,.16)}.ds-readout div:first-child{padding-left:0;border-left:0}.ds-readout dt{font:600 12px/1.3 var(--font-sans,Geist,sans-serif);letter-spacing:.14em;text-transform:uppercase;color:rgba(38,70,83,.8)}.ds-readout dd{margin:0;font:700 clamp(1.75rem,3.2vw,2.5rem)/1 var(--font-display,'Bricolage Grotesque',sans-serif);letter-spacing:-.02em;font-variant-numeric:tabular-nums}"
+    },
+    {
+      "name": "Certification Card",
+      "kind": "card",
+      "refersTo": "card-certification",
+      "description": "A PADI course as a physical card: level band, inset photo, duration/price cells. Owner-chosen 14px + soft shadow exception.",
+      "html": "<article class=\"ds-cert\"><div class=\"ds-cert-band\">Beginner</div><div class=\"ds-cert-photo\"></div><div class=\"ds-cert-body\"><h3>Open Water Diver</h3><p>Your first certification, in Trincomalee bay.</p><div class=\"ds-cert-cells\"><span>3 days</span><span>$450 <small>USD</small></span></div><span class=\"ds-cert-cta\">View <svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.25\" stroke-linecap=\"square\"><path d=\"M4 12h15M13 6l6 6-6 6\"/></svg></span></div></article>",
+      "css": ".ds-cert{width:300px;overflow:hidden;border-radius:14px;background:#FFF8F0;color:#264653;box-shadow:0 22px 40px -26px rgba(15,30,37,.7);transition:translate .3s cubic-bezier(.16,1,.3,1),box-shadow .3s}.ds-cert:hover{translate:0 -8px;box-shadow:0 30px 50px -26px rgba(15,30,37,.75)}.ds-cert-band{height:44px;display:flex;align-items:center;padding:0 20px;background:#F4A261;color:#0f1e25;font:600 12px var(--font-sans,Geist,sans-serif);letter-spacing:.14em;text-transform:uppercase}.ds-cert-photo{margin:16px 16px 0;aspect-ratio:16/10;border-radius:8px;background:#264653}.ds-cert-body{padding:20px}.ds-cert h3{margin:0;font:800 20px/1.25 var(--font-display,'Bricolage Grotesque',sans-serif)}.ds-cert p{margin:8px 0 0;font-size:14px;color:rgba(38,70,83,.8)}.ds-cert-cells{display:grid;grid-template-columns:1fr 1fr;margin-top:20px;border-block:2px solid #264653;font:800 20px var(--font-display,'Bricolage Grotesque',sans-serif);font-variant-numeric:tabular-nums}.ds-cert-cells span{padding:12px 0}.ds-cert-cells span+span{padding-left:16px;border-left:1px solid rgba(38,70,83,.15)}.ds-cert-cells small{font:600 12px var(--font-sans,Geist,sans-serif);letter-spacing:.14em;color:rgba(38,70,83,.8)}.ds-cert-cta{margin-top:16px;display:flex;justify-content:space-between;align-items:center;min-height:44px;padding:0 16px;border-radius:6px;background:#0f1e25;color:#FFF8F0;font:600 14px var(--font-sans,Geist,sans-serif);transition:background-color .2s,color .2s}.ds-cert:hover .ds-cert-cta{background:#E76F51;color:#0f1e25}"
+    },
+    {
+      "name": "Header Navigation",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "Sticky surface bar with a 2px charcoal rule and the coral Book action.",
+      "html": "<header class=\"ds-nav\"><span class=\"ds-nav-mark\">Diving Club</span><nav><a href=\"#\">Courses</a><a href=\"#\">Packages</a><a href=\"#\">FAQ</a><a class=\"ds-nav-book\" href=\"#\">Book Now</a></nav></header>",
+      "css": ".ds-nav{display:flex;align-items:center;justify-content:space-between;height:64px;padding:0 32px;background:#FFF8F0;border-bottom:2px solid #264653}.ds-nav-mark{font:800 18px var(--font-display,'Bricolage Grotesque',sans-serif);letter-spacing:-.02em;color:#264653}.ds-nav nav{display:flex;align-items:center;gap:24px}.ds-nav a{font:600 13px var(--font-sans,Geist,sans-serif);color:rgba(38,70,83,.8);text-decoration:none;padding:8px 0;transition:color .2s}.ds-nav a:hover{color:#264653}.ds-nav a:focus-visible{outline:2px solid #2A9D8F;outline-offset:3px;border-radius:2px}.ds-nav .ds-nav-book{display:inline-flex;align-items:center;min-height:44px;padding:0 20px;border-radius:2px;background:#E76F51;color:#0f1e25}.ds-nav .ds-nav-book:hover{background:#D4603F;color:#0f1e25}"
+    },
+    {
+      "name": "Depth Stop",
+      "kind": "custom",
+      "refersTo": "readout-cell",
+      "description": "A section's log entry in the margin column: 2px rule, depth over log label.",
+      "html": "<div class=\"ds-stop\"><span>09&thinsp;m</span><p>The shallows</p></div>",
+      "css": ".ds-stop{width:10rem;border-top:2px solid currentColor;padding-top:12px;color:#0f1e25;background:#2A9D8F;padding:12px}.ds-stop span{display:block;font:700 20px/1.25 var(--font-display,'Bricolage Grotesque',sans-serif);font-variant-numeric:tabular-nums}.ds-stop p{margin:8px 0 0;font:600 12px/1.3 var(--font-sans,Geist,sans-serif);letter-spacing:.14em;text-transform:uppercase}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Descent",
+    "overview": "**Creative North Star: \"The Descent\"**\n\nEvery page is a dive. It opens at the surface on warm white and goes down through depth zones (surface, sunrise accent fields, shallow-water teal, charcoal sea, the near-black abyss) and never comes back up. The world is an instrument world: a dive log and a dive computer. Facts are readouts, sections are stops logged in metres, and a hairline depth gauge with ticks from 0 to 18 m sits in the left margin on wide screens. The marker on the gauge is a small head-down diver that descends as you scroll.\n\nThe flat instrument surface is kept alive by drawn sea life. Hand-drawn dive-slate SVGs (clownfish, tang, turtle, diver, mask, fins, coral, seaweed, bubbles) swim, bob and sway through every zone in one 2px charcoal-sea line with flat brand fills. The owner pinned three things: the five brand colours, a warm-white home hero (sunrise was rejected for the hero and is an accent only), and drawn animated sea life. Photography is the centre's own, set in square-shouldered plates.\n\nThe system rejects the stock dive-resort page: a full-bleed photo hero, three equal cards and empty white space. Density is editorial. Big, tight Bricolage display type sits against ruled readout grids.",
+    "keyCharacteristics": [
+      "Depth zones run in one direction only: surface, then shallow, then deep, then abyss.",
+      "Tropic coral means \"act\". It is used only for actions and the gauge.",
+      "Facts are dive-computer readouts: tabular Bricolage numerals over tracked Geist labels, in cells ruled by 2px lines.",
+      "Photo plates have 2px shoulders. Objects the owner treats as physical (certification cards, form and booking panels) get soft corners and a soft offset shadow.",
+      "Motion is CSS-only and uses scroll-driven timelines. Everything rests, still and legible, under reduced motion."
+    ],
+    "rules": [
+      {
+        "name": "The Coral Means Act Rule",
+        "body": "Tropic coral is reserved for actions and the depth gauge. If an element is coral and you can't press it, and it isn't the gauge, it is wrong.",
+        "section": "colors"
+      },
+      {
+        "name": "The One-Way Descent Rule",
+        "body": "Zones run surface, then shallow, then deep, then abyss, and never step back up. Sunrise is an accent field placed between them, not a stage of the dive.",
+        "section": "colors"
+      },
+      {
+        "name": "The Teal Takes Dark Ink Rule",
+        "body": "On shallow-water teal, all text is `surface-dark` at full strength. There is no dimmed secondary text on teal.",
+        "section": "colors"
+      },
+      {
+        "name": "The Readout Rule",
+        "body": "A number that matters is set in Bricolage with tabular numerals, sits over its Geist label (the value on top, the label underneath) and lives in a cell ruled by a 2px top line and hairline dividers.",
+        "section": "typography"
+      },
+      {
+        "name": "The Figure Is the Price Rule",
+        "body": "The `figure` size is used only for the price.",
+        "section": "typography"
+      },
+      {
+        "name": "The Plates Never Float Rule",
+        "body": "Photo plates never cast a shadow. Only the physical-object exceptions (cards and panels) do.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do start every page at the surface and step down through the zones. Close inner pages with the abyss CTA band at 18 m.",
+      "Do use Tropic Coral for the primary action and the gauge, always with dark text (5.51:1).",
+      "Do put `surface-dark` text on teal (5.13:1) and use Sunrise, not coral, for small accent text on dark grounds (4.89:1).",
+      "Do keep secondary text at or above /80 on warm white and /72 on charcoal sea, using the zone's `text-muted`.",
+      "Do set facts as readouts: Bricolage tabular value over a 12px tracked Geist label, in cells ruled by 2px lines.",
+      "Do frame photographs as 2px plates backed with charcoal sea, with a 1.035 scale on hover over 900ms.",
+      "Do keep the soft 14–18px corners and offset shadows for certification cards, form and booking panels, and the detail panel, where the owner chose them.",
+      "Do run motion on CSS only (scroll and view timelines, transform and opacity), starting from an already-legible state, and remove every loop under reduced motion.",
+      "Do keep form fields at 52px, touch targets at 44px or more, and field text at 16px on phones."
+    ],
+    "donts": [
+      "Don't put charcoal-sea text on shallow-water teal. It measures 3.03:1 and fails.",
+      "Don't put white text on tropic coral, or use coral for small text on charcoal sea (3.26:1).",
+      "Don't use coral on anything that isn't an action or the gauge.",
+      "Don't use a sunrise-ground home hero. The owner rejected it, and sunrise is an accent only.",
+      "Don't step a page back up the zones (for example, abyss followed by surface).",
+      "Don't use gradients or glass (backdrop blur).",
+      "Don't put a shadow on photo plates, buttons or flat sections.",
+      "Don't build the stock resort page: a full-bleed photo hero, three equal cards and white space.",
+      "Don't use emoji or glyph icons. Use the drawn sea life or inline SVG."
+    ]
+  }
+}

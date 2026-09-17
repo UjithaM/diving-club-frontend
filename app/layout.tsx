@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Fraunces, Plus_Jakarta_Sans } from "next/font/google";
+import { Bricolage_Grotesque, Geist } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import WhatsAppFab from "@/components/ui/WhatsAppFab";
-import SmoothScrollProvider from "@/components/providers/SmoothScrollProvider";
+import DepthRail from "@/components/ui/DepthRail";
 import type { LocalBusiness, WithContext } from "schema-dts";
 import { safeJsonLd } from "@/lib/jsonld";
 import { getCourses } from "@/lib/api/courses";
@@ -18,15 +19,8 @@ const NAV_MAX = 8;
 const toNav = (list: { slug: string; name: string }[]): NavItem[] =>
   list.slice(0, NAV_MAX).map(({ slug, name }) => ({ slug, name }));
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
-  subsets: ["latin"],
-  display: "swap",
-  axes: ["opsz", "SOFT", "WONK"],
-});
-
 /**
- * The ad pages' headline face, set through `.type-display` in globals.css.
+ * The display face for every heading on the site.
  *
  * `opsz` only. The other axes Bricolage ships — wdth, and wght which comes along automatically —
  * are either unused here (the headline sits at the default width of 100) or already covered, and
@@ -39,11 +33,11 @@ const bricolage = Bricolage_Grotesque({
   axes: ["opsz"],
 });
 
-const jakarta = Plus_Jakarta_Sans({
-  variable: "--font-jakarta",
+/** Body and UI. One variable file covers every weight the site uses. */
+const geist = Geist({
+  variable: "--font-geist",
   subsets: ["latin"],
   display: "swap",
-  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -123,10 +117,9 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${jakarta.variable} ${bricolage.variable} antialiased`}
+      className={`${geist.variable} ${bricolage.variable} antialiased`}
     >
       <head>
-        <script src="https://analytics.ahrefs.com/analytics.js" data-key="JUJD0Ce1iIv72G6QYuIKdg" async />
         {/* Google Tag Manager — inline, not @next/third-parties: that component defers GTM
             until after hydration, which is too late for the /dive and /padi bridge pages. */}
         {/* eslint-disable-next-line @next/next/next-script-for-ga */}
@@ -186,16 +179,21 @@ try{localStorage.setItem('dc_attr',JSON.stringify(out));}catch(e){}
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: safeJsonLd(localBusinessJsonLd) }}
         />
-        <SmoothScrollProvider>
-          <Header
-            courseItems={toNav(courses)}
-            experienceItems={toNav(experiences)}
-            diveSiteItems={toNav(diveSites)}
-          />
-          <main className="flex-1">{children}</main>
-          <Footer />
-          <WhatsAppFab />
-        </SmoothScrollProvider>
+        <Header
+          courseItems={toNav(courses)}
+          experienceItems={toNav(experiences)}
+          diveSiteItems={toNav(diveSites)}
+        />
+        <DepthRail />
+        <main className="flex-1">{children}</main>
+        <Footer />
+        <WhatsAppFab />
+        {/* Analytics only: nothing on the page waits for it, so it loads once the page is idle. */}
+        <Script
+          src="https://analytics.ahrefs.com/analytics.js"
+          data-key="JUJD0Ce1iIv72G6QYuIKdg"
+          strategy="lazyOnload"
+        />
       </body>
     </html>
   );

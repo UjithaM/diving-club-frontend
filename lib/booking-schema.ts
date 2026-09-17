@@ -121,7 +121,7 @@ export function validateBookingPayload(body: BookingPayload): Record<string, str
     items.forEach((line, i) => {
       const row = (line ?? {}) as { item?: unknown; bookingFor?: unknown };
       set(`items.${i}.item`, itemError(row.item));
-      if (row.bookingFor !== "course" && row.bookingFor !== "activity") {
+      if (!["course", "activity", "package"].includes(String(row.bookingFor))) {
         set(`items.${i}.bookingFor`, "Required");
       }
     });

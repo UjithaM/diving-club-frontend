@@ -30,7 +30,7 @@ export const courseFaqs: Record<string, PageFaq[]> = {
     },
     {
       question: "How many people are in each class?",
-      answer: "Maximum five students per instructor. In practice, we often have fewer. Small groups mean you get actual attention, not just a briefing and a wave.",
+      answer: "Maximum two students per instructor. Small groups mean you get actual attention, not just a briefing and a wave.",
     },
     {
       question: "Is the Open Water certification recognised worldwide?",

@@ -15,6 +15,9 @@
  * shows the same reviews as a dive-site page.
  */
 
+import { DepthStop, type Zone } from "@/components/ui/Section";
+import ScrollButtons from "@/components/ui/ScrollButtons";
+
 /**
  * Lands on the REVIEWS tab, not the map pin — that's the `!9m1!1b1` on the end. The
  * `?entry=ttu&g_ep=…` Google appends when you copy the URL is a session/build stamp and is
@@ -100,8 +103,8 @@ function StarRating({ rating }: { rating: number }) {
           width="14"
           height="14"
           viewBox="0 0 14 14"
-          fill={i < rating ? "#F4A261" : "none"}
-          stroke="#F4A261"
+          fill={i < rating ? "var(--color-sunrise)" : "none"}
+          stroke="var(--color-sunrise)"
           strokeWidth="1"
           aria-hidden="true"
         >
@@ -124,107 +127,108 @@ function GoogleMark() {
   );
 }
 
+const avatarTones = ["bg-sunrise", "bg-shallow-water", "bg-tropic-coral"];
+
+function ReviewCard({ r, i }: { r: Review; i: number }) {
+  return (
+    <a
+      href={GOOGLE_LISTING}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`Read ${r.name}'s review on Google Maps`}
+      className="group zone-surface relative flex border border-charcoal-sea/15 w-[19rem] sm:w-[23rem] shrink-0 flex-col rounded-[2px] p-6 sm:p-7 transition-transform duration-300 hover:-translate-y-1"
+    >
+      <figure className="flex flex-col flex-1 m-0">
+        <div className="flex items-center justify-between mb-4">
+          <StarRating rating={r.rating} />
+          <GoogleMark />
+        </div>
+
+        <span className="font-display font-extrabold text-[4.5rem] leading-[0.6] h-8 text-sunrise select-none" aria-hidden="true">
+          &ldquo;
+        </span>
+        <blockquote className="flex-1 m-0">
+          <p className="text-meta sm:text-body text-charcoal-sea">{r.text}</p>
+        </blockquote>
+
+        <figcaption className="mt-6 pt-4 border-t-2 border-charcoal-sea flex items-center gap-3">
+          <div className={`w-10 h-10 rounded-full ${avatarTones[i % avatarTones.length]} flex items-center justify-center shrink-0`}>
+            <span className="text-surface-dark font-display font-extrabold">{r.name.charAt(0)}</span>
+          </div>
+          <div className="min-w-0">
+            <p className="text-charcoal-sea font-semibold text-sm leading-tight truncate">{r.name}</p>
+            <p className="text-muted text-xs">
+              {r.localGuide ? "Local Guide · " : ""}
+              {r.date}
+            </p>
+            {/* Say whose words these are: Google's translation, not the reviewer's. */}
+            {r.translatedFrom && (
+              <p className="text-muted text-[11px] mt-0.5">Translated from {r.translatedFrom}</p>
+            )}
+          </div>
+        </figcaption>
+      </figure>
+    </a>
+  );
+}
+
 export default function GoogleReviewsSection({
   heading = "What our divers say on Google",
   limit,
-  plainHeading = false,
+  zone = "surface",
+  depth,
 }: {
   heading?: string;
   /** Ad pages pass 4 — the form matters more there than scroll depth. Default shows all. */
   limit?: number;
-  /**
-   * Render the heading as a real section heading instead of the small letterspaced label.
-   *
-   * The ad pages pass this: their redesign drops the all-caps eyebrow everywhere, and an 11px
-   * uppercase label is the wrong weight for a section that now sits below the offer rather
-   * than above it. Everywhere else the label style is what matches the surrounding page.
-   */
+  /** @deprecated Every variant now renders a real section heading. */
   plainHeading?: boolean;
+  zone?: Zone;
+  depth?: number;
 }) {
   const shown = limit ? reviews.slice(0, limit) : reviews;
+  const light = zone === "surface" || zone === "sunrise";
+  const stripId = limit ? `reviews-${limit}` : "reviews";
 
   return (
-    <section className="bg-warm-white border-t border-border-subtle py-16 lg:py-24 px-6">
-      <div className="max-w-6xl mx-auto">
-        {plainHeading ? (
-          <h2 className="type-display text-section font-extrabold text-charcoal-sea mb-9">
-            {heading}
-          </h2>
-        ) : (
-          <div className="flex items-center gap-3 mb-8">
-            <span className="h-px w-6 bg-tropic-coral" aria-hidden="true" />
-            {/* coral-deep, not tropic-coral: #E76F51 as 11px text on warm-white measures
-                2.94:1 and fails AA. Same hue, deepened to 4.88:1. */}
-            <h2 className="text-coral-deep text-[11px] font-semibold tracking-[0.22em] uppercase">
-              {heading}
-            </h2>
+    <section className={`zone-${zone} py-16 lg:py-28 overflow-hidden`}>
+      <div className="px-5 sm:px-8">
+        <div className={`max-w-6xl mx-auto ${depth !== undefined ? "grid gap-y-6 lg:grid-cols-[10rem_minmax(0,1fr)] lg:gap-x-10" : ""}`}>
+          {depth !== undefined && <DepthStop depth={depth} />}
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-5 mb-8 lg:mb-12 reveal">
+            <h2 className="text-section font-extrabold max-w-[16ch]">{heading}</h2>
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Every quote below is checkable in one click — that's the point of using real ones. */}
+              <a
+                href={GOOGLE_LISTING}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`inline-flex items-center gap-2.5 min-h-11 px-5 rounded-[2px] text-sm font-semibold transition-colors w-fit ${light ? "bg-charcoal-sea text-warm-white hover:bg-surface-dark" : "bg-warm-white text-charcoal-sea hover:bg-white"}`}
+              >
+                <GoogleMark />
+                Read every review on our Google listing
+              </a>
+              <ScrollButtons target={stripId} label="Scroll reviews" />
+            </div>
           </div>
-        )}
-
-        {/* Mobile is a swipe carousel, desktop is a grid — CSS scroll-snap does both, so
-            this stays a server component with no JS. The negative margin lets cards run to
-            the screen edge, and the 85% width leaves the next one peeking so it's obvious
-            there's more to swipe. tabIndex makes the strip keyboard-scrollable. */}
-        <div
-          tabIndex={0}
-          role="region"
-          aria-label="Google reviews"
-          className="flex gap-4 overflow-x-auto snap-x snap-mandatory -mx-6 px-6 pb-3 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-5 md:overflow-visible md:mx-0 md:px-0 md:pb-0"
-        >
-          {shown.map((r) => (
-            <a
-              key={r.name}
-              href={GOOGLE_LISTING}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`Read ${r.name}'s review on Google Maps`}
-              className="snap-start shrink-0 w-[85%] max-w-sm md:w-auto md:max-w-none bg-white border border-charcoal-sea/8 rounded-2xl p-6 flex flex-col hover:border-shallow-water/40 transition-colors"
-            >
-              <figure className="flex flex-col flex-1">
-                <div className="flex items-center justify-between mb-4">
-                  <StarRating rating={r.rating} />
-                  <GoogleMark />
-                </div>
-
-                <blockquote className="flex-1">
-                  <p className="text-meta text-charcoal-sea/75">&ldquo;{r.text}&rdquo;</p>
-                </blockquote>
-
-                <figcaption className="mt-5 pt-5 border-t border-charcoal-sea/8 flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-tropic-coral/15 flex items-center justify-center flex-shrink-0">
-                    <span className="text-tropic-coral font-bold text-sm">{r.name.charAt(0)}</span>
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-charcoal-sea font-semibold text-sm leading-tight truncate">
-                      {r.name}
-                    </p>
-                    <p className="text-charcoal-sea/75 text-xs">
-                      {r.localGuide ? "Local Guide · " : ""}
-                      {r.date}
-                    </p>
-                    {/* Say whose words these are: Google's translation, not the reviewer's. */}
-                    {r.translatedFrom && (
-                      <p className="text-charcoal-sea/75 text-[11px] mt-0.5">
-                        Translated from {r.translatedFrom}
-                      </p>
-                    )}
-                  </div>
-                </figcaption>
-              </figure>
-            </a>
-          ))}
         </div>
+      </div>
 
-        {/* Every quote above is checkable in one click — that's the point of using real ones. */}
-        <a
-          href={GOOGLE_LISTING}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 mt-8 text-charcoal-sea/75 hover:text-shallow-water text-sm font-medium transition-colors"
-        >
-          <GoogleMark />
-          Read every review on our Google listing
-        </a>
+      {/* A native horizontal scroller: swipe, trackpad, shift+wheel or the buttons above. The
+          side padding lines the first card up with the page grid and lets the last one reach the
+          viewport edge. */}
+      <div
+        id={stripId}
+        role="region"
+        aria-label="Google reviews"
+        tabIndex={0}
+        className="review-strip flex gap-4 overflow-x-auto snap-x snap-mandatory pb-5"
+      >
+        {shown.map((r, i) => (
+          <div key={r.name} className="snap-start shrink-0 flex">
+            <ReviewCard r={r} i={i} />
+          </div>
+        ))}
       </div>
     </section>
   );

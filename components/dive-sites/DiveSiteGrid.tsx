@@ -1,103 +1,94 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import type { DiveSite } from "@/lib/types";
+import { FilterBar } from "@/components/ui/FilterBar";
+import { Arrow } from "@/components/ui/Button";
+import { Diver } from "@/components/illustrations/Sea";
+import { parseDepth } from "@/lib/depth";
 
 type Difficulty = DiveSite["difficulty"] | "all";
 
-const difficultyMeta: Record<DiveSite["difficulty"], { label: string; accent: string; textClass: string; bgClass: string }> = {
-  Beginner:     { label: "Beginner",     accent: "#2A9D8F", textClass: "text-shallow-water", bgClass: "bg-shallow-water/10" },
-  Intermediate: { label: "Intermediate", accent: "#F4A261", textClass: "text-sunrise",       bgClass: "bg-sunrise/10"       },
-  Advanced:     { label: "Advanced",     accent: "#E76F51", textClass: "text-tropic-coral",  bgClass: "bg-tropic-coral/10"  },
-  Technical:    { label: "Technical",    accent: "#264653", textClass: "text-charcoal-sea",  bgClass: "bg-charcoal-sea/10"  },
+const chip: Record<string, string> = {
+  Beginner: "bg-shallow-water",
+  Intermediate: "bg-sunrise",
+  Advanced: "bg-tropic-coral",
+  Technical: "bg-warm-white",
 };
 
-const ease = "cubic-bezier(0.16, 1, 0.3, 1)";
-
-function DiveSiteCard({ site, index }: { site: DiveSite; index: number }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
-  const meta = difficultyMeta[site.difficulty];
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setInView(true); observer.unobserve(el); } },
-      { rootMargin: "-30px" }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
+/** A small vertical gauge: the site's depth range on a 0–30 m (or deeper) scale. */
+function MiniGauge({ depth }: { depth: string }) {
+  const r = parseDepth(depth);
+  if (!r) return null;
+  const floor = Math.max(30, Math.ceil(r[1] / 10) * 10);
+  const pct = (m: number) => `${(m / floor) * 100}%`;
   return (
-    <div
-      ref={ref}
-      className="h-full"
-      style={{
-        opacity: inView ? 1 : 0,
-        transform: inView ? "translateY(0)" : "translateY(40px)",
-        transition: `opacity 0.6s ${(index % 3) * 0.1}s ${ease}, transform 0.6s ${(index % 3) * 0.1}s ${ease}`,
-      }}
-    >
-      <article className="bg-white rounded-2xl overflow-hidden flex flex-col h-full shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
-        <div className="h-1.5 w-full flex-shrink-0" style={{ background: meta.accent }} />
-
-        <div
-          className="h-32 flex items-center justify-center relative overflow-hidden flex-shrink-0"
-          style={{ background: `${meta.accent}0d` }}
-        >
-          <svg width="56" height="56" viewBox="0 0 56 56" fill="none" aria-hidden="true" style={{ opacity: 0.12 }}>
-            <ellipse cx="28" cy="38" rx="18" ry="8" fill={meta.accent} />
-            <path d="M10 28 Q28 8 46 28" stroke={meta.accent} strokeWidth="3" fill="none" />
-            <circle cx="28" cy="22" r="6" fill={meta.accent} />
-          </svg>
-          {site.popular && (
-            <span className="absolute top-3 right-3 text-[10px] font-bold tracking-widest uppercase px-2 py-1 rounded-full text-white" style={{ background: meta.accent }}>
-              Popular
-            </span>
-          )}
-        </div>
-
-        <div className="p-6 flex flex-col flex-1">
-          <div className="flex items-center justify-between mb-3">
-            <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${meta.bgClass} ${meta.textClass}`}>
-              {meta.label}
-            </span>
-            <span className="text-charcoal-sea/40 text-xs font-medium">{site.depth}</span>
-          </div>
-
-          <h2 className="font-bold text-charcoal-sea text-lg leading-snug mb-3 group-hover:text-shallow-water transition-colors">
-            {site.name}
-          </h2>
-
-          <p className="text-charcoal-sea/55 text-sm leading-relaxed mb-5 flex-1 line-clamp-3">
-            {site.description}
-          </p>
-
-          <div className="flex flex-wrap gap-1.5 mb-5">
-            <span className="text-xs text-charcoal-sea/50 bg-charcoal-sea/5 px-2.5 py-1 rounded-full">
-              ⏱ {site.boatTime}
-            </span>
-            <span className="text-xs text-charcoal-sea/50 bg-charcoal-sea/5 px-2.5 py-1 rounded-full">
-              {site.season}
-            </span>
-          </div>
-
-          <Link
-            href={`/dive-sites/${site.slug}`}
-            className="block text-center font-semibold py-3 rounded-full text-sm text-white bg-charcoal-sea hover:bg-shallow-water transition-colors"
-          >
-            Explore Site
-          </Link>
-        </div>
-      </article>
+    <div className="relative h-full w-10 shrink-0" aria-hidden="true">
+      <span className="absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2 bg-warm-white/25" />
+      <span
+        className="absolute left-1/2 w-2.5 -translate-x-1/2 rounded-full bg-sunrise transition-colors group-hover:bg-tropic-coral"
+        style={{ top: pct(r[0]), height: pct(r[1] - r[0]) }}
+      />
+      <span className="absolute left-1/2 w-9 -translate-x-1/2 -translate-y-1/2" style={{ top: pct(r[1]) }}>
+        <Diver className="block w-full rotate-90" suit="var(--color-shallow-water)" line="var(--color-surface-dark)" />
+      </span>
     </div>
   );
 }
 
-const filterLabels: Record<Difficulty, string> = {
+function DiveSiteCard({ site }: { site: DiveSite }) {
+  return (
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-[14px] zone-deep ring-1 ring-warm-white/10 transition-[translate] duration-300 ease-(--ease-surface) hover:-translate-y-1.5">
+      {site.image && (
+        <div className="plate aspect-[16/9] rounded-none">
+          <Image
+            src={site.image}
+            alt={`${site.name} dive site in Trincomalee, Sri Lanka`}
+            fill
+            className="object-cover"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
+        </div>
+      )}
+      <div className="flex flex-1 gap-4 p-5 sm:p-6">
+        <div className="flex flex-1 flex-col">
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <span className={`rounded-full px-2.5 py-1 text-label uppercase font-semibold text-surface-dark ${chip[site.difficulty] ?? "bg-shallow-water"}`}>
+              {site.difficulty}
+            </span>
+            {site.popular && (
+              <span className="rounded-full border border-warm-white/40 px-2.5 py-0.5 text-label uppercase font-semibold">Popular</span>
+            )}
+          </div>
+
+          <p className="font-display text-readout font-extrabold tabular text-sunrise">{site.depth}</p>
+
+          <h2 className="mt-2 text-sub font-extrabold leading-tight">
+            <Link href={`/dive-sites/${site.slug}`} className="after:absolute after:inset-0 after:content-['']">
+              {site.name}
+            </Link>
+          </h2>
+
+          <p className="mt-2 mb-4 flex-1 text-meta text-muted line-clamp-3">{site.description}</p>
+
+          <p className="mb-5 flex flex-wrap gap-1.5">
+            <span className="rounded-full bg-warm-white/10 px-2.5 py-1 text-xs font-semibold tabular">{site.boatTime}</span>
+            <span className="rounded-full bg-warm-white/10 px-2.5 py-1 text-xs font-semibold">{site.season}</span>
+          </p>
+
+          <span className="inline-flex min-h-11 w-fit items-center gap-2 text-sm font-bold text-sunrise group-hover:text-warm-white" aria-hidden="true">
+            Explore Site <Arrow />
+          </span>
+        </div>
+        <MiniGauge depth={site.depth} />
+      </div>
+    </article>
+  );
+}
+
+const filterLabels: Record<string, string> = {
   all: "All Sites",
   Beginner: "Beginner",
   Intermediate: "Intermediate",
@@ -105,53 +96,35 @@ const filterLabels: Record<Difficulty, string> = {
   Technical: "Technical",
 };
 
+const difficulties: Difficulty[] = ["all", "Beginner", "Intermediate", "Advanced", "Technical"];
+
 export default function DiveSiteGrid({ sites }: { sites: DiveSite[] }) {
-  const [activeDifficulty, setActiveDifficulty] = useState<Difficulty>("all");
-
-  const difficulties: Difficulty[] = ["all", "Beginner", "Intermediate", "Advanced", "Technical"];
-
-  const counts: Record<Difficulty, number> = {
-    all: sites.length,
-    Beginner:     sites.filter((s) => s.difficulty === "Beginner").length,
-    Intermediate: sites.filter((s) => s.difficulty === "Intermediate").length,
-    Advanced:     sites.filter((s) => s.difficulty === "Advanced").length,
-    Technical:    sites.filter((s) => s.difficulty === "Technical").length,
-  };
-
-  const filtered = activeDifficulty === "all" ? sites : sites.filter((s) => s.difficulty === activeDifficulty);
+  const [active, setActive] = useState<Difficulty>("all");
+  const filtered = active === "all" ? sites : sites.filter((s) => s.difficulty === active);
 
   return (
-    <section className="bg-warm-white py-12 px-6 min-h-[60vh]">
+    <section className="zone-shallow py-12 lg:py-16 px-5 sm:px-8 min-h-[60vh]">
       <div className="max-w-6xl mx-auto">
-        <div className="flex flex-wrap gap-2 mb-10">
-          {difficulties.map((d) => (
-            <button
-              key={d}
-              onClick={() => setActiveDifficulty(d)}
-              className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
-                activeDifficulty === d
-                  ? "bg-charcoal-sea text-warm-white"
-                  : "bg-charcoal-sea/8 text-charcoal-sea/60 hover:bg-charcoal-sea/15 hover:text-charcoal-sea"
-              }`}
-            >
-              {filterLabels[d]}
-              <span className={`ml-1.5 text-xs ${activeDifficulty === d ? "opacity-60" : "opacity-40"}`}>
-                {counts[d]}
-              </span>
-            </button>
-          ))}
-        </div>
+        <FilterBar
+          options={difficulties.map((d) => ({
+            value: d,
+            label: filterLabels[d],
+            count: d === "all" ? sites.length : sites.filter((s) => s.difficulty === d).length,
+          }))}
+          active={active}
+          onChange={setActive}
+          summary={`${filtered.length} ${filtered.length === 1 ? "dive site" : "dive sites"}${
+            active !== "all" ? ` · ${filterLabels[active]}` : ""
+          }`}
+        />
 
-        <p className="text-charcoal-sea/40 text-sm mb-6">
-          {filtered.length} {filtered.length === 1 ? "dive site" : "dive sites"}
-          {activeDifficulty !== "all" && ` · ${filterLabels[activeDifficulty]}`}
-        </p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <ul key={active} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           {filtered.map((site, i) => (
-            <DiveSiteCard key={site.slug} site={site} index={i} />
+            <li key={site.slug} className="rise-in" style={{ "--i": i % 6 } as React.CSSProperties}>
+              <DiveSiteCard site={site} />
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </section>
   );

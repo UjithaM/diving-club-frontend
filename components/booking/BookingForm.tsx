@@ -26,15 +26,36 @@ import {
 } from "@/components/ui/fieldStyles";
 import BookingFields, { FieldError, Req } from "@/components/booking/BookingFields";
 import SlotPicker from "@/components/booking/SlotPicker";
-import PaymentStep from "@/components/booking/PaymentStep";
+import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
+import { Bubbles, Diver, Fins, Mask, Turtle } from "@/components/illustrations/Sea";
+import dynamic from "next/dynamic";
 import type { Deposit, PaymentOptions, SlotChoice } from "@/lib/types";
 import type { DiscountLink } from "@/lib/api/discount-links";
 import { discountReasonMessage } from "@/lib/api/discount-links";
 import { cartSubtotal, depositRuleLabel, headcount, previewDiscount } from "@/lib/discount";
 
+/**
+ * Loaded on demand: it pulls in PayPal's SDK wrapper, and nobody needs that until the booking
+ * exists and the payment screen opens.
+ */
+const PaymentStep = dynamic(() => import("@/components/booking/PaymentStep"), {
+  ssr: false,
+  loading: () => (
+    <p className="flex items-center justify-center gap-3 py-12 text-charcoal-sea/80 text-sm">
+      <span className="h-5 w-5 rounded-full border-2 border-charcoal-sea/20 border-t-shallow-water motion-safe:animate-spin" aria-hidden="true" />
+      Loading payment options…
+    </p>
+  ),
+});
+
 // ─── Types & helpers ─────────────────────────────────────────────────────────
 
-type BookingType = "course" | "activity" | "dive-site";
+type BookingType = "course" | "activity" | "package" | "dive-site";
+
+/** What the backend calls each line. Dive sites are booked as activities — see below. */
+function apiType(type: BookingType): "course" | "activity" | "package" {
+  return type === "dive-site" ? "activity" : type;
+}
 
 /**
  * The activity a dive site is booked as. Dive sites are places, not products — they carry no
@@ -94,6 +115,7 @@ function money(amount: number, currency: string) {
 function typeLabel(type: BookingType) {
   if (type === "course") return "Course";
   if (type === "activity") return "Activity";
+  if (type === "package") return "Package";
   return "Dive Site";
 }
 
@@ -117,12 +139,12 @@ function DiscountBanner({
 }) {
   if (rejected) {
     return (
-      <div className="mb-5 rounded-xl border border-tropic-coral/30 bg-tropic-coral/[0.06] px-4 py-3">
+      <div className="rounded-[14px] border-2 border-tropic-coral/40 bg-tropic-coral/[0.06] px-4 py-3.5">
         <p className="text-sm text-charcoal-sea leading-relaxed">{rejected}</p>
         <button
           type="button"
           onClick={onDrop}
-          className="mt-2 text-sm font-bold text-tropic-coral underline underline-offset-2"
+          className="mt-2 min-h-11 text-sm font-bold text-coral-deep underline underline-offset-2"
         >
           Continue without the discount
         </button>
@@ -132,8 +154,8 @@ function DiscountBanner({
 
   if (!link.valid) {
     return (
-      <div className="mb-5 rounded-xl border border-charcoal-sea/15 bg-charcoal-sea/[0.04] px-4 py-3">
-        <p className="text-sm text-charcoal-sea/70 leading-relaxed">
+      <div className="rounded-[14px] border-2 border-charcoal-sea/15 bg-white px-4 py-3.5">
+        <p className="text-sm text-charcoal-sea/80 leading-relaxed">
           {discountReasonMessage(link.reason)}
         </p>
       </div>
@@ -146,20 +168,23 @@ function DiscountBanner({
       : `$${link.discount_value} off`;
 
   return (
-    <div className="mb-5 rounded-xl border border-shallow-water/30 bg-shallow-water/[0.08] px-4 py-3">
-      <p className="text-sm font-bold text-charcoal-sea">
+    <div className="pop-in flex items-start gap-3 rounded-[14px] bg-sunrise px-4 py-3.5 text-surface-dark">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="mt-0.5 shrink-0"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8Z" /><circle cx="7.5" cy="7.5" r="1.5" fill="currentColor" /></svg>
+      <div>
+      <p className="text-sm font-bold">
         {off} — {link.label}
       </p>
       {link.item && (
-        <p className="text-xs text-charcoal-sea/55 mt-1">
+        <p className="text-xs mt-1">
           Applies to {link.item.name}, already selected below.
         </p>
       )}
       {link.expires_at && (
-        <p className="text-xs text-charcoal-sea/45 mt-1">
+        <p className="text-xs mt-1 tabular">
           Valid until {link.expires_at.split(" ")[0]}
         </p>
       )}
+      </div>
     </div>
   );
 }
@@ -203,11 +228,12 @@ function SuccessScreen({ summary }: { summary: SuccessSummary }) {
       }}
       className="text-center py-8 scroll-mt-24"
     >
-      <div className="w-20 h-20 rounded-full bg-shallow-water/10 border-2 border-shallow-water flex items-center justify-center mx-auto mb-6">
+      <div className="relative w-20 h-20 rounded-full bg-shallow-water flex items-center justify-center mx-auto mb-6">
+        <span className="absolute -inset-6 text-shallow-water/60" aria-hidden="true"><Bubbles count={6} /></span>
         <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
           <path
             d="M10 20l8 8 14-14"
-            stroke="#2A9D8F"
+            stroke="var(--color-surface-dark)"
             strokeWidth="3"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -218,38 +244,38 @@ function SuccessScreen({ summary }: { summary: SuccessSummary }) {
         </svg>
       </div>
 
-      <h2 className="text-charcoal-sea font-display text-2xl font-bold mb-2">
+      <h2 className="text-charcoal-sea text-section font-extrabold mb-3">
         Booking received
       </h2>
-      <p className="text-charcoal-sea/60 text-sm leading-relaxed mb-8 max-w-xs mx-auto">
+      <p className="text-charcoal-sea/80 text-body mb-8 max-w-sm mx-auto">
         Our team will contact you shortly on {summary.phone} to confirm your booking and share
         the advance payment details. Nothing is charged until then.
       </p>
 
-      <div className="bg-white border border-charcoal-sea/8 rounded-2xl p-5 text-left mb-6 max-w-sm mx-auto">
-        <p className="text-xs text-charcoal-sea/40 uppercase tracking-widest mb-3">
+      <div className="zone-deep rounded-[18px] p-6 text-left mb-7 max-w-sm mx-auto">
+        <p className="text-label uppercase font-semibold text-sunrise mb-4">
           Booking summary
         </p>
-        <div className="space-y-2 text-sm">
+        <div className="space-y-3 text-sm [&_span:first-child]:text-muted [&_span:last-child]:text-warm-white">
           <div className="flex justify-between gap-3">
-            <span className="text-charcoal-sea/55">What</span>
-            <span className="font-semibold text-charcoal-sea text-right max-w-[60%]">
+            <span>What</span>
+            <span className="font-semibold text-right max-w-[60%]">
               {summary.items}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-charcoal-sea/55">Date</span>
-            <span className="font-semibold text-charcoal-sea">
+            <span>Date</span>
+            <span className="font-semibold text-right">
               {summary.date || "We'll agree one on WhatsApp"}
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-charcoal-sea/55">People</span>
-            <span className="font-semibold text-charcoal-sea">{summary.people}</span>
+            <span>People</span>
+            <span className="font-semibold text-right">{summary.people}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-charcoal-sea/55">Name</span>
-            <span className="font-semibold text-charcoal-sea">{summary.name}</span>
+            <span>Name</span>
+            <span className="font-semibold text-right">{summary.name}</span>
           </div>
         </div>
       </div>
@@ -258,18 +284,16 @@ function SuccessScreen({ summary }: { summary: SuccessSummary }) {
         href={`https://wa.me/94743945010?text=${waText}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-2 bg-[#25D366] text-white font-semibold px-6 py-3.5 rounded-full text-sm hover:opacity-90 transition-opacity mb-4"
+        className="cta-pulse relative inline-flex items-center gap-2.5 min-h-13 bg-whatsapp text-surface-dark font-bold px-7 rounded-full hover:bg-whatsapp-hover transition-colors mb-5"
       >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="white" aria-hidden="true">
-          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-        </svg>
+        <WhatsAppIcon size={20} />
         Chat with us on WhatsApp
       </a>
 
       <div>
         <Link
           href="/"
-          className="text-sm text-charcoal-sea/50 hover:text-charcoal-sea transition-colors"
+          className="inline-flex items-center min-h-11 text-sm font-semibold text-charcoal-sea/80 hover:text-charcoal-sea transition-colors"
         >
           ← Back to home
         </Link>
@@ -282,9 +306,27 @@ function SuccessScreen({ summary }: { summary: SuccessSummary }) {
  * Plain section label. The numbered circles and their hint lines went when the form was
  * shortened — three stages on one screen don't need signposting, and each one cost a row.
  */
-function SectionHeading({ title }: { title: string }) {
-  return <h2 className="text-charcoal-sea text-lg font-bold mb-3">{title}</h2>;
+function SectionHeading({ title, step }: { title: string; step: number }) {
+  return (
+    <h2 className="flex items-center gap-3 text-charcoal-sea text-sub font-extrabold mb-5">
+      {/* The number carries information: the order these get filled in. */}
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-surface-dark font-display text-base text-warm-white tabular" aria-hidden="true">
+        {step}
+      </span>
+      {title}
+    </h2>
+  );
 }
+
+/** One stage of the form, as a panel. */
+const PANEL = "rounded-[18px] bg-white p-5 sm:p-7 ring-1 ring-charcoal-sea/10 shadow-[0_18px_40px_-30px_rgba(15,30,37,0.5)]";
+
+const TAB_ART: Record<BookingType, React.ReactNode> = {
+  course: <Mask className="w-9" />,
+  activity: <Fins className="w-5" />,
+  package: <Turtle className="w-10" />,
+  "dive-site": <Diver className="w-12" />,
+};
 
 // ─── Main form ────────────────────────────────────────────────────────────────
 
@@ -319,7 +361,7 @@ export default function BookingForm({
   // away the discount they followed a link for.
   const lockedItem = discountLink?.valid ? discountLink.item : null;
 
-  const validType = (["course", "activity", "dive-site"] as const).includes(
+  const validType = (["course", "activity", "package", "dive-site"] as const).includes(
     initialType as BookingType
   )
     ? (initialType as BookingType)
@@ -343,6 +385,7 @@ export default function BookingForm({
   const [courseOptions, setCourseOptions] = useState<ItemOption[]>([]);
   const [activityOptions, setActivityOptions] = useState<ItemOption[]>([]);
   const [diveSiteOptions, setDiveSiteOptions] = useState<ItemOption[]>([]);
+  const [packageOptions, setPackageOptions] = useState<ItemOption[]>([]);
   const [optionsLoading, setOptionsLoading] = useState(true);
 
   const [bookingRef, setBookingRef] = useState<string | null>(null);
@@ -398,8 +441,10 @@ export default function BookingForm({
       fetch(`${base}/courses`).then((r) => r.json()),
       fetch(`${base}/activities`).then((r) => r.json()),
       fetch(`${base}/dive-sites`).then((r) => r.json()),
+      // Optional: a packages outage must not stop courses and activities from loading.
+      fetch(`${base}/packages`).then((r) => r.json()).catch(() => ({ data: [] })),
     ])
-      .then(([c, a, d]) => {
+      .then(([c, a, d, p]) => {
         // Keep the whole object. Price, currency and the per-item deposit all ride along
         // in this same payload — throwing them away used to mean a second round trip.
         const toOptions = (rows: ItemOption[]): ItemOption[] =>
@@ -414,6 +459,7 @@ export default function BookingForm({
         setCourseOptions(toOptions(c.data));
         setActivityOptions(toOptions(a.data));
         setDiveSiteOptions(toOptions(d.data));
+        setPackageOptions(toOptions(p.data));
       })
       .finally(() => setOptionsLoading(false));
 
@@ -429,6 +475,7 @@ export default function BookingForm({
   function optionsForType(type: BookingType) {
     if (type === "course") return courseOptions;
     if (type === "activity") return activityOptions;
+    if (type === "package") return packageOptions;
     return diveSiteOptions;
   }
 
@@ -596,8 +643,7 @@ export default function BookingForm({
             const max = lineMaxQuantity(line);
             const choice = choiceFor(line);
             return {
-              // Dive sites are booked as activities — the backend has no third type.
-              bookingFor: line.type === "course" ? "course" : "activity",
+              bookingFor: apiType(line.type),
               item: line.item,
               // Only items with a cap take a quantity — everything else has no key at all.
               ...(max ? { quantity: Math.min(headcount(line.quantity), max) } : {}),
@@ -678,7 +724,7 @@ export default function BookingForm({
 
   if (status === "success" && summary) {
     return (
-      <div className="max-w-lg mx-auto px-6 py-12">
+      <div className="max-w-xl mx-auto px-5 sm:px-6 py-12">
         <SuccessScreen summary={summary} />
       </div>
     );
@@ -687,7 +733,7 @@ export default function BookingForm({
   // Payment is its own screen — the booking exists by now and has a reference to pay against.
   if (bookingRef && hasAnyGateway) {
     return (
-      <div className="max-w-lg mx-auto px-6 py-10">
+      <div className="max-w-xl mx-auto px-5 sm:px-6 py-10">
         {paymentOptions ? (
           <PaymentStep
             bookingRef={bookingRef}
@@ -700,7 +746,7 @@ export default function BookingForm({
         ) : (
           <div className="py-12 text-center">
             {paymentOptionsError ? (
-              <p className="text-tropic-coral text-sm">
+              <p className="text-coral-deep text-sm font-semibold">
                 Could not load payment options. Please{" "}
                 <a href="https://wa.me/94743945010" className="font-semibold underline">
                   WhatsApp us
@@ -708,7 +754,10 @@ export default function BookingForm({
                 to complete your booking.
               </p>
             ) : (
-              <p className="text-charcoal-sea/50 text-sm">Loading payment options…</p>
+              <p className="flex items-center justify-center gap-3 text-charcoal-sea/80 text-sm">
+                <span className="h-5 w-5 rounded-full border-2 border-charcoal-sea/20 border-t-shallow-water motion-safe:animate-spin" aria-hidden="true" />
+                Loading payment options…
+              </p>
             )}
           </div>
         )}
@@ -719,6 +768,7 @@ export default function BookingForm({
   const tabs: { value: BookingType; label: string }[] = [
     { value: "course", label: "Course" },
     { value: "activity", label: "Activity" },
+    ...(packageOptions.length ? [{ value: "package" as const, label: "Package" }] : []),
     { value: "dive-site", label: "Dive Site" },
   ];
 
@@ -739,7 +789,7 @@ export default function BookingForm({
       }
       onFocusCapture={funnel.noteFocus}
       noValidate
-      className="max-w-lg mx-auto px-6 py-8 scroll-mt-20 space-y-6"
+      className="relative max-w-2xl mx-auto px-5 sm:px-6 py-10 scroll-mt-20 space-y-5"
     >
       {discountLink && (
         <DiscountBanner
@@ -753,13 +803,13 @@ export default function BookingForm({
       )}
 
       {/* ── 1. What ── */}
-      <section>
-        <SectionHeading title="What would you like to book?" />
+      <section className={PANEL}>
+        <SectionHeading step={1} title="What would you like to book?" />
 
         {!lockedItem && (
           <div className="mb-4">
             <p className={labelClass}>I want to book a</p>
-            <div className="flex gap-2">
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(5.5rem,1fr))] gap-2" role="group" aria-label="Booking type">
               {tabs.map(({ value, label }) => (
                 <button
                   key={value}
@@ -769,12 +819,13 @@ export default function BookingForm({
                     setValue("item", "");
                   }}
                   aria-pressed={bookingType === value}
-                  className={`flex-1 min-h-[48px] rounded-xl text-sm font-semibold border transition-all duration-200 ${
+                  className={`flex-1 flex flex-col items-center justify-center gap-1.5 min-h-[76px] rounded-[12px] text-sm font-bold border-2 transition-[background-color,border-color,scale] duration-200 active:scale-[0.97] cursor-pointer ${
                     bookingType === value
-                      ? "bg-charcoal-sea text-warm-white border-charcoal-sea"
-                      : "bg-white text-charcoal-sea/55 border-charcoal-sea/20 hover:border-charcoal-sea/40"
+                      ? "bg-shallow-water text-surface-dark border-surface-dark"
+                      : "bg-white text-charcoal-sea border-charcoal-sea/20 hover:border-shallow-water"
                   }`}
                 >
+                  <span className="flex h-7 items-center" aria-hidden="true">{TAB_ART[value]}</span>
                   {label}
                 </button>
               ))}
@@ -789,8 +840,8 @@ export default function BookingForm({
           {lockedItem ? (
             <>
               <p className={labelClass}>You&apos;re booking</p>
-              <div className="rounded-xl border border-shallow-water/30 bg-shallow-water/[0.06] px-4 py-3">
-                <p className="text-sm font-semibold text-charcoal-sea">{lockedItem.name}</p>
+              <div className="rounded-[12px] border-2 border-shallow-water bg-shallow-water/10 px-4 py-3">
+                <p className="text-sub font-extrabold text-charcoal-sea">{lockedItem.name}</p>
                 <p className={hintClass}>
                   Locked in by your discount link — book anything else separately.
                 </p>
@@ -832,8 +883,8 @@ export default function BookingForm({
           )}
 
           {pickerOption?.price != null && pickerOption.price > 0 && (
-            <p className="text-sm font-semibold text-charcoal-sea mt-2">
-              {money(pickerOption.price, pickerOption.currency ?? "USD")} per person
+            <p className="pop-in mt-3 inline-flex items-baseline gap-2 rounded-full bg-sunrise/35 px-3.5 py-1.5 text-sm font-semibold text-charcoal-sea">
+              <span className="font-display text-base font-extrabold tabular">{money(pickerOption.price, pickerOption.currency ?? "USD")}</span> per person
             </p>
           )}
           {bookingType === "dive-site" && pickerItem && (
@@ -852,12 +903,12 @@ export default function BookingForm({
                 return (
                   <li
                     key={lineKey(line)}
-                    className="rounded-xl border border-charcoal-sea/15 bg-white px-4 py-3"
+                    className="pop-in rounded-[12px] border-2 border-charcoal-sea/12 bg-warm-white px-4 py-3"
                   >
                     <div className="flex items-center gap-3">
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-semibold text-charcoal-sea">{lineLabel(line)}</p>
-                        <p className="text-xs text-charcoal-sea/50 mt-0.5">
+                        <p className="text-xs text-charcoal-sea/80 mt-0.5 tabular">
                           {typeLabel(line.type)}
                           {option?.price
                             ? ` · ${money(option.price, option.currency ?? "USD")} per person`
@@ -871,12 +922,15 @@ export default function BookingForm({
                             setExtraLines((prev) => prev.filter((_, j) => j !== i))
                           }
                           aria-label={`Remove ${lineLabel(line)} from your booking`}
-                          className="shrink-0 w-9 h-9 rounded-full text-charcoal-sea/40 hover:bg-tropic-coral/10 hover:text-tropic-coral transition-colors"
+                          className="shrink-0 flex items-center justify-center w-11 h-11 rounded-full text-charcoal-sea/70 hover:bg-tropic-coral/15 hover:text-coral-deep transition-colors cursor-pointer"
                         >
-                          ✕
+                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                            <path d="M2 2l10 10M12 2 2 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                          </svg>
                         </button>
                       ) : (
-                        <span className="shrink-0 text-xs font-bold text-shallow-water">
+                        <span className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-shallow-water px-2.5 py-1 text-xs font-bold text-surface-dark">
+                          <svg width="12" height="12" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5l4 4 8-9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>
                           Selected
                         </span>
                       )}
@@ -887,7 +941,7 @@ export default function BookingForm({
                     {isExtra && (
                       <div className="mt-3 border-t border-charcoal-sea/10 pt-3">
                         <SlotPicker
-                          type={line.type === "course" ? "course" : "activity"}
+                          type={apiType(line.type)}
                           item={line.item}
                           date={bookingDate ?? ""}
                           people={lineQuantity(line)}
@@ -908,14 +962,14 @@ export default function BookingForm({
               <button
                 type="button"
                 onClick={addAnother}
-                className="mt-3 text-sm font-semibold text-shallow-water underline underline-offset-2 hover:text-charcoal-sea transition-colors"
+                className="mt-3 inline-flex items-center min-h-11 gap-2 rounded-full border-2 border-dashed border-charcoal-sea/30 px-4 text-sm font-semibold text-charcoal-sea hover:border-shallow-water hover:bg-shallow-water/10 transition-colors cursor-pointer"
               >
                 + Book something else as well
               </button>
             )}
 
             {sub > 0 && (
-              <p className="text-sm text-charcoal-sea/70 mt-4">
+              <p className="text-sm text-charcoal-sea/80 mt-4 tabular">
                 {money(sub, itemCurrency)} for {headcount(people)}{" "}
                 {headcount(people) === 1 ? "person" : "people"}
                 {depositLabel ? ` · ${depositLabel}` : ""}
@@ -926,8 +980,8 @@ export default function BookingForm({
       </section>
 
       {/* ── 2. Details ── */}
-      <section className="space-y-4">
-        <SectionHeading title="Your details" />
+      <section className={`${PANEL} space-y-5`}>
+        <SectionHeading step={2} title="Your details" />
         <BookingFields
           form={form}
           maxQuantity={pickerOption?.maxQuantity ?? null}
@@ -935,7 +989,7 @@ export default function BookingForm({
           slotPicker={
             pickerLine ? (
               <SlotPicker
-                type={pickerLine.type === "course" ? "course" : "activity"}
+                type={apiType(pickerLine.type)}
                 item={pickerLine.item}
                 date={bookingDate ?? ""}
                 people={lineQuantity(pickerLine)}
@@ -950,13 +1004,13 @@ export default function BookingForm({
       </section>
 
       {/* ── 3. Review & send ── */}
-      <section>
-        <SectionHeading title="Anything else?" />
+      <section className={PANEL}>
+        <SectionHeading step={3} title="Anything else?" />
 
         <div className="mb-4">
           <label htmlFor="notes" className={labelClass}>
             Questions or special requests{" "}
-            <span className="text-charcoal-sea/40 font-normal">(optional)</span>
+            <span className="text-charcoal-sea/75 font-normal">(optional)</span>
           </label>
           <textarea
             id="notes"
@@ -970,14 +1024,14 @@ export default function BookingForm({
         {/* Estimate. The server recalculates on submit and its number wins — which is why
             this says "estimate" rather than quoting a total as final. */}
         {sub > 0 && (
-          <div className="bg-charcoal-sea rounded-2xl p-5 mb-4">
-            <p className="text-warm-white/40 text-xs uppercase tracking-widest mb-3">
+          <div className="zone-deep relative overflow-hidden rounded-[16px] p-5 sm:p-6 mb-5">
+            <p className="text-label uppercase font-semibold text-sunrise mb-4">
               Your booking
             </p>
-            <div className="space-y-2 text-sm">
+            <div className="space-y-2.5 text-sm tabular">
               {cart.map(({ line, option, quantity: q }) => (
                 <div key={lineKey(line)} className="flex justify-between gap-3">
-                  <span className="text-warm-white/60">
+                  <span className="text-muted">
                     {lineLabel(line)} — {money(option?.price ?? 0, option?.currency ?? itemCurrency)}{" "}
                     × {people}
                     {option?.maxQuantity ? ` × ${q} dives` : ""}
@@ -988,21 +1042,21 @@ export default function BookingForm({
                 </div>
               ))}
               {discountOff > 0 && (
-                <div className="flex justify-between border-t border-white/10 pt-2">
-                  <span className="text-shallow-water">Discount</span>
-                  <span className="text-shallow-water font-semibold">
+                <div className="flex justify-between border-t border-dashed border-rule pt-2.5">
+                  <span className="text-sunrise">Discount</span>
+                  <span className="text-sunrise font-semibold">
                     −{money(discountOff, itemCurrency)}
                   </span>
                 </div>
               )}
-              <div className="flex justify-between border-t border-white/10 pt-2">
-                <span className="text-warm-white/50">Estimated total</span>
-                <span className="text-warm-white font-bold text-base">
+              <div className="flex items-baseline justify-between border-t-2 border-warm-white/40 pt-3 mt-1">
+                <span className="text-muted">Estimated total</span>
+                <span className="font-display text-warm-white font-extrabold text-readout">
                   {money(previewTotal, itemCurrency)}
                 </span>
               </div>
               {depositLabel && (
-                <p className="text-warm-white/40 text-xs pt-1">
+                <p className="text-muted text-xs pt-1">
                   You can pay {depositLabel} now and the rest on arrival.
                 </p>
               )}
@@ -1015,7 +1069,7 @@ export default function BookingForm({
         {apiError && (
           <p
             role="alert"
-            className="text-tropic-coral text-sm bg-tropic-coral/10 border border-tropic-coral/20 rounded-xl px-4 py-3 mb-4"
+            className="text-coral-deep text-sm font-semibold bg-tropic-coral/10 border-2 border-tropic-coral/40 rounded-[12px] px-4 py-3 mb-4"
           >
             {apiError}
           </p>
@@ -1024,7 +1078,7 @@ export default function BookingForm({
         {status === "error" && (
           <p
             role="alert"
-            className="text-tropic-coral text-sm bg-tropic-coral/10 border border-tropic-coral/20 rounded-xl px-4 py-3 mb-4"
+            className="text-coral-deep text-sm font-semibold bg-tropic-coral/10 border-2 border-tropic-coral/40 rounded-[12px] px-4 py-3 mb-4"
           >
             Something went wrong. Please try again or WhatsApp us on{" "}
             <a
@@ -1041,7 +1095,7 @@ export default function BookingForm({
 
         {/* Consent at the point of commitment, not buried in the footer — the 48-hour
             refund rule and the late-arrival rule only hold if they were shown here. */}
-        <p className="text-xs text-charcoal-sea/45 leading-relaxed mb-4">
+        <p className="text-xs text-charcoal-sea/80 leading-relaxed mb-4">
           By sending this you agree to our{" "}
           <Link href="/terms" className="underline hover:text-shallow-water">terms</Link> and{" "}
           <Link href="/refund-policy" className="underline hover:text-shallow-water">refund policy</Link>
@@ -1053,12 +1107,20 @@ export default function BookingForm({
         <button
           type="submit"
           disabled={status === "submitting"}
-          className="w-full min-h-[52px] bg-tropic-coral text-white font-bold rounded-full text-base hover:bg-sunrise transition-colors disabled:opacity-60"
+          className="group w-full min-h-14 inline-flex items-center justify-center gap-3 bg-action text-action-ink font-bold rounded-[12px] text-lg hover:bg-action-hover active:scale-[0.99] transition-[background-color,scale] disabled:opacity-70 cursor-pointer"
         >
+          {status === "submitting" && (
+            <span className="h-5 w-5 rounded-full border-2 border-action-ink/30 border-t-action-ink motion-safe:animate-spin" aria-hidden="true" />
+          )}
           {status === "submitting" ? "Booking…" : "Book"}
+          {status !== "submitting" && (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="square" aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1">
+              <path d="M4 12h15M13 6l6 6-6 6" />
+            </svg>
+          )}
         </button>
 
-        <p className="text-xs text-charcoal-sea/45 text-center mt-3">
+        <p className="text-xs text-charcoal-sea/80 text-center mt-3">
           Nothing is charged yet — we confirm your dates on WhatsApp first.
         </p>
       </section>

@@ -4,6 +4,8 @@ import BookingForm from "@/components/booking/BookingForm";
 import { getDiscountLink } from "@/lib/api/discount-links";
 import type { WebPage, WithContext } from "schema-dts";
 import { safeJsonLd } from "@/lib/jsonld";
+import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
+import { Bubbles, Diver, Fish, Tang } from "@/components/illustrations/Sea";
 
 export async function generateMetadata({
   searchParams,
@@ -57,32 +59,46 @@ export default async function BookPage({
       />
 
       {/* Hero */}
-      <section className="bg-charcoal-sea py-14 lg:py-20 px-6">
-        <div className="max-w-2xl mx-auto">
-          <nav className="flex items-center gap-2 text-warm-white/35 text-xs mb-8">
-            <Link href="/" className="hover:text-warm-white/60 transition-colors">Home</Link>
-            <span>/</span>
-            <span className="text-warm-white/60">Book a Dive</span>
+      <section className="zone-surface lane relative overflow-hidden px-5 sm:px-8 pt-8 pb-10 lg:pt-12 lg:pb-14">
+        <div className="absolute inset-x-0 bottom-4 h-12" aria-hidden="true">
+          <Fish className="swim absolute left-0 top-0 w-9" style={{ "--swim-time": "30s", "--rest": "70%" } as React.CSSProperties} />
+          <Tang className="swim absolute left-0 top-4 w-7" style={{ "--swim-time": "37s", animationDelay: "-14s", "--rest": "84%" } as React.CSSProperties} />
+        </div>
+        <div className="relative max-w-2xl mx-auto">
+          <nav className="flex items-center gap-2 text-charcoal-sea/80 text-xs mb-8" aria-label="Breadcrumb">
+            <Link href="/" className="hover:text-charcoal-sea underline-offset-4 hover:underline transition-colors">Home</Link>
+            <span aria-hidden="true">/</span>
+            <span className="text-charcoal-sea font-semibold">Book a Dive</span>
           </nav>
 
-          <div className="flex items-center gap-3 mb-5">
-            <span className="h-px w-6 bg-tropic-coral" />
-            <span className="text-tropic-coral text-[11px] font-semibold tracking-[0.22em] uppercase">
-              Reserve your spot · Secure online payment
-            </span>
+          <div className="absolute right-0 top-6 w-32 sm:w-48 pointer-events-none" aria-hidden="true">
+            <div className="enter-swim">
+              <div className="bob relative">
+                <Diver className="block w-full h-auto" />
+                <div className="absolute right-[4%] bottom-[55%] h-28 w-8 text-shallow-water">
+                  <Bubbles count={5} />
+                </div>
+              </div>
+            </div>
           </div>
 
-          <h1 className="text-warm-white font-display text-[clamp(2.2rem,5vw,4rem)] font-extrabold leading-tight mb-4">
+          <h1 className="text-hero font-extrabold mb-4 pr-28 sm:pr-40">
             Book a Dive
           </h1>
-          <p className="text-warm-white/55 text-base leading-relaxed">
+          <p className="text-lead text-muted max-w-[46ch]">
             Fill in the form, choose your payment method, and lock in your spot. We confirm within 24 hours.
+          </p>
+          {/* Trust notes, set where they reassure — beside the form, not above the heading. */}
+          <p className="mt-6 flex flex-wrap gap-2 text-label uppercase font-semibold">
+            <span className="rounded-full bg-sunrise px-3 py-1.5 text-surface-dark">Reserve your spot</span>
+            <span className="sr-only"> · </span>
+            <span className="rounded-full bg-shallow-water px-3 py-1.5 text-surface-dark">Secure online payment</span>
           </p>
         </div>
       </section>
 
       {/* Booking form */}
-      <section className="bg-warm-white min-h-[60vh] py-4">
+      <section className="bg-surface-muted min-h-[60vh] border-y-2 border-charcoal-sea/10">
         {/* searchParams arrives already decoded — decoding again threw URIError on any item containing '%' */}
         <BookingForm
           initialType={type}
@@ -93,19 +109,20 @@ export default async function BookPage({
       </section>
 
       {/* Bottom help strip */}
-      <section className="bg-charcoal-sea/5 border-t border-charcoal-sea/8 py-10 px-6">
+      <section className="zone-deep py-12 px-5 sm:px-8">
         <div className="max-w-lg mx-auto text-center">
-          <p className="text-charcoal-sea/55 text-sm mb-3">Not sure what to book?</p>
-          <div className="flex items-center justify-center gap-6 text-sm">
-            <Link href="/courses" className="text-shallow-water font-semibold hover:underline">
+          <p className="text-sub font-extrabold mb-5">Not sure what to book?</p>
+          <div className="flex flex-wrap items-center justify-center gap-3 text-sm">
+            <Link href="/courses" className="inline-flex items-center min-h-11 px-5 rounded-full border-2 border-warm-white/40 font-semibold hover:bg-warm-white/10 transition-colors">
               Browse courses
             </Link>
-            <span className="text-charcoal-sea/20">·</span>
-            <Link href="/activities" className="text-shallow-water font-semibold hover:underline">
+            <span className="sr-only">·</span>
+            <Link href="/activities" className="inline-flex items-center min-h-11 px-5 rounded-full border-2 border-warm-white/40 font-semibold hover:bg-warm-white/10 transition-colors">
               Browse activities
             </Link>
-            <span className="text-charcoal-sea/20">·</span>
-            <a href="https://wa.me/94743945010" target="_blank" rel="noopener noreferrer" className="text-shallow-water font-semibold hover:underline">
+            <span className="sr-only">·</span>
+            <a href="https://wa.me/94743945010" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 min-h-11 px-5 rounded-full bg-whatsapp text-surface-dark font-bold hover:bg-whatsapp-hover transition-colors">
+              <WhatsAppIcon size={18} />
               WhatsApp us
             </a>
           </div>

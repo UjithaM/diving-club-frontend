@@ -1,7 +1,5 @@
-"use client";
-
-import { useState } from "react";
 import type { PageFaq } from "@/lib/types";
+import type { Zone } from "@/components/ui/Section";
 
 interface FaqAccordionProps {
   faqs: PageFaq[];
@@ -15,86 +13,55 @@ interface FaqAccordionProps {
    * FAQs and the list is a navigation aid rather than the objection handling itself.
    */
   defaultOpen?: boolean;
+  zone?: Zone;
 }
 
+/**
+ * Server-rendered. The accordion is native <details> sharing one `name`, so opening one closes
+ * the others with no JavaScript, and every answer is in the HTML either way.
+ */
 export default function FaqAccordion({
   faqs,
   heading = "Frequently asked questions",
   defaultOpen = false,
+  zone = "surface",
 }: FaqAccordionProps) {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const dark = zone === "deep" || zone === "abyss";
 
-  if (defaultOpen) {
-    return (
-      <section className="bg-warm-white border-t border-border-subtle py-16 lg:py-24 px-6">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="type-display text-section font-extrabold text-charcoal-sea mb-10">
-            {heading}
-          </h2>
+  return (
+    <section className={`zone-${zone} py-16 lg:py-24 px-5 sm:px-8`}>
+      <div className="max-w-3xl mx-auto">
+        <h2 className="text-section font-extrabold mb-10 reveal">{heading}</h2>
 
-          {/* Hairline rules, not bordered cards — nine identical rounded boxes was the look
-              this redesign is getting away from. */}
-          <dl className="divide-y divide-border-medium border-t border-border-medium">
+        {defaultOpen ? (
+          <dl className="border-t-2 border-current">
             {faqs.map((faq) => (
-              <div key={faq.question} className="py-7">
-                <dt className="text-sub font-bold text-charcoal-sea mb-2">{faq.question}</dt>
-                <dd className="text-body text-charcoal-sea/75">{faq.answer}</dd>
+              <div key={faq.question} className="reveal py-7 border-b border-rule">
+                <dt className="text-sub font-bold mb-2">{faq.question}</dt>
+                <dd className="text-body text-muted">{faq.answer}</dd>
               </div>
             ))}
           </dl>
-        </div>
-      </section>
-    );
-  }
-
-  return (
-    <section className="bg-warm-white py-16 px-6">
-      <div className="max-w-3xl mx-auto">
-        <div className="flex items-center gap-3 mb-8">
-          <span className="h-px w-6 bg-tropic-coral" aria-hidden="true" />
-          <span className="text-tropic-coral text-[11px] font-semibold tracking-[0.22em] uppercase">
-            Questions
-          </span>
-        </div>
-        <h2 className="text-charcoal-sea font-display text-3xl font-extrabold mb-10">
-          {heading}
-        </h2>
-
-        <dl className="space-y-3">
-          {faqs.map((faq, i) => (
-            <div
-              key={i}
-              className="border border-charcoal-sea/10 rounded-2xl overflow-hidden"
-            >
-              <dt>
-                <button
-                  type="button"
-                  className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left"
-                  aria-expanded={openIndex === i}
-                  onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                >
-                  <span className="text-charcoal-sea font-semibold text-base leading-snug">
-                    {faq.question}
-                  </span>
+        ) : (
+          <div className="border-t-2 border-current">
+            {faqs.map((faq, i) => (
+              <details key={i} name="faq" className="group border-b border-rule">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-left [&::-webkit-details-marker]:hidden">
+                  <span className="font-semibold text-base leading-snug">{faq.question}</span>
                   <span
-                    className="flex-shrink-0 w-6 h-6 rounded-full bg-tropic-coral/10 flex items-center justify-center transition-transform duration-200"
-                    style={{ transform: openIndex === i ? "rotate(45deg)" : "rotate(0deg)" }}
+                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-[rotate,background-color] duration-300 ease-(--ease-surface) group-open:rotate-45 ${dark ? "bg-warm-white/10 group-open:bg-sunrise group-open:text-surface-dark" : "bg-charcoal-sea/8 group-open:bg-shallow-water"}`}
                     aria-hidden="true"
                   >
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                      <path d="M6 2v8M2 6h8" stroke="#E76F51" strokeWidth="1.5" strokeLinecap="round" />
+                      <path d="M6 1.5v9M1.5 6h9" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
                     </svg>
                   </span>
-                </button>
-              </dt>
-              {openIndex === i && (
-                <dd className="px-6 pb-5">
-                  <p className="text-charcoal-sea/75 text-sm leading-relaxed">{faq.answer}</p>
-                </dd>
-              )}
-            </div>
-          ))}
-        </dl>
+                </summary>
+                <p className="faq-answer pb-6 pr-12 text-body text-muted">{faq.answer}</p>
+              </details>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

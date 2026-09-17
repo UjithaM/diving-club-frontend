@@ -2,13 +2,13 @@
 
 import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import SeatMap from "@/components/booking/SeatMap";
-import { errorId, hintClass, labelClass } from "@/components/ui/fieldStyles";
+import { errorId, labelClass } from "@/components/ui/fieldStyles";
 import { FieldError } from "@/components/booking/BookingFields";
 import { getSlots } from "@/lib/api/slots";
 import type { Slot, SlotChoice } from "@/lib/types";
 
 interface SlotPickerProps {
-  type: "course" | "activity";
+  type: "course" | "activity" | "package";
   /** Item name or slug — the backend resolves either. */
   item: string;
   /** YYYY-MM-DD, or "" while they haven't picked one. */
@@ -96,9 +96,14 @@ export default function SlotPicker({
       <p className={labelClass}>{heading ?? "Pick a time"}</p>
 
       {loading ? (
-        <p className={hintClass}>Checking availability…</p>
+        <div className="flex flex-wrap gap-2" aria-live="polite">
+          <span className="sr-only">Checking availability…</span>
+          {[0, 1, 2].map((i) => (
+            <span key={i} className="h-[62px] w-32 rounded-[10px] bg-charcoal-sea/8 motion-safe:animate-pulse" aria-hidden="true" />
+          ))}
+        </div>
       ) : (
-        <div className="flex flex-wrap gap-2">
+        <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
           {slots.map((slot) => {
             const isSelected = slot.id === value.slotId;
             return (
@@ -108,22 +113,27 @@ export default function SlotPicker({
                 disabled={slot.sold_out}
                 aria-pressed={isSelected}
                 onClick={() => onChange({ slotId: slot.id, seats: [] })}
-                className={`rounded-xl border px-4 py-3 text-left transition-colors ${
+                className={`relative rounded-[10px] border-2 px-4 py-3 text-left transition-[background-color,border-color,scale] duration-150 active:scale-[0.98] sm:min-w-32 ${
                   isSelected
-                    ? "border-shallow-water bg-shallow-water/10 ring-2 ring-shallow-water"
+                    ? "border-surface-dark bg-shallow-water"
                     : slot.sold_out
-                      ? "cursor-not-allowed border-charcoal-sea/10 bg-charcoal-sea/5"
-                      : "border-charcoal-sea/20 bg-white hover:border-shallow-water"
+                      ? "cursor-not-allowed border-transparent bg-charcoal-sea/8"
+                      : "cursor-pointer border-charcoal-sea/25 bg-white hover:border-shallow-water"
                 }`}
               >
+                {isSelected && (
+                  <svg className="draw-check absolute right-2.5 top-2.5" width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                    <path d="M4 10.5l4 4 8-9" stroke="var(--color-surface-dark)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
                 <span
-                  className={`block text-sm font-semibold ${
-                    slot.sold_out ? "text-charcoal-sea/35" : "text-charcoal-sea"
+                  className={`block font-display text-base font-extrabold tabular ${
+                    slot.sold_out ? "text-charcoal-sea/45 line-through" : "text-surface-dark"
                   }`}
                 >
                   {slot.label}
                 </span>
-                <span className="mt-0.5 block text-xs text-charcoal-sea/50">
+                <span className={`mt-0.5 block text-xs ${isSelected ? "text-surface-dark" : "text-charcoal-sea/75"}`}>
                   {slot.sold_out
                     ? "Fully booked"
                     : slot.exclusive

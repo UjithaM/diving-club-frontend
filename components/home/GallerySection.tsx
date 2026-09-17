@@ -1,63 +1,66 @@
-import Image from "next/image";
+import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
-import AnimatedSection from "@/components/ui/AnimatedSection";
+import Section from "@/components/ui/Section";
+import { Arrow } from "@/components/ui/Button";
+import { galleryFallback } from "@/lib/photos";
+import { Bubbles } from "@/components/illustrations/Sea";
 import type { GalleryImage } from "@/lib/types";
 
+interface Cell {
+  key: string;
+  src: string | StaticImageData;
+  alt: string;
+  title?: string;
+}
+
 export default function GallerySection({ images }: { images: GalleryImage[] }) {
-  const cells = images.slice(0, 6);
+  // The admin gallery can be empty; the centre's own photos stand in rather than leaving a
+  // heading over nothing.
+  const cells: Cell[] = images.length
+    ? images.slice(0, 6).map((img) => ({ key: String(img.id), src: img.url, alt: img.title, title: img.title }))
+    : galleryFallback.map((p, i) => ({ key: `local-${i}`, src: p.src, alt: p.alt }));
 
   return (
-    <section className="bg-warm-white py-16 lg:py-28 px-6 border-t border-charcoal-sea/8">
-      <div className="max-w-6xl mx-auto">
-        {/* Section header */}
-        <div className="mb-12">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-6 h-px bg-tropic-coral" />
-            <span className="text-[11px] uppercase tracking-[0.22em] font-semibold text-tropic-coral">
-              Underwater World
-            </span>
-          </div>
-          <h2 className="text-[clamp(2rem,4vw,3.5rem)] font-extrabold leading-tight text-charcoal-sea font-display">
-            Moments Beneath the Surface
-          </h2>
-          <p className="text-charcoal-sea/55 text-base leading-relaxed mt-4 max-w-xl">
-            Every dive tells its own story. Here are a few glimpses from the waters around Trincomalee.
-          </p>
-        </div>
-
-        {cells.length > 0 ? (
-          <div className="gallery-grid">
-            {cells.map((img, i) => (
-              <AnimatedSection key={img.id} delay={i * 0.05}>
-                <div className="rounded-2xl overflow-hidden aspect-square relative bg-charcoal-sea/10">
-                  <Image
-                    src={img.url}
-                    alt={img.title}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 50vw, 33vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-charcoal-sea/60 to-transparent" />
-                  <span className="absolute bottom-0 left-0 text-[10px] uppercase tracking-widest text-warm-white/70 p-4">
-                    {img.title}
-                  </span>
-                </div>
-              </AnimatedSection>
-            ))}
-
-            {/* Gallery CTA tile */}
-            <AnimatedSection delay={cells.length * 0.05}>
-              <Link
-                href="/gallery"
-                className="rounded-2xl overflow-hidden bg-tropic-coral/10 border border-shallow-water/20 aspect-square flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-tropic-coral/15 transition-colors"
-              >
-                <span className="text-tropic-coral font-semibold text-sm">See More</span>
-                <span className="text-charcoal-sea/40 text-[11px] uppercase tracking-widest">View Gallery →</span>
-              </Link>
-            </AnimatedSection>
-          </div>
-        ) : null}
+    <Section zone="abyss" depth={16} log="Underwater World" className="relative">
+      <div className="ambient right-4 top-0 h-full w-24 text-shallow-water/60 lg:right-16 lg:w-40" aria-hidden="true">
+        <Bubbles count={8} />
       </div>
-    </section>
+      <div className="mb-12 reveal">
+        <h2 className="text-section font-extrabold">Moments Beneath the Surface</h2>
+        <p className="text-lead text-muted mt-4 max-w-[48ch]">
+          Every dive tells its own story. Here are a few glimpses from the waters around Trincomalee.
+        </p>
+      </div>
+
+      <div className="gallery-grid">
+        {cells.map((c, i) => (
+          <figure key={c.key} className={`plate relative m-0 reveal ${i === 0 ? "col-span-2 aspect-[2/1] lg:aspect-auto" : "aspect-square"}`}>
+            <Image
+              src={c.src}
+              alt={c.alt}
+              fill
+              placeholder={typeof c.src === "string" ? "empty" : "blur"}
+              className="object-cover"
+              sizes={i === 0 ? "(max-width: 1024px) 100vw, 50vw" : "(max-width: 1024px) 50vw, 25vw"}
+            />
+            {c.title && (
+              <figcaption className="absolute bottom-0 left-0 zone-abyss text-label uppercase font-semibold px-3 py-2">
+                {c.title}
+              </figcaption>
+            )}
+          </figure>
+        ))}
+
+        <Link
+          href="/gallery"
+          className="group aspect-square flex flex-col justify-between p-5 lg:p-6 bg-action text-action-ink hover:bg-action-hover transition-colors reveal"
+        >
+          <span className="font-display font-extrabold text-sub lg:text-readout">See More</span>
+          <span className="flex items-center justify-between text-label uppercase font-semibold">
+            View Gallery <Arrow />
+          </span>
+        </Link>
+      </div>
+    </Section>
   );
 }

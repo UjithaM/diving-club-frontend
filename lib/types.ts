@@ -68,6 +68,33 @@ export interface Experience {
   deposit?: Deposit;
 }
 
+/** A fixed bundle of activities/courses sold at one price. */
+export interface TravelPackage {
+  slug: string;
+  name: string;
+  tagline: string | null;
+  description: string;
+  price: number;
+  /** The "was" price: admin-set, else the sum of the items. null when there's no saving. */
+  originalPrice: number | null;
+  valueTotal: number;
+  savings: number;
+  currency: string;
+  duration: string | null;
+  minAge: number | null;
+  highlights: string[];
+  requirements: string | null;
+  image: string | null;
+  popular: boolean;
+  faqs: PageFaq[];
+  metaTitle: string | null;
+  metaDescription: string | null;
+  updatedAt: string | null;
+  maxQuantity: null;
+  deposit?: Deposit;
+  items: { type: "course" | "activity"; name: string; slug: string; quantity: number; price: number }[];
+}
+
 export interface DiveSite {
   slug: string;
   name: string;

@@ -16,6 +16,7 @@ import SlotPicker from "@/components/booking/SlotPicker";
 import type { BookableItem, SlotChoice } from "@/lib/types";
 import { headcount } from "@/lib/discount";
 import WhatsAppCta from "./WhatsAppCta";
+import { Bubbles, Diver } from "@/components/illustrations/Sea";
 
 /**
  * Price and duration, straight from the API. Confirms the choice at the point of commitment.
@@ -31,34 +32,34 @@ function ItemSummary({ item }: { item: BookableItem }) {
     : 0;
 
   return (
-    <div className="bg-charcoal-sea rounded-2xl p-5">
-      <p className="text-sub font-bold text-warm-white mb-3">{item.name}</p>
+    <div className="zone-deep relative overflow-hidden rounded-[14px] p-5 sm:p-6">
+      <p className="text-sub font-extrabold mb-4 pr-16">{item.name}</p>
 
-      <div className="flex items-end gap-3 flex-wrap mb-2">
-        {/* tropic-coral on charcoal-sea is 3.26:1 — fine for a 36px numeral, which is why the
-            price reads coral here and coral-deep on the warm-white sections. */}
-        <span className="text-tropic-coral text-4xl font-extrabold leading-none">
+      <div className="flex items-end gap-x-3 gap-y-2 flex-wrap">
+        {/* tropic-coral on charcoal-sea is 3.26:1 — fine for a 40px numeral. */}
+        <span className="font-display text-tropic-coral text-[2.5rem] font-extrabold leading-none tabular">
           ${item.price}
         </span>
-        <span className="text-meta text-warm-white/75 mb-1">{item.currency} per person</span>
+        <span className="text-meta text-muted mb-1">{item.currency} per person</span>
         {saving > 0 && (
           <>
-            <span className="text-sub text-warm-white/75 line-through mb-0.5">
+            <span className="text-sub text-muted line-through mb-0.5 tabular">
               ${item.originalPrice}
             </span>
-            {/* Coral text on warm-white, not white on coral: at 12px the white-on-coral chip
-                measured 3.09:1 and failed AA. */}
-            <span className="bg-warm-white text-coral-deep text-xs font-bold px-2.5 py-1 rounded-full mb-1">
+            {/* Coral-deep on warm-white, not white on coral: the white chip failed AA. */}
+            <span className="pop-in bg-warm-white text-coral-deep text-xs font-bold px-2.5 py-1 rounded-full mb-1">
               Save ${saving}
             </span>
           </>
         )}
       </div>
 
-      <p className="text-meta text-warm-white/75">
+      <p className="mt-4 pt-3 border-t border-rule text-meta text-muted tabular">
         {item.duration}
         {item.minAge ? ` · Ages ${item.minAge}+` : ""}
       </p>
+
+      <Diver className="absolute -right-3 top-3 w-24 opacity-90 bob" suit="var(--color-shallow-water)" line="var(--color-surface-dark)" />
     </div>
   );
 }
@@ -206,40 +207,38 @@ export default function AdBookingForm({
     return (
       <div
         ref={topRef}
-        className="bg-white border border-shallow-water/30 rounded-2xl p-8 text-center scroll-mt-24"
+        className="relative overflow-hidden bg-white border-2 border-shallow-water rounded-[18px] p-7 sm:p-9 text-center scroll-mt-24 shadow-[0_24px_50px_-30px_rgba(15,30,37,0.55)]"
       >
-        <div className="w-14 h-14 rounded-full bg-shallow-water/10 border-2 border-shallow-water flex items-center justify-center mx-auto mb-5">
-          <svg width="28" height="28" viewBox="0 0 40 40" fill="none" aria-hidden="true">
-            <path
-              d="M10 20l8 8 14-14"
-              stroke="#2A9D8F"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
+        <div className="absolute inset-x-0 bottom-0 h-40 text-shallow-water/50 pointer-events-none" aria-hidden="true">
+          <Bubbles count={8} />
+        </div>
+        <div className="pop-in relative w-16 h-16 rounded-full bg-shallow-water flex items-center justify-center mx-auto mb-6">
+          <svg className="draw-check" width="30" height="30" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M4 10.5l4 4 8-9" stroke="var(--color-surface-dark)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
 
         <h3 className="type-display text-section font-extrabold text-charcoal-sea mb-3">
           Request received — you&apos;re not booked yet
         </h3>
-        <p className="text-body text-charcoal-sea/75 mb-6">
+        <p className="relative text-body text-charcoal-sea/80 mb-6">
           Our team will WhatsApp you within 24 hours to confirm your dates and send the advance
           payment details. Nothing is charged until then.
         </p>
 
         {reference && (
-          <p className="text-meta text-charcoal-sea/75 mb-6">
-            Your reference: <span className="font-bold text-charcoal-sea">{reference}</span>
+          <p className="relative text-meta text-charcoal-sea/80 mb-6">
+            Your reference:{" "}
+            <span className="font-display font-extrabold text-charcoal-sea tabular bg-sunrise/35 px-2 py-0.5 rounded-[4px]">{reference}</span>
           </p>
         )}
 
-        <WhatsAppCta message={message} source={source} label="Message us on WhatsApp" />
+        <WhatsAppCta message={message} source={source} label="Message us on WhatsApp" className="relative" />
 
-        <div className="mt-6">
+        <div className="relative mt-6">
           <Link
             href="/"
-            className="text-meta text-charcoal-sea/75 hover:text-charcoal-sea transition-colors inline-flex items-center min-h-[48px]"
+            className="text-meta text-charcoal-sea/80 hover:text-charcoal-sea transition-colors inline-flex items-center min-h-[48px]"
           >
             Back to Diving Club
           </Link>
@@ -267,7 +266,7 @@ export default function AdBookingForm({
       // noValidate: our messages are friendlier than the browser's bubbles, and the
       // native ones only fire on submit — which is the thing being fixed here.
       noValidate
-      className="bg-white border border-charcoal-sea/10 rounded-2xl p-6 sm:p-8 space-y-5"
+      className="relative bg-white rounded-[18px] border-t-4 border-tropic-coral p-5 sm:p-8 space-y-6 shadow-[0_24px_50px_-30px_rgba(15,30,37,0.55)] ring-1 ring-charcoal-sea/8"
     >
       {/* What */}
       {fixedItem ? (
@@ -330,7 +329,7 @@ export default function AdBookingForm({
       {status === "error" && (
         <p
           role="alert"
-          className="text-meta text-coral-deep bg-tropic-coral/10 border border-tropic-coral/40 rounded-xl px-4 py-3"
+          className="text-meta text-coral-deep bg-tropic-coral/10 border-2 border-tropic-coral/40 rounded-[10px] px-4 py-3"
         >
           Something went wrong. Please try again, or WhatsApp us on{" "}
           <a
@@ -345,32 +344,39 @@ export default function AdBookingForm({
         </p>
       )}
 
-      {/* 19px, not 16: white on tropic-coral is 3.09:1, which clears AA only at the large-text
-          threshold (18.66px bold). Hover goes to coral-deep rather than sunrise — sunrise under
-          white text measures 1.96:1. */}
+      {/* Dark ink on coral (5.51:1) at any size — white on coral only cleared AA as large text. */}
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="w-full bg-tropic-coral text-white font-bold py-4 rounded-full hover:bg-coral-deep transition-colors duration-200 disabled:opacity-60 text-[19px]"
+        className="group w-full min-h-14 inline-flex items-center justify-center gap-3 bg-action text-action-ink font-bold rounded-[12px] hover:bg-action-hover active:scale-[0.99] transition-[background-color,scale] duration-200 disabled:opacity-70 text-lg cursor-pointer"
       >
+        {status === "submitting" && (
+          <span className="h-5 w-5 rounded-full border-2 border-action-ink/30 border-t-action-ink motion-safe:animate-spin" aria-hidden="true" />
+        )}
         {/* Not "Book Now" — nothing is booked, and the word makes people brace for a
             card form that never comes. The success screen already says as much. */}
         {status === "submitting" ? "Sending…" : "Check availability"}
+        {status !== "submitting" && (
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="square" aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1">
+            <path d="M4 12h15M13 6l6 6-6 6" />
+          </svg>
+        )}
       </button>
 
       {/* Baymard: trust markers do the most work at the point of commitment, not in a
           section further down the page. */}
-      <div className="text-center space-y-2">
-        <p className="text-meta text-charcoal-sea/75">
-          No card needed. Nothing is charged now — we confirm your dates and the advance on
-          WhatsApp first.
+      <div className="text-center space-y-2 pt-1">
+        <p className="text-meta text-charcoal-sea font-semibold flex items-center justify-center gap-2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-whatsapp-deep)" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0"><rect x="4" y="10" width="16" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></svg>
+          <span>No card needed. Nothing is charged now — we confirm your dates and the advance on
+          WhatsApp first.</span>
         </p>
-        <p className="text-meta text-charcoal-sea/75">
+        <p className="text-meta text-charcoal-sea/80">
           PADI dive centre in Trincomalee since 2010
         </p>
         {/* Consent has to be visible at the point of commitment for the 48-hour rule and
             the late-arrival rule to hold. */}
-        <p className="text-meta text-charcoal-sea/75">
+        <p className="text-meta text-charcoal-sea/80">
           By sending this you agree to our{" "}
           <Link href="/terms" className="underline hover:text-shallow-water">terms</Link> and{" "}
           <Link href="/refund-policy" className="underline hover:text-shallow-water">refund policy</Link>.
