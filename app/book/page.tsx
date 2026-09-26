@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import BookingForm from "@/components/booking/BookingForm";
 import { getDiscountLink } from "@/lib/api/discount-links";
+import { getActivePromotions } from "@/lib/api/promotions";
 import type { WebPage, WithContext } from "schema-dts";
 import { safeJsonLd } from "@/lib/jsonld";
 import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
@@ -49,7 +50,11 @@ export default async function BookPage({
 
   // Resolved server-side so the wizard renders with the discount already known — no
   // loading flicker, and no chance of showing full price for a beat before correcting it.
-  const discountLink = discount ? await getDiscountLink(discount) : null;
+  const [discountLink, promotions] = await Promise.all([
+    discount ? getDiscountLink(discount) : null,
+    // Optional: the form still books at full price if this can't load.
+    getActivePromotions().catch(() => []),
+  ]);
 
   return (
     <>
@@ -105,6 +110,7 @@ export default async function BookPage({
           initialItem={item}
           discountCode={discount}
           discountLink={discountLink}
+          promotions={promotions}
         />
       </section>
 

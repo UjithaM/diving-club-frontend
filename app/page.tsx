@@ -4,6 +4,9 @@ import { getGalleryImages } from "@/lib/api/gallery";
 import type { FAQPage, TouristAttraction, WithContext } from "schema-dts";
 import { safeJsonLd } from "@/lib/jsonld";
 import HeroSection from "@/components/home/HeroSection";
+import PromoSection from "@/components/home/PromoSection";
+import { getActivePromotions } from "@/lib/api/promotions";
+import { cardPromotion, isLive } from "@/lib/discount";
 import StatsSection from "@/components/home/StatsSection";
 import FeaturedExperiencesSection from "@/components/home/FeaturedExperiencesSection";
 import FeaturedCoursesSection from "@/components/home/FeaturedCoursesSection";
@@ -83,10 +86,17 @@ const faqJsonLd: WithContext<FAQPage> = {
 };
 
 export default async function HomePage() {
-  const [home, galleryImages] = await Promise.all([
+  const [home, galleryImages, allPromotions] = await Promise.all([
     getHome(),
     getGalleryImages().catch(() => []),
+    getActivePromotions().catch(() => []),
   ]);
+  // The list is cached for an hour, so drop a deal whose book-by moment has passed since.
+  // A server component renders once per cache fill, so this is "when this HTML was made" —
+  // exactly what the countdown needs for a first paint that matches hydration.
+  // eslint-disable-next-line react-hooks/purity
+  const serverNow = Date.now();
+  const promotions = allPromotions.filter((p) => isLive(p, serverNow));
 
   // /api/home already orders these featured → popular → sort_order.
   const featuredCourses = home.courses.slice(0, 3);
@@ -104,10 +114,11 @@ export default async function HomePage() {
         dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }}
       />
       <HeroSection />
+      <PromoSection promotions={promotions} serverNow={serverNow} />
       <StatsSection />
-      <FeaturedExperiencesSection experiences={featuredExperiences} />
+      <FeaturedExperiencesSection experiences={featuredExperiences} promo={cardPromotion(promotions, "activity")} />
       <Waterline from="surface" to="shallow" />
-      <FeaturedCoursesSection courses={featuredCourses} />
+      <FeaturedCoursesSection courses={featuredCourses} promo={cardPromotion(promotions, "course")} />
       <WhyChooseUsSection />
       <DiveSitesSection sites={featuredDiveSites} />
       <GoogleReviewsSection zone="deep" depth={14} />

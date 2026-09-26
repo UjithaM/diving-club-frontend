@@ -32,7 +32,9 @@ import dynamic from "next/dynamic";
 import type { Deposit, PaymentOptions, SlotChoice } from "@/lib/types";
 import type { DiscountLink } from "@/lib/api/discount-links";
 import { discountReasonMessage } from "@/lib/api/discount-links";
-import { cartSubtotal, depositRuleLabel, headcount, previewDiscount } from "@/lib/discount";
+import { bestPromotion, cartSubtotal, depositRuleLabel, headcount, isLive, leadPromotion, previewDiscount, promotionHint } from "@/lib/discount";
+import OfferPanel from "@/components/booking/OfferPanel";
+import type { Promotion } from "@/lib/types";
 import { currencySymbol } from "@/lib/money";
 
 /**
@@ -340,6 +342,8 @@ interface BookingFormProps {
   discountCode?: string;
   /** Resolved server-side. null = no token, or we couldn't reach the API to check. */
   discountLink?: DiscountLink | null;
+  /** Active promotions (early bird, group deals). The backend applies them on its own. */
+  promotions?: Promotion[];
 }
 
 /**
@@ -359,6 +363,7 @@ export default function BookingForm({
   initialItem,
   discountCode,
   discountLink = null,
+  promotions = [],
 }: BookingFormProps) {
   // A link scoped to one item locks the picker to it — swapping it away would silently throw
   // away the discount they followed a link for.
@@ -547,6 +552,14 @@ export default function BookingForm({
     cart.map((c) => ({ price: c.option?.price, quantity: c.quantity })),
     people
   );
+  // The best promotion comes off first; a discount link then stacks on what's left — same order
+  // as Api/BookingController::store.
+  const promoLines = cart.map((c) => ({ price: c.option?.price, quantity: c.quantity, kind: apiType(c.line.type) }));
+  const livePromos = promotions.filter((p) => isLive(p));
+  const promotion = bestPromotion(livePromos, promoLines, people, bookingDate);
+  const promoOff = promotion?.amount ?? 0;
+  const promoHint = promotionHint(livePromos, promoLines, people, bookingDate, promoOff);
+  const leadPromo = leadPromotion(livePromos);
   const activeDiscount =
     useDiscount && !discountRejected && discountLink?.valid ? discountLink : null;
   /**
@@ -566,9 +579,16 @@ export default function BookingForm({
       )
     : sub;
   const discountOff = activeDiscount
-    ? previewDiscount(discountBase, activeDiscount.discount_type, activeDiscount.discount_value)
+    ? Math.min(
+        previewDiscount(
+          activeDiscount.item ? discountBase : discountBase - promoOff,
+          activeDiscount.discount_type,
+          activeDiscount.discount_value
+        ),
+        sub - promoOff
+      )
     : 0;
-  const previewTotal = Math.max(sub - discountOff, 0);
+  const previewTotal = Math.max(sub - promoOff - discountOff, 0);
   // The advance is per booking, so one label for the cart. The server computes the amount.
   const depositLabel = depositRuleLabel(
     cart.find((c) => c.option?.deposit?.enabled)?.option?.deposit,
@@ -803,6 +823,16 @@ export default function BookingForm({
             setUseDiscount(false);
             setDiscountRejected(null);
           }}
+        />
+      )}
+
+      {leadPromo && (
+        <OfferPanel
+          lead={leadPromo}
+          others={livePromos.filter((p) => p !== leadPromo)}
+          applied={promotion?.promo ?? null}
+          saving={promotion ? money(promoOff, itemCurrency) : null}
+          dateChosen={Boolean(bookingDate)}
         />
       )}
 
@@ -1045,6 +1075,14 @@ export default function BookingForm({
                   </span>
                 </div>
               ))}
+              {promotion && (
+                <div className="flex justify-between border-t border-dashed border-rule pt-2.5">
+                  <span className="text-sunrise">{promotion.promo.title}</span>
+                  <span className="text-sunrise font-semibold">
+                    −{money(promoOff, itemCurrency)}
+                  </span>
+                </div>
+              )}
               {discountOff > 0 && (
                 <div className="flex justify-between border-t border-dashed border-rule pt-2.5">
                   <span className="text-sunrise">Discount</span>
@@ -1059,6 +1097,7 @@ export default function BookingForm({
                   {money(previewTotal, itemCurrency)}
                 </span>
               </div>
+              {promoHint && <p className="text-sunrise text-xs pt-1">{promoHint}</p>}
               {depositLabel && (
                 <p className="text-muted text-xs pt-1">
                   You can pay {depositLabel} now and the rest on arrival.

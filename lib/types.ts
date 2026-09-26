@@ -195,11 +195,17 @@ export interface ApiFaq {
 export interface Promotion {
   id: number;
   title: string;
-  description: string;
+  description: string | null;
   discount_type: "percentage" | "fixed";
   discount_value: string;
-  starts_at: string;
-  ends_at: string;
+  starts_at: string | null;
+  /** Book-by moment (ISO 8601). */
+  ends_at: string | null;
+  /** Early-bird dive window, "YYYY-MM-DD". Null = any dive date. */
+  travel_from: string | null;
+  travel_to: string | null;
+  /** Group deal: the fewest people it applies to. */
+  min_people: number | null;
   applicable_to: "all" | "course" | "activity";
   is_currently_active: boolean;
 }

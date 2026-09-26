@@ -1,9 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { Course, HomeCourse } from "@/lib/types";
+import type { Course, HomeCourse, Promotion } from "@/lib/types";
 import { Arrow } from "@/components/ui/Button";
 import { Diver, Fins, Mask, Turtle } from "@/components/illustrations/Sea";
-import { currencySymbol } from "@/lib/money";
+import { currencySymbol, money } from "@/lib/money";
+import { promoBadge, promoFinePrint, promoPrice } from "@/lib/discount";
 
 const levels: Record<Course["level"], { label: string; band: string; art: React.ReactNode }> = {
   beginner: { label: "Beginner", band: "bg-sunrise text-surface-dark", art: <Mask className="w-11" /> },
@@ -22,6 +23,7 @@ export default function CourseCard({
   meta = [],
   cta = "View",
   headingLevel = 3,
+  promo = null,
 }: {
   course: HomeCourse;
   /** Extra facts shown as chips under the description (listing page: depth, minimum age). */
@@ -29,6 +31,8 @@ export default function CourseCard({
   cta?: string;
   /** h3 under a section heading; h2 when the card sits directly under the page's h1. */
   headingLevel?: 2 | 3;
+  /** A running deal for courses (see cardPromotion): shows the regular price struck through. */
+  promo?: Promotion | null;
 }) {
   const level = levels[course.level];
   const Heading = headingLevel === 2 ? "h2" : "h3";
@@ -46,6 +50,11 @@ export default function CourseCard({
 
       <div className="p-4 pb-0">
         <div className="plate aspect-[16/10] rounded-[8px] bg-shallow-water/20">
+          {promo && (
+            <span className="pop-in absolute left-2.5 top-2.5 z-10 rounded-[3px] bg-tropic-coral px-2 py-1 text-label uppercase font-semibold text-surface-dark">
+              {promoBadge(promo)}
+            </span>
+          )}
           {course.image ? (
             <Image
               src={course.image}
@@ -84,10 +93,16 @@ export default function CourseCard({
           <div className="grid grid-cols-2 border-y-2 border-charcoal-sea divide-x divide-charcoal-sea/15">
             <p className="font-display font-extrabold text-sub tabular py-3">{course.duration}</p>
             <p className="font-display font-extrabold text-sub tabular py-3 pl-4">
-              {currencySymbol(course.currency)}{course.price}
+              {promo && (
+                <span className="block font-sans text-xs font-semibold text-muted line-through">
+                  {money(course.price, course.currency)}
+                </span>
+              )}
+              {promo ? money(promoPrice(course.price, promo), course.currency) : `${currencySymbol(course.currency)}${course.price}`}
               <span className="font-sans text-label uppercase font-semibold ml-1.5 align-middle text-muted">{course.currency}</span>
             </p>
           </div>
+          {promo && promoFinePrint(promo) && <p className="text-xs text-muted mt-2">{promoFinePrint(promo)}</p>}
           <span
             className="mt-4 flex items-center justify-between min-h-11 px-4 rounded-[6px] bg-surface-dark text-warm-white text-sm font-semibold transition-colors group-hover:bg-action group-hover:text-action-ink"
             aria-hidden="true"

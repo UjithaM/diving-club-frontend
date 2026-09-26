@@ -1,10 +1,16 @@
-import type { HomeActivity } from "@/lib/types";
+import type { HomeActivity, Promotion } from "@/lib/types";
 import ExperienceCard from "@/components/ui/ExperienceCard";
 import Section from "@/components/ui/Section";
 import Button from "@/components/ui/Button";
 import { Mask } from "@/components/illustrations/Sea";
 
-export default function FeaturedExperiencesSection({ experiences }: { experiences: HomeActivity[] }) {
+export default function FeaturedExperiencesSection({
+  experiences,
+  promo = null,
+}: {
+  experiences: HomeActivity[];
+  promo?: Promotion | null;
+}) {
   return (
     <Section zone="surface" depth={3} log="Get in the Water" className="relative">
       <div className="relative flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8 lg:mb-16 reveal">
@@ -23,7 +29,7 @@ export default function FeaturedExperiencesSection({ experiences }: { experience
       <ul className="rail md:grid-cols-3 lg:grid-cols-[minmax(0,6fr)_minmax(0,7fr)] lg:grid-rows-2 md:gap-8 lg:gap-x-10 lg:gap-y-10 list-none">
         {experiences.map((experience, i) => (
           <li key={experience.slug} className={`list-none reveal ${i === 0 ? "lg:row-span-2" : ""}`}>
-            <ExperienceCard experience={experience} lead={i === 0} />
+            <ExperienceCard experience={experience} lead={i === 0} promo={promo} />
           </li>
         ))}
       </ul>

@@ -3,6 +3,9 @@ import { Bricolage_Grotesque, Geist } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import Header from "@/components/layout/Header";
+import PromoStrip from "@/components/layout/PromoStrip";
+import { getActivePromotions } from "@/lib/api/promotions";
+import { isLive, leadPromotion } from "@/lib/discount";
 import Footer from "@/components/layout/Footer";
 import WhatsAppFab from "@/components/ui/WhatsAppFab";
 import DepthRail from "@/components/ui/DepthRail";
@@ -108,10 +111,11 @@ export default async function RootLayout({
 }>) {
   // ISR-cached and tagged, so /api/revalidate already keeps the nav in step with admin.
   // Empty on failure — a nav without dropdown items beats a site-wide 500.
-  const [courses, experiences, diveSites] = await Promise.all([
+  const [courses, experiences, diveSites, promotions] = await Promise.all([
     getCourses().catch(() => []),
     getExperiences().catch(() => []),
     getDiveSites().catch(() => []),
+    getActivePromotions().catch(() => []),
   ]);
 
   return (
@@ -179,6 +183,7 @@ try{localStorage.setItem('dc_attr',JSON.stringify(out));}catch(e){}
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: safeJsonLd(localBusinessJsonLd) }}
         />
+        <PromoStrip promo={leadPromotion(promotions.filter((p) => isLive(p)))} />
         <Header
           courseItems={toNav(courses)}
           experienceItems={toNav(experiences)}

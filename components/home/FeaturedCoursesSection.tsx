@@ -1,4 +1,4 @@
-import type { HomeCourse } from "@/lib/types";
+import type { HomeCourse, Promotion } from "@/lib/types";
 import CourseCard from "@/components/ui/CourseCard";
 import Section from "@/components/ui/Section";
 import Button from "@/components/ui/Button";
@@ -29,7 +29,7 @@ function School() {
 /** Dealt like a hand of cards on wide screens; straightens as you reach for one. */
 const tilt = ["lg:-rotate-1 lg:translate-y-3", "lg:rotate-0", "lg:rotate-1 lg:translate-y-3"];
 
-export default function FeaturedCoursesSection({ courses }: { courses: HomeCourse[] }) {
+export default function FeaturedCoursesSection({ courses, promo = null }: { courses: HomeCourse[]; promo?: Promotion | null }) {
   return (
     <Section zone="shallow" depth={6} log="PADI Certified" className="relative overflow-hidden">
       <School />
@@ -51,7 +51,7 @@ export default function FeaturedCoursesSection({ courses }: { courses: HomeCours
             key={course.slug}
             className={`reveal transition-[rotate,translate] duration-300 ease-(--ease-surface) hover:rotate-0 hover:translate-y-0 ${tilt[i % tilt.length]}`}
           >
-            <CourseCard course={course} />
+            <CourseCard course={course} promo={promo} />
           </li>
         ))}
       </ul>

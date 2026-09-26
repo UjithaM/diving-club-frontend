@@ -1,9 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { HomeActivity } from "@/lib/types";
+import type { HomeActivity, Promotion } from "@/lib/types";
 import { activityPhotos } from "@/lib/photos";
 import { Arrow } from "@/components/ui/Button";
-import { currencySymbol } from "@/lib/money";
+import { currencySymbol, money } from "@/lib/money";
+import { promoBadge, promoFinePrint, promoPrice } from "@/lib/discount";
 
 const typeLabels: Record<string, string> = {
   "try-diving":     "Try Diving",
@@ -19,7 +20,16 @@ const typeLabels: Record<string, string> = {
  * An activity as a photo plate with its readouts underneath. `lead` is the big one on the left
  * of the home grid; the others sit beside it as horizontal plates on wide screens.
  */
-export default function ExperienceCard({ experience, lead = false }: { experience: HomeActivity; lead?: boolean }) {
+export default function ExperienceCard({
+  experience,
+  lead = false,
+  promo = null,
+}: {
+  experience: HomeActivity;
+  lead?: boolean;
+  /** A running deal for activities (see cardPromotion): shows the regular price struck through. */
+  promo?: Promotion | null;
+}) {
   const label = typeLabels[experience.type] ?? experience.type;
   const fallback = activityPhotos[experience.type];
   const href = `/activities/${experience.slug}`;
@@ -53,6 +63,11 @@ export default function ExperienceCard({ experience, lead = false }: { experienc
             {experience.divesIncluded} dives
           </span>
         ) : null}
+        {promo && (
+          <span className="pop-in absolute bottom-0 left-0 bg-tropic-coral text-surface-dark text-label uppercase font-semibold px-3 py-2">
+            {promoBadge(promo)}
+          </span>
+        )}
       </div>
 
       <div className="flex flex-col flex-1 pt-5">
@@ -66,12 +81,19 @@ export default function ExperienceCard({ experience, lead = false }: { experienc
           {experience.description}
         </p>
 
+        {promo && promoFinePrint(promo) && <p className="text-xs text-muted -mt-3 mb-3">{promoFinePrint(promo)}</p>}
+
         <div className="flex items-end justify-between gap-4 border-t-2 border-current pt-3">
           <div className="flex gap-6">
             <div className="flex flex-col-reverse gap-1">
               <span className="text-label uppercase font-semibold text-muted">{experience.duration}</span>
               <span className="font-display font-bold text-readout tabular">
-                {currencySymbol(experience.currency)}{experience.price}
+                {promo && (
+                  <span className="font-sans text-meta font-semibold text-muted line-through mr-2">
+                    {money(experience.price, experience.currency)}
+                  </span>
+                )}
+                {promo ? money(promoPrice(experience.price, promo), experience.currency) : `${currencySymbol(experience.currency)}${experience.price}`}
                 <span className="text-meta font-normal text-muted ml-1">{experience.currency}</span>
               </span>
             </div>

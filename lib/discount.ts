@@ -1,4 +1,4 @@
-import type { Deposit } from "@/lib/types";
+import type { Deposit, Promotion } from "@/lib/types";
 
 /**
  * Client-side discount maths for the *preview* shown before submitting.
@@ -62,6 +62,141 @@ export function depositRuleLabel(
   return deposit.type === "percentage"
     ? `${deposit.value}% to reserve`
     : `${currency} ${deposit.value.toFixed(2)} per person to reserve`;
+}
+
+// ─── Promotions ──────────────────────────────────────────────────────────────
+// Mirrors App\Models\Promotion::discountFor and the best-of pick in Api\BookingController.
+// Preview only: the server applies promotions itself and its total wins.
+
+export type PromoLine = { price?: number; quantity: string | number; kind: "course" | "activity" | "package" };
+
+/** Still bookable right now? The API list is cached for an hour, so re-check the book-by time. */
+export function isLive(promo: Promotion, now = Date.now()): boolean {
+  return !promo.ends_at || new Date(promo.ends_at).getTime() > now;
+}
+
+/** The deal to headline: the early bird (it has a deadline), else any deal for everyone. */
+export function leadPromotion(promos: Promotion[]): Promotion | null {
+  return (
+    promos.find((p) => p.travel_from || p.travel_to) ?? promos.find((p) => !p.min_people) ?? promos[0] ?? null
+  );
+}
+
+/** Amount a promotion takes off this booking, or 0 when its rules don't match. */
+export function promotionDiscount(
+  promo: Promotion,
+  lines: PromoLine[],
+  people: string | number,
+  date?: string | null
+): number {
+  if (promo.min_people && headcount(people) < promo.min_people) return 0;
+  if (promo.travel_from || promo.travel_to) {
+    if (!date) return 0;
+    const day = date.slice(0, 10);
+    if (promo.travel_from && day < promo.travel_from) return 0;
+    if (promo.travel_to && day > promo.travel_to) return 0;
+  }
+  const eligible = lines.filter((l) => promo.applicable_to === "all" || promo.applicable_to === l.kind);
+  return previewDiscount(cartSubtotal(eligible, people), promo.discount_type, Number(promo.discount_value));
+}
+
+/** Promotions don't stack with each other — the booking gets the single best one. */
+export function bestPromotion(
+  promos: Promotion[],
+  lines: PromoLine[],
+  people: string | number,
+  date?: string | null
+): { promo: Promotion; amount: number } | null {
+  let best: { promo: Promotion; amount: number } | null = null;
+  for (const promo of promos) {
+    const amount = promotionDiscount(promo, lines, people, date);
+    if (amount > (best?.amount ?? 0)) best = { promo, amount };
+  }
+  return best;
+}
+
+/**
+ * "What would unlock a better deal?" — a dive date in the early-bird window, or a bigger group.
+ * Only offered when it would beat what the booking already gets.
+ */
+export function promotionHint(
+  promos: Promotion[],
+  lines: PromoLine[],
+  people: string | number,
+  date: string | null | undefined,
+  current: number
+): string | null {
+  let best: { text: string; amount: number } | null = null;
+  for (const promo of promos) {
+    if (promotionDiscount(promo, lines, people, date) > 0) continue;
+    const needsDate = Boolean(promo.travel_from || promo.travel_to);
+    const needsPeople = Boolean(promo.min_people && headcount(people) < promo.min_people);
+    // One nudge at a time: asking for both a new date and more people is not a hint.
+    if (needsDate && needsPeople) continue;
+    // Compared per person: a group deal's total grows with the group it asks for, so "add 3
+    // divers for 10%" would otherwise outbid "move your date for 15%".
+    const amount = needsPeople
+      ? promotionDiscount(promo, lines, promo.min_people!, date) / promo.min_people!
+      : promotionDiscount(promo, lines, people, promo.travel_from ?? promo.travel_to) / headcount(people);
+    if (amount <= Math.max(current / headcount(people), best?.amount ?? 0)) continue;
+    const off = promoLabel(promo);
+    const text = needsPeople
+      ? `Add ${promo.min_people! - headcount(people)} more ${promo.min_people! - headcount(people) === 1 ? "diver" : "divers"} to get ${off} (${promo.title}).`
+      : `Pick a dive date ${travelWindow(promo)} to get ${off} (${promo.title}).`;
+    best = { text, amount };
+  }
+  return best?.text ?? null;
+}
+
+/** For cards: the per-person price a percentage deal gives. Group-only deals are not a card price. */
+export function cardPromotion(promos: Promotion[], kind: PromoLine["kind"]): Promotion | null {
+  return (
+    promos
+      .filter((p) => p.discount_type === "percentage" && !p.min_people)
+      .filter((p) => p.applicable_to === "all" || p.applicable_to === kind)
+      .sort((a, b) => Number(b.discount_value) - Number(a.discount_value))[0] ?? null
+  );
+}
+
+export function promoPrice(price: number, promo: Promotion): number {
+  return round2(price - previewDiscount(price, promo.discount_type, Number(promo.discount_value)));
+}
+
+/** The chip on a card: "Early bird · 15% off". */
+export function promoBadge(promo: Promotion): string {
+  return `${promo.travel_from || promo.travel_to ? "Early bird · " : ""}${promoLabel(promo)}`;
+}
+
+/** Under a card price, so a struck-through price never reads as today's price for any date. */
+export function promoFinePrint(promo: Promotion): string | null {
+  return promo.travel_from || promo.travel_to ? `Early-bird price for dives ${travelWindow(promo)}` : null;
+}
+
+/** "15% off" — a fixed deal is off the whole booking, so it gets no currency guess here. */
+export function promoLabel(promo: Promotion): string {
+  const value = Number(promo.discount_value);
+  return promo.discount_type === "percentage" ? `${value}% off` : `${value} off your booking`;
+}
+
+/**
+ * "1 May 2027" from "2027-05-01" or an ISO moment. Read in UTC, the backend's clock: a book-by
+ * of 31 March ends 23:59:59 UTC, which in Colombo is already 1 April — the day the admin picked
+ * is the one to show.
+ */
+export function formatDay(value: string): string {
+  return new Date(value.length === 10 ? `${value}T00:00:00Z` : value).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
+/** "between 1 May 2027 and 31 Oct 2027", "from 1 May 2027", "until 31 Oct 2027". */
+export function travelWindow(promo: Promotion): string {
+  if (promo.travel_from && promo.travel_to) return `between ${formatDay(promo.travel_from)} and ${formatDay(promo.travel_to)}`;
+  if (promo.travel_from) return `from ${formatDay(promo.travel_from)}`;
+  return promo.travel_to ? `until ${formatDay(promo.travel_to)}` : "";
 }
 
 function round2(n: number): number {
