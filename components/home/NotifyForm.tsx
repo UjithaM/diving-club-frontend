@@ -46,12 +46,12 @@ export default function NotifyForm({ source, label }: { source: string; label: s
   }
 
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={onSubmit} className="w-full max-w-[20rem] sm:max-w-md">
       <label htmlFor={id} className="sr-only">
         {label}
       </label>
       <div
-        className={`flex min-h-[52px] rounded-[10px] border-2 bg-white transition-[border-color,box-shadow] duration-150 focus-within:shadow-[0_0_0_4px_color-mix(in_srgb,var(--color-surface-dark)_18%,transparent)] ${
+        className={`flex min-h-14 items-center rounded-[3px] border-2 bg-warm-white shadow-[0_18px_30px_-20px_rgba(15,30,37,0.7)] transition-[border-color,box-shadow] duration-150 focus-within:shadow-[0_0_0_4px_color-mix(in_srgb,var(--color-surface-dark)_22%,transparent)] ${
           error ? "border-coral-deep" : "border-surface-dark"
         }`}
       >
@@ -65,12 +65,12 @@ export default function NotifyForm({ source, label }: { source: string; label: s
           placeholder="you@example.com"
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? `${id}-error` : `${id}-hint`}
-          className="min-w-0 flex-1 rounded-l-[8px] bg-transparent px-4 text-base text-charcoal-sea placeholder:text-charcoal-sea/55 focus:outline-none sm:text-sm"
+          className="min-w-0 flex-1 self-stretch bg-transparent pl-4 pr-2 text-base text-charcoal-sea placeholder:text-charcoal-sea/55 focus:outline-none sm:text-sm"
         />
         <button
           type="submit"
           disabled={status === "submitting"}
-          className="m-1 shrink-0 rounded-[6px] bg-surface-dark px-4 text-sm font-bold text-warm-white transition-colors hover:bg-charcoal-sea disabled:opacity-70 cursor-pointer sm:px-6"
+          className="mr-2 flex h-10 shrink-0 items-center rounded-full bg-surface-dark px-4 text-sm font-bold text-sunrise transition-colors hover:bg-charcoal-sea disabled:opacity-70 cursor-pointer"
         >
           {status === "submitting" ? "Saving…" : "Notify me"}
         </button>

@@ -106,7 +106,7 @@ export default function PromoSection({ promotions, serverNow }: { promotions: Pr
                   the deal, and the way to take it. Inverts to dark on hover. */}
               <Link
                 href="/book#offer-details"
-                className="group inline-flex w-full items-center justify-between gap-4 min-h-14 rounded-[3px] border-2 border-surface-dark bg-warm-white py-2 pl-6 pr-2 text-base font-bold text-surface-dark shadow-[0_18px_30px_-20px_rgba(15,30,37,0.7)] transition-colors duration-200 hover:bg-surface-dark hover:text-warm-white sm:w-auto"
+                className="group inline-flex w-auto items-center justify-between gap-4 min-h-14 rounded-[3px] border-2 border-surface-dark bg-warm-white py-2 pl-6 pr-2 text-base font-bold text-surface-dark shadow-[0_18px_30px_-20px_rgba(15,30,37,0.7)] transition-colors duration-200 hover:bg-surface-dark hover:text-warm-white"
               >
                 {dives ? "Book early-bird dates" : "Book with the offer"}
                 <span
