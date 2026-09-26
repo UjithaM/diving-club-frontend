@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import AdLandingPage from "@/components/ads/AdLandingPage";
 import { getCourses } from "@/lib/api/courses";
+import { money } from "@/lib/money";
 
 /** Open Water is what the ads sell, so its price is the one that has to match the ad. */
 const HEADLINE_COURSE = "open-water-diver";
 
 /** " from $395", or "" if the API is down — never a hardcoded price. */
-const fromPrice = (courses: { slug: string; price: number }[]) => {
+const fromPrice = (courses: { slug: string; price: number; currency: string }[]) => {
   const course = courses.find((c) => c.slug === HEADLINE_COURSE);
-  return course ? ` from $${course.price}` : "";
+  return course ? ` from ${money(course.price, course.currency)}` : "";
 };
 
 export async function generateMetadata(): Promise<Metadata> {

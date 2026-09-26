@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Course, HomeCourse } from "@/lib/types";
 import { Arrow } from "@/components/ui/Button";
 import { Diver, Fins, Mask, Turtle } from "@/components/illustrations/Sea";
+import { currencySymbol } from "@/lib/money";
 
 const levels: Record<Course["level"], { label: string; band: string; art: React.ReactNode }> = {
   beginner: { label: "Beginner", band: "bg-sunrise text-surface-dark", art: <Mask className="w-11" /> },
@@ -83,7 +84,7 @@ export default function CourseCard({
           <div className="grid grid-cols-2 border-y-2 border-charcoal-sea divide-x divide-charcoal-sea/15">
             <p className="font-display font-extrabold text-sub tabular py-3">{course.duration}</p>
             <p className="font-display font-extrabold text-sub tabular py-3 pl-4">
-              ${course.price}
+              {currencySymbol(course.currency)}{course.price}
               <span className="font-sans text-label uppercase font-semibold ml-1.5 align-middle text-muted">{course.currency}</span>
             </p>
           </div>

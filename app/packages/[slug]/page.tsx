@@ -12,6 +12,7 @@ import Button from "@/components/ui/Button";
 import RelatedGrid from "@/components/ui/RelatedGrid";
 import type { BreadcrumbList, FAQPage, Product, TouristTrip, WithContext } from "schema-dts";
 import { safeJsonLd } from "@/lib/jsonld";
+import { money } from "@/lib/money";
 
 const SITE = "https://divingclub.lk";
 const BUSINESS = { "@id": SITE } as const;
@@ -19,10 +20,6 @@ const BUSINESS = { "@id": SITE } as const;
 export async function generateStaticParams() {
   const packages = await getPackages().catch(() => []);
   return packages.map((p) => ({ slug: p.slug }));
-}
-
-function money(amount: number, currency: string) {
-  return `${currency === "USD" ? "$" : `${currency} `}${Number.isInteger(amount) ? amount : amount.toFixed(2)}`;
 }
 
 /** Trimmed at a word boundary so the snippet never ends mid-word. */

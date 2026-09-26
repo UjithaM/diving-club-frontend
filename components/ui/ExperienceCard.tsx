@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { HomeActivity } from "@/lib/types";
 import { activityPhotos } from "@/lib/photos";
 import { Arrow } from "@/components/ui/Button";
+import { currencySymbol } from "@/lib/money";
 
 const typeLabels: Record<string, string> = {
   "try-diving":     "Try Diving",
@@ -70,7 +71,7 @@ export default function ExperienceCard({ experience, lead = false }: { experienc
             <div className="flex flex-col-reverse gap-1">
               <span className="text-label uppercase font-semibold text-muted">{experience.duration}</span>
               <span className="font-display font-bold text-readout tabular">
-                ${experience.price}
+                {currencySymbol(experience.currency)}{experience.price}
                 <span className="text-meta font-normal text-muted ml-1">{experience.currency}</span>
               </span>
             </div>

@@ -1,4 +1,5 @@
 import DetailPanel from "@/components/ui/DetailPanel";
+import { money } from "@/lib/money";
 
 interface ActivityDetailClientProps {
   experienceName: string;
@@ -22,7 +23,7 @@ export default function ActivityDetailClient({
   return (
     <DetailPanel
       eyebrow="Activity price"
-      price={{ amount: `$${price}`, currency, note: "per person" }}
+      price={{ amount: money(price, currency), currency, note: "per person" }}
       rows={[
         { label: "Duration", value: duration },
         { label: "Min age", value: `${minAge}+` },

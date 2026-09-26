@@ -8,6 +8,7 @@ import { FilterBar } from "@/components/ui/FilterBar";
 import { Arrow } from "@/components/ui/Button";
 import { activityPhotos } from "@/lib/photos";
 import { Diver, Fish, Mask, Tang, Turtle } from "@/components/illustrations/Sea";
+import { currencySymbol } from "@/lib/money";
 
 type ActivityType = Experience["type"] | "all";
 
@@ -73,7 +74,7 @@ function ActivityCard({ experience }: { experience: Experience }) {
 
         <div className="flex items-center justify-between gap-4 border-t-2 border-charcoal-sea pt-4">
           <p className="font-display text-readout font-extrabold tabular">
-            ${experience.price}
+            {currencySymbol(experience.currency)}{experience.price}
             <span className="ml-1.5 align-middle font-sans text-label uppercase font-semibold text-muted">{experience.currency}</span>
           </p>
           <span

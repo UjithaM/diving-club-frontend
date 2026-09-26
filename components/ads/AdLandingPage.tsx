@@ -8,6 +8,7 @@ import ReefScene from "@/components/illustrations/ReefScene";
 import Waterline from "@/components/illustrations/Waterline";
 import { BranchCoral, BrainCoral, Bubbles, Diver, FanCoral, Fins, Fish, Mask, Seaweed, Tang, Turtle } from "@/components/illustrations/Sea";
 import type { BookableItem, PageFaq } from "@/lib/types";
+import { currencySymbol, money } from "@/lib/money";
 
 const PHONE_DISPLAY = "074 394 5010";
 
@@ -159,7 +160,7 @@ export default function AdLandingPage({
               <div className="mt-8 flex items-stretch rounded-[14px] overflow-hidden border-2 border-charcoal-sea w-fit max-w-full">
                 <span className="flex items-center bg-charcoal-sea px-5 py-3">
                   <span className="type-display text-figure font-extrabold text-tropic-coral tabular-nums">
-                    ${summaryItem.price}
+                    {money(summaryItem.price, summaryItem.currency)}
                   </span>
                 </span>
                 <span className="flex items-center px-5 py-3 text-body font-semibold text-charcoal-sea">
@@ -289,7 +290,7 @@ export default function AdLandingPage({
 
             <dl className="mt-9 border-t-2 border-charcoal-sea">
               <PriceRow label="Per person">
-                ${summaryItem.price} {summaryItem.currency}
+                {money(summaryItem.price, summaryItem.currency)} {summaryItem.currency}
               </PriceRow>
               <PriceRow label="Duration">{summaryItem.duration}</PriceRow>
               {summaryItem.minAge ? (
@@ -298,9 +299,9 @@ export default function AdLandingPage({
               {saving !== null ? (
                 <PriceRow label="Usual price">
                   <span className="line-through font-normal text-muted">
-                    ${summaryItem.originalPrice}
+                    {currencySymbol(summaryItem.currency)}{summaryItem.originalPrice}
                   </span>
-                  <span className="text-coral-deep ml-2.5">save ${saving}</span>
+                  <span className="text-coral-deep ml-2.5">save {currencySymbol(summaryItem.currency)}{saving}</span>
                 </PriceRow>
               ) : null}
             </dl>

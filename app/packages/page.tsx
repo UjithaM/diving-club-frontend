@@ -8,6 +8,7 @@ import PageHero from "@/components/ui/PageHero";
 import Waterline from "@/components/illustrations/Waterline";
 import { BranchCoral, BrainCoral, Seaweed, Turtle } from "@/components/illustrations/Sea";
 import type { TravelPackage } from "@/lib/types";
+import { money } from "@/lib/money";
 
 const URL = "https://divingclub.lk/packages";
 const title = "Diving & Activity Packages in Trincomalee | Diving Club";
@@ -29,10 +30,6 @@ export const metadata: Metadata = {
 };
 
 const inlineLink = "font-semibold underline underline-offset-4 hover:no-underline";
-
-function money(amount: number, currency: string) {
-  return `${currency === "USD" ? "$" : `${currency} `}${Number.isInteger(amount) ? amount : amount.toFixed(2)}`;
-}
 
 function PackageCard({ pkg }: { pkg: TravelPackage }) {
   return (

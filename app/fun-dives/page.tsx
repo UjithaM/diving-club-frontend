@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import AdLandingPage from "@/components/ads/AdLandingPage";
 import { getExperienceBySlug } from "@/lib/api/experiences";
+import { money } from "@/lib/money";
 
 /**
  * The `fun-dive` ACTIVITY ($40), not the `fun-dives` course — only activities carry
@@ -11,7 +12,7 @@ import { getExperienceBySlug } from "@/lib/api/experiences";
 const ACTIVITY_SLUG = "fun-dive";
 
 /** " from $40", or "" if the API is down — never a hardcoded price. */
-const fromPrice = (course?: { price: number }) => (course ? ` from $${course.price}` : "");
+const fromPrice = (course?: { price: number; currency: string }) => (course ? ` from ${money(course.price, course.currency)}` : "");
 
 export async function generateMetadata(): Promise<Metadata> {
   const course = await getExperienceBySlug(ACTIVITY_SLUG);

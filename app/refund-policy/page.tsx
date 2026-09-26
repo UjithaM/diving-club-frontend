@@ -88,7 +88,7 @@ export default function RefundPolicyPage() {
         it.
       </p>
       <p>
-        Prices on this site are shown in US dollars. If your card is billed in another currency,
+        Prices on this site are shown in euros. If your card is billed in another currency,
         your bank sets that exchange rate, and the amount refunded is the amount we received —
         currency movement between the two dates isn&apos;t something we can control.
       </p>

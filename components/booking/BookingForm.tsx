@@ -33,6 +33,7 @@ import type { Deposit, PaymentOptions, SlotChoice } from "@/lib/types";
 import type { DiscountLink } from "@/lib/api/discount-links";
 import { discountReasonMessage } from "@/lib/api/discount-links";
 import { cartSubtotal, depositRuleLabel, headcount, previewDiscount } from "@/lib/discount";
+import { currencySymbol } from "@/lib/money";
 
 /**
  * Loaded on demand: it pulls in PayPal's SDK wrapper, and nobody needs that until the booking
@@ -129,10 +130,12 @@ const ease = "cubic-bezier(0.16, 1, 0.3, 1)";
  */
 function DiscountBanner({
   link,
+  currency,
   rejected,
   onDrop,
 }: {
   link: DiscountLink;
+  currency: string;
   /** Backend rejection at submit time, e.g. the link was redeemed a moment ago. */
   rejected: string | null;
   onDrop: () => void;
@@ -165,7 +168,7 @@ function DiscountBanner({
   const off =
     link.discount_type === "percentage"
       ? `${link.discount_value}% off`
-      : `$${link.discount_value} off`;
+      : `${currencySymbol(currency)}${link.discount_value} off`;
 
   return (
     <div className="pop-in flex items-start gap-3 rounded-[14px] bg-sunrise px-4 py-3.5 text-surface-dark">
@@ -794,6 +797,7 @@ export default function BookingForm({
       {discountLink && (
         <DiscountBanner
           link={discountLink}
+          currency={itemCurrency}
           rejected={discountRejected}
           onDrop={() => {
             setUseDiscount(false);

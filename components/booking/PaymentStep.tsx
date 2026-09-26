@@ -244,7 +244,7 @@ export default function PaymentStep({
           <PayPalScriptProvider
             options={{
               clientId: paypal.client_id,
-              currency: "USD",
+              currency: cur,
               intent: "capture",
               ...(paypal.mode === "sandbox" && { "data-sdk-integration-source": "button-factory" }),
             }}

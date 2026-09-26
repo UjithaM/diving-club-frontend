@@ -17,6 +17,7 @@ import type { BookableItem, SlotChoice } from "@/lib/types";
 import { headcount } from "@/lib/discount";
 import WhatsAppCta from "./WhatsAppCta";
 import { Bubbles, Diver } from "@/components/illustrations/Sea";
+import { currencySymbol } from "@/lib/money";
 
 /**
  * Price and duration, straight from the API. Confirms the choice at the point of commitment.
@@ -38,17 +39,17 @@ function ItemSummary({ item }: { item: BookableItem }) {
       <div className="flex items-end gap-x-3 gap-y-2 flex-wrap">
         {/* tropic-coral on charcoal-sea is 3.26:1 — fine for a 40px numeral. */}
         <span className="font-display text-tropic-coral text-[2.5rem] font-extrabold leading-none tabular">
-          ${item.price}
+          {currencySymbol(item.currency)}{item.price}
         </span>
         <span className="text-meta text-muted mb-1">{item.currency} per person</span>
         {saving > 0 && (
           <>
             <span className="text-sub text-muted line-through mb-0.5 tabular">
-              ${item.originalPrice}
+              {currencySymbol(item.currency)}{item.originalPrice}
             </span>
             {/* Coral-deep on warm-white, not white on coral: the white chip failed AA. */}
             <span className="pop-in bg-warm-white text-coral-deep text-xs font-bold px-2.5 py-1 rounded-full mb-1">
-              Save ${saving}
+              Save {currencySymbol(item.currency)}{saving}
             </span>
           </>
         )}

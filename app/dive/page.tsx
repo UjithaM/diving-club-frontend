@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import AdLandingPage from "@/components/ads/AdLandingPage";
 import { getCourseBySlug } from "@/lib/api/courses";
+import { money } from "@/lib/money";
 
 const COURSE_SLUG = "discover-scuba-diving";
 
 /** " from $40", or "" if the API is down — never a hardcoded price. */
-const fromPrice = (course?: { price: number }) => (course ? ` from $${course.price}` : "");
+const fromPrice = (course?: { price: number; currency: string }) => (course ? ` from ${money(course.price, course.currency)}` : "");
 
 export async function generateMetadata(): Promise<Metadata> {
   const course = await getCourseBySlug(COURSE_SLUG);

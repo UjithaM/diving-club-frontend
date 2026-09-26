@@ -85,7 +85,7 @@ const localBusinessJsonLd: WithContext<LocalBusiness> = {
   hasMap: "https://www.google.com/maps/place/Diving+Club/@8.5609627,81.2431568,341m/data=!3m1!1e3!4m6!3m5!1s0x3afbbdb47010bccd:0xade22adddd90b6c!8m2!3d8.5609377!4d81.2422479",
   openingHours: "Mo-Su 07:00-18:00",
   priceRange: "$$",
-  currenciesAccepted: "USD",
+  currenciesAccepted: "EUR",
   paymentAccepted: "Cash, Credit Card",
   areaServed: ["Trincomalee", "Nilaveli", "Uppuveli"],
   knowsAbout: ["Scuba Diving", "PADI Certification", "Wreck Diving", "Underwater Photography", "Marine Conservation"],

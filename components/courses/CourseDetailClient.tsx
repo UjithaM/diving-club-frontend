@@ -1,4 +1,5 @@
 import DetailPanel from "@/components/ui/DetailPanel";
+import { money } from "@/lib/money";
 
 interface CourseDetailClientProps {
   courseName: string;
@@ -22,7 +23,7 @@ export default function CourseDetailClient({
   return (
     <DetailPanel
       eyebrow="Course price"
-      price={{ amount: `$${price}`, currency }}
+      price={{ amount: money(price, currency), currency }}
       rows={[
         { label: "Duration", value: duration },
         ...(maxDepth !== "N/A" ? [{ label: "Max depth", value: maxDepth }] : []),

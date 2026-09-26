@@ -12,6 +12,7 @@ import type { TouristAttraction, FAQPage, WithContext } from "schema-dts";
 import { safeJsonLd } from "@/lib/jsonld";
 
 import CtaBand, { BandLink, WhatsAppButton } from "@/components/ui/CtaBand";
+import { money } from "@/lib/money";
 export async function generateStaticParams() {
   const experiences = await getExperiences();
   return experiences.map((e) => ({ slug: e.slug }));
@@ -174,7 +175,7 @@ export default async function ActivityDetailPage({
             ? [`${experience.divesIncluded} dive${experience.divesIncluded > 1 ? "s" : ""} included`]
             : []),
         ]}
-        price={{ prefix: "From", amount: `$${experience.price}`, currency: experience.currency }}
+        price={{ prefix: "From", amount: money(experience.price, experience.currency), currency: experience.currency }}
         image={{ src: experience.image, alt: `${experience.name} with Diving Club in Trincomalee, Sri Lanka` }}
       />
 

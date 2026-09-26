@@ -13,6 +13,7 @@ import type { Course as SchemaCourse, FAQPage, WithContext } from "schema-dts";
 import { safeJsonLd } from "@/lib/jsonld";
 
 import CtaBand, { BandLink, WhatsAppButton } from "@/components/ui/CtaBand";
+import { money } from "@/lib/money";
 export async function generateStaticParams() {
   const courses = await getCourses();
   return courses.map((c) => ({ slug: c.slug }));
@@ -198,7 +199,7 @@ export default async function CourseDetailPage({
           ...(course.maxDepth !== "N/A" ? [`to ${course.maxDepth}`] : []),
           `Age ${course.minAge}+`,
         ]}
-        price={{ prefix: "From", amount: `$${course.price}`, currency: course.currency }}
+        price={{ prefix: "From", amount: money(course.price, course.currency), currency: course.currency }}
         image={{ src: course.image, alt: `${course.name} course with Diving Club in Trincomalee, Sri Lanka` }}
       />
 
