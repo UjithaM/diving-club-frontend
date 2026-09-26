@@ -554,7 +554,7 @@ export default function BookingForm({
   );
   // The best promotion comes off first; a discount link then stacks on what's left — same order
   // as Api/BookingController::store.
-  const promoLines = cart.map((c) => ({ price: c.option?.price, quantity: c.quantity, kind: apiType(c.line.type) }));
+  const promoLines = cart.map((c) => ({ price: c.option?.price, quantity: c.quantity, kind: apiType(c.line.type), slug: c.option?.slug }));
   const livePromos = promotions.filter((p) => isLive(p));
   const promotion = bestPromotion(livePromos, promoLines, people, bookingDate);
   const promoOff = promotion?.amount ?? 0;

@@ -1,15 +1,17 @@
 import type { HomeActivity, Promotion } from "@/lib/types";
 import ExperienceCard from "@/components/ui/ExperienceCard";
+import { cardDeal } from "@/lib/discount";
 import Section from "@/components/ui/Section";
 import Button from "@/components/ui/Button";
 import { Mask } from "@/components/illustrations/Sea";
 
 export default function FeaturedExperiencesSection({
   experiences,
-  promo = null,
+  promotions = [],
 }: {
   experiences: HomeActivity[];
-  promo?: Promotion | null;
+  /** Live promotions; each card finds its own deal, since each item has its own value. */
+  promotions?: Promotion[];
 }) {
   return (
     <Section zone="surface" depth={3} log="Get in the Water" className="relative">
@@ -29,7 +31,7 @@ export default function FeaturedExperiencesSection({
       <ul className="rail md:grid-cols-3 lg:grid-cols-[minmax(0,6fr)_minmax(0,7fr)] lg:grid-rows-2 md:gap-8 lg:gap-x-10 lg:gap-y-10 list-none">
         {experiences.map((experience, i) => (
           <li key={experience.slug} className={`list-none reveal ${i === 0 ? "lg:row-span-2" : ""}`}>
-            <ExperienceCard experience={experience} lead={i === 0} promo={promo} />
+            <ExperienceCard experience={experience} lead={i === 0} deal={cardDeal(promotions, "activity", experience.slug)} />
           </li>
         ))}
       </ul>

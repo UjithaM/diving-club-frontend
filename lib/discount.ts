@@ -1,4 +1,5 @@
-import type { Deposit, Promotion } from "@/lib/types";
+import type { Deposit, Promotion, PromotionItem } from "@/lib/types";
+import { money } from "@/lib/money";
 
 /**
  * Client-side discount maths for the *preview* shown before submitting.
@@ -68,7 +69,23 @@ export function depositRuleLabel(
 // Mirrors App\Models\Promotion::discountFor and the best-of pick in Api\BookingController.
 // Preview only: the server applies promotions itself and its total wins.
 
-export type PromoLine = { price?: number; quantity: string | number; kind: "course" | "activity" | "package" };
+export type PromoLine = {
+  price?: number;
+  quantity: string | number;
+  kind: PromotionItem["type"];
+  slug?: string;
+};
+
+/** The promotion's entry for this item, or undefined when the item isn't on the deal. */
+export function promoItem(promo: Promotion, kind: PromotionItem["type"], slug?: string): PromotionItem | undefined {
+  return slug ? promo.items.find((i) => i.type === kind && i.slug === slug) : undefined;
+}
+
+/** Off ONE person's price: a percent of it, or a fixed amount clamped to it. */
+export function unitOff(price: number, type: Promotion["discount_type"], value: number): number {
+  if (!(price > 0) || !(value > 0)) return 0;
+  return round2(type === "percentage" ? (price * Math.min(value, 100)) / 100 : Math.min(value, price));
+}
 
 /** Still bookable right now? The API list is cached for an hour, so re-check the book-by time. */
 export function isLive(promo: Promotion, now = Date.now()): boolean {
@@ -82,7 +99,7 @@ export function leadPromotion(promos: Promotion[]): Promotion | null {
   );
 }
 
-/** Amount a promotion takes off this booking, or 0 when its rules don't match. */
+/** Amount a promotion takes off this booking, or 0 when its rules don't match. Mirrors Promotion::discountFor. */
 export function promotionDiscount(
   promo: Promotion,
   lines: PromoLine[],
@@ -96,8 +113,13 @@ export function promotionDiscount(
     if (promo.travel_from && day < promo.travel_from) return 0;
     if (promo.travel_to && day > promo.travel_to) return 0;
   }
-  const eligible = lines.filter((l) => promo.applicable_to === "all" || promo.applicable_to === l.kind);
-  return previewDiscount(cartSubtotal(eligible, people), promo.discount_type, Number(promo.discount_value));
+  // Per item, per person: each unit of a listed item gets that item's own value off.
+  return round2(
+    lines.reduce((sum, l) => {
+      const item = promoItem(promo, l.kind, l.slug);
+      return item ? sum + unitOff(l.price ?? 0, promo.discount_type, item.discount_value) * headcount(people) * headcount(l.quantity) : sum;
+    }, 0)
+  );
 }
 
 /** Promotions don't stack with each other — the booking gets the single best one. */
@@ -139,7 +161,9 @@ export function promotionHint(
       ? promotionDiscount(promo, lines, promo.min_people!, date) / promo.min_people!
       : promotionDiscount(promo, lines, people, promo.travel_from ?? promo.travel_to) / headcount(people);
     if (amount <= Math.max(current / headcount(people), best?.amount ?? 0)) continue;
-    const off = promoLabel(promo);
+    // Worded for what's in the cart: "10% off", not the deal's headline "up to 20% off".
+    const inCart = narrowPromotion(promo, lines.flatMap((l) => (l.slug ? [{ type: l.kind, slug: l.slug }] : [])));
+    const off = promoPhrase(inCart ?? promo);
     const text = needsPeople
       ? `Add ${promo.min_people! - headcount(people)} more ${promo.min_people! - headcount(people) === 1 ? "diver" : "divers"} to get ${off} (${promo.title}).`
       : `Pick a dive date ${travelWindow(promo)} to get ${off} (${promo.title}).`;
@@ -148,23 +172,46 @@ export function promotionHint(
   return best?.text ?? null;
 }
 
-/** For cards: the per-person price a percentage deal gives. Group-only deals are not a card price. */
-export function cardPromotion(promos: Promotion[], kind: PromoLine["kind"]): Promotion | null {
-  return (
-    promos
-      .filter((p) => p.discount_type === "percentage" && !p.min_people)
-      .filter((p) => p.applicable_to === "all" || p.applicable_to === kind)
-      .sort((a, b) => Number(b.discount_value) - Number(a.discount_value))[0] ?? null
-  );
+export type ItemDeal = { promo: Promotion; item: PromotionItem; off: number };
+
+/**
+ * Every running deal on one item, the one to headline first: deals anyone can get before group
+ * deals, then the biggest saving per person.
+ */
+export function itemDeals(promos: Promotion[], kind: PromotionItem["type"], slug: string): ItemDeal[] {
+  return promos
+    .flatMap((promo) => {
+      const item = promoItem(promo, kind, slug);
+      return item ? [{ promo, item, off: unitOff(item.price, promo.discount_type, item.discount_value) }] : [];
+    })
+    .filter((d) => d.off > 0)
+    .sort((a, b) => Number(Boolean(a.promo.min_people)) - Number(Boolean(b.promo.min_people)) || b.off - a.off);
 }
 
-export function promoPrice(price: number, promo: Promotion): number {
-  return round2(price - previewDiscount(price, promo.discount_type, Number(promo.discount_value)));
+/** For cards: the deal price anyone gets. Group-only deals are not a card price. */
+export function cardDeal(promos: Promotion[], kind: PromotionItem["type"], slug: string): ItemDeal | null {
+  return itemDeals(promos, kind, slug).find((d) => !d.promo.min_people) ?? null;
+}
+
+/** "20% off" or "$15 off" — one item's value. */
+export function itemLabel(promo: Promotion, item: PromotionItem): string {
+  return promo.discount_type === "percentage" ? `${item.discount_value}% off` : `${money(item.discount_value, item.currency)} off`;
+}
+
+/** promoLabel for mid-sentence: "get up to 20% off". */
+export function promoPhrase(promo: Promotion): string {
+  return promoLabel(promo).replace(/^Up/, "up");
+}
+
+/** The promotion cut down to the given items, or null when it covers none of them. */
+export function narrowPromotion(promo: Promotion, scope: { type: PromotionItem["type"]; slug: string }[]): Promotion | null {
+  const items = promo.items.filter((i) => scope.some((s) => s.type === i.type && s.slug === i.slug));
+  return items.length > 0 ? { ...promo, items, max_discount: Math.max(...items.map((i) => i.discount_value)) } : null;
 }
 
 /** The chip on a card: "Early bird · 15% off". */
-export function promoBadge(promo: Promotion): string {
-  return `${promo.travel_from || promo.travel_to ? "Early bird · " : ""}${promoLabel(promo)}`;
+export function promoBadge(deal: ItemDeal): string {
+  return `${deal.promo.travel_from || deal.promo.travel_to ? "Early bird · " : ""}${itemLabel(deal.promo, deal.item)}`;
 }
 
 /** Under a card price, so a struck-through price never reads as today's price for any date. */
@@ -172,10 +219,16 @@ export function promoFinePrint(promo: Promotion): string | null {
   return promo.travel_from || promo.travel_to ? `Early-bird price for dives ${travelWindow(promo)}` : null;
 }
 
-/** "15% off" — a fixed deal is off the whole booking, so it gets no currency guess here. */
+/**
+ * "Up to 20% off", or "20% off" when every item gets the same. Items are per person, so a fixed
+ * deal reads "Up to $50 off" in the item's own currency, never a guessed "$".
+ */
 export function promoLabel(promo: Promotion): string {
-  const value = Number(promo.discount_value);
-  return promo.discount_type === "percentage" ? `${value}% off` : `${value} off your booking`;
+  const values = new Set(promo.items.map((i) => i.discount_value));
+  const top = promo.items[0];
+  const value =
+    promo.discount_type === "percentage" ? `${promo.max_discount}%` : money(promo.max_discount, top?.currency);
+  return `${values.size > 1 ? "Up to " : ""}${value} off`;
 }
 
 /**

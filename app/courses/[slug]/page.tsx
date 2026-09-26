@@ -5,6 +5,7 @@ import type { Course } from "@/lib/types";
 import CourseDetailClient from "@/components/courses/CourseDetailClient";
 import FaqAccordion from "@/components/ui/FaqAccordion";
 import GoogleReviewsSection from "@/components/ui/GoogleReviewsSection";
+import { ScopedPromo } from "@/components/home/PromoSection";
 import DetailHero, { type Tone } from "@/components/ui/DetailHero";
 import TickDot from "@/components/ui/TickDot";
 import RelatedGrid from "@/components/ui/RelatedGrid";
@@ -202,6 +203,9 @@ export default async function CourseDetailPage({
         price={{ prefix: "From", amount: money(course.price, course.currency), currency: course.currency }}
         image={{ src: course.image, alt: `${course.name} course with Diving Club in Trincomalee, Sri Lanka` }}
       />
+
+      {/* This course's own deal, if it has one, in the home page's offer style. */}
+      <ScopedPromo scope={[{ type: "course", slug: course.slug }]} />
 
       {/* Body */}
       <section className="zone-surface py-12 lg:py-16 px-5 sm:px-8 border-t-2 border-charcoal-sea/10">

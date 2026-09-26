@@ -6,7 +6,7 @@ import { safeJsonLd } from "@/lib/jsonld";
 import HeroSection from "@/components/home/HeroSection";
 import PromoSection from "@/components/home/PromoSection";
 import { getActivePromotions } from "@/lib/api/promotions";
-import { cardPromotion, isLive } from "@/lib/discount";
+import { isLive } from "@/lib/discount";
 import StatsSection from "@/components/home/StatsSection";
 import FeaturedExperiencesSection from "@/components/home/FeaturedExperiencesSection";
 import FeaturedCoursesSection from "@/components/home/FeaturedCoursesSection";
@@ -116,9 +116,9 @@ export default async function HomePage() {
       <HeroSection />
       <PromoSection promotions={promotions} serverNow={serverNow} />
       <StatsSection />
-      <FeaturedExperiencesSection experiences={featuredExperiences} promo={cardPromotion(promotions, "activity")} />
+      <FeaturedExperiencesSection experiences={featuredExperiences} promotions={promotions} />
       <Waterline from="surface" to="shallow" />
-      <FeaturedCoursesSection courses={featuredCourses} promo={cardPromotion(promotions, "course")} />
+      <FeaturedCoursesSection courses={featuredCourses} promotions={promotions} />
       <WhyChooseUsSection />
       <DiveSitesSection sites={featuredDiveSites} />
       <GoogleReviewsSection zone="deep" depth={14} />

@@ -1,5 +1,6 @@
 import type { HomeCourse, Promotion } from "@/lib/types";
 import CourseCard from "@/components/ui/CourseCard";
+import { cardDeal } from "@/lib/discount";
 import Section from "@/components/ui/Section";
 import Button from "@/components/ui/Button";
 import { Fish, Tang } from "@/components/illustrations/Sea";
@@ -29,7 +30,8 @@ function School() {
 /** Dealt like a hand of cards on wide screens; straightens as you reach for one. */
 const tilt = ["lg:-rotate-1 lg:translate-y-3", "lg:rotate-0", "lg:rotate-1 lg:translate-y-3"];
 
-export default function FeaturedCoursesSection({ courses, promo = null }: { courses: HomeCourse[]; promo?: Promotion | null }) {
+/** `promotions` are the live ones; each card finds its own deal, since each item has its own value. */
+export default function FeaturedCoursesSection({ courses, promotions = [] }: { courses: HomeCourse[]; promotions?: Promotion[] }) {
   return (
     <Section zone="shallow" depth={6} log="PADI Certified" className="relative overflow-hidden">
       <School />
@@ -51,7 +53,7 @@ export default function FeaturedCoursesSection({ courses, promo = null }: { cour
             key={course.slug}
             className={`reveal transition-[rotate,translate] duration-300 ease-(--ease-surface) hover:rotate-0 hover:translate-y-0 ${tilt[i % tilt.length]}`}
           >
-            <CourseCard course={course} promo={promo} />
+            <CourseCard course={course} deal={cardDeal(promotions, "course", course.slug)} />
           </li>
         ))}
       </ul>

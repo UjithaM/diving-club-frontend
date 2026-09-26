@@ -4,6 +4,7 @@ import { getExperiences, getExperienceBySlug } from "@/lib/api/experiences";
 import ActivityDetailClient from "@/components/activities/ActivityDetailClient";
 import FaqAccordion from "@/components/ui/FaqAccordion";
 import GoogleReviewsSection from "@/components/ui/GoogleReviewsSection";
+import { ScopedPromo } from "@/components/home/PromoSection";
 import DetailHero, { type Tone } from "@/components/ui/DetailHero";
 import TickDot from "@/components/ui/TickDot";
 import RelatedGrid from "@/components/ui/RelatedGrid";
@@ -178,6 +179,9 @@ export default async function ActivityDetailPage({
         price={{ prefix: "From", amount: money(experience.price, experience.currency), currency: experience.currency }}
         image={{ src: experience.image, alt: `${experience.name} with Diving Club in Trincomalee, Sri Lanka` }}
       />
+
+      {/* This activity's own deal, if it has one, in the home page's offer style. */}
+      <ScopedPromo scope={[{ type: "activity", slug: experience.slug }]} />
 
       {/* Body */}
       <section className="zone-surface py-12 lg:py-16 px-5 sm:px-8 border-t-2 border-charcoal-sea/10">

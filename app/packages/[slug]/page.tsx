@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getPackageBySlug, getPackages } from "@/lib/api/packages";
 import FaqAccordion from "@/components/ui/FaqAccordion";
 import GoogleReviewsSection from "@/components/ui/GoogleReviewsSection";
+import { ScopedPromo } from "@/components/home/PromoSection";
 import DetailHero from "@/components/ui/DetailHero";
 import TickDot from "@/components/ui/TickDot";
 import WhatsAppIcon from "@/components/ui/WhatsAppIcon";
@@ -172,6 +173,9 @@ export default async function PackageDetailPage({ params }: { params: Promise<{ 
         }}
         image={{ src: pkg.image, alt: `${pkg.name} with Diving Club in Trincomalee, Sri Lanka` }}
       />
+
+      {/* This package's own deal, if it has one, in the home page's offer style. */}
+      <ScopedPromo scope={[{ type: "package", slug: pkg.slug }]} />
 
       {/* Body */}
       <section className="zone-surface py-12 lg:py-16 px-5 sm:px-8 border-t-2 border-charcoal-sea/10">

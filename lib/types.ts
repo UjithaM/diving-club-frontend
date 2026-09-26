@@ -192,12 +192,26 @@ export interface ApiFaq {
   sort_order: number;
 }
 
+/** One item a promotion covers, at its own value. Items not listed get no discount. */
+export interface PromotionItem {
+  type: "course" | "activity" | "package";
+  slug: string;
+  name: string;
+  price: number;
+  currency: string;
+  /** Percent, or an amount off each person's price — see Promotion.discount_type. */
+  discount_value: number;
+}
+
 export interface Promotion {
   id: number;
   title: string;
   description: string | null;
   discount_type: "percentage" | "fixed";
-  discount_value: string;
+  /** The biggest item value: the "up to" figure. */
+  max_discount: number;
+  /** Biggest value first. */
+  items: PromotionItem[];
   starts_at: string | null;
   /** Book-by moment (ISO 8601). */
   ends_at: string | null;
@@ -206,7 +220,6 @@ export interface Promotion {
   travel_to: string | null;
   /** Group deal: the fewest people it applies to. */
   min_people: number | null;
-  applicable_to: "all" | "course" | "activity";
   is_currently_active: boolean;
 }
 

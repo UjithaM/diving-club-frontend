@@ -13,11 +13,11 @@ import { bookingFormDefaults, type BookingFormValues } from "@/lib/booking-form"
 import { errorId, errorInputClass, inputClass, labelClass } from "@/components/ui/fieldStyles";
 import BookingFields, { FieldError, Req } from "@/components/booking/BookingFields";
 import SlotPicker from "@/components/booking/SlotPicker";
-import type { BookableItem, SlotChoice } from "@/lib/types";
-import { headcount } from "@/lib/discount";
+import type { BookableItem, Promotion, SlotChoice } from "@/lib/types";
+import { cardDeal, headcount, promoBadge, promoFinePrint, type ItemDeal } from "@/lib/discount";
 import WhatsAppCta from "./WhatsAppCta";
 import { Bubbles, Diver } from "@/components/illustrations/Sea";
-import { currencySymbol } from "@/lib/money";
+import { currencySymbol, money } from "@/lib/money";
 
 /**
  * Price and duration, straight from the API. Confirms the choice at the point of commitment.
@@ -27,7 +27,7 @@ import { currencySymbol } from "@/lib/money";
  * further down — which is the thing the collapsed disclosure existed to avoid in the first
  * place. It also took a 24px tap target with it.
  */
-function ItemSummary({ item }: { item: BookableItem }) {
+function ItemSummary({ item, deal }: { item: BookableItem; deal: ItemDeal | null }) {
   const saving = item.originalPrice && item.originalPrice > item.price
     ? item.originalPrice - item.price
     : 0;
@@ -39,10 +39,18 @@ function ItemSummary({ item }: { item: BookableItem }) {
       <div className="flex items-end gap-x-3 gap-y-2 flex-wrap">
         {/* tropic-coral on charcoal-sea is 3.26:1 — fine for a 40px numeral. */}
         <span className="font-display text-tropic-coral text-[2.5rem] font-extrabold leading-none tabular">
-          {currencySymbol(item.currency)}{item.price}
+          {deal ? money(item.price - deal.off, item.currency) : `${currencySymbol(item.currency)}${item.price}`}
         </span>
         <span className="text-meta text-muted mb-1">{item.currency} per person</span>
-        {saving > 0 && (
+        {/* The page's running deal on this item, same numbers as the offer section above. */}
+        {deal ? (
+          <>
+            <span className="text-sub text-muted line-through mb-0.5 tabular">{money(item.price, item.currency)}</span>
+            <span className="pop-in bg-sunrise text-surface-dark text-xs font-bold px-2.5 py-1 rounded-full mb-1">
+              {promoBadge(deal)}
+            </span>
+          </>
+        ) : saving > 0 && (
           <>
             <span className="text-sub text-muted line-through mb-0.5 tabular">
               {currencySymbol(item.currency)}{item.originalPrice}
@@ -54,6 +62,8 @@ function ItemSummary({ item }: { item: BookableItem }) {
           </>
         )}
       </div>
+
+      {deal && promoFinePrint(deal.promo) && <p className="mt-2 text-xs text-muted">{promoFinePrint(deal.promo)}</p>}
 
       <p className="mt-4 pt-3 border-t border-rule text-meta text-muted tabular">
         {item.duration}
@@ -75,6 +85,8 @@ interface AdBookingFormProps {
   source: string;
   /** WhatsApp prefill text, un-encoded. */
   message: string;
+  /** Live promotions: the summary card shows the chosen item's deal price. */
+  promotions?: Promotion[];
 }
 
 export default function AdBookingForm({
@@ -83,6 +95,7 @@ export default function AdBookingForm({
   fixedItem,
   source,
   message,
+  promotions = [],
 }: AdBookingFormProps) {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const [reference, setReference] = useState<string | null>(null);
@@ -273,7 +286,7 @@ export default function AdBookingForm({
       {fixedItem ? (
         <div>
           <p className={labelClass}>You&apos;re booking</p>
-          <ItemSummary item={fixedItem} />
+          <ItemSummary item={fixedItem} deal={cardDeal(promotions, bookingFor, fixedItem.slug)} />
         </div>
       ) : (
         <div data-field="item">
@@ -302,7 +315,7 @@ export default function AdBookingForm({
 
           {selected && (
             <div className="mt-4">
-              <ItemSummary item={selected} />
+              <ItemSummary item={selected} deal={cardDeal(promotions, bookingFor, selected.slug)} />
             </div>
           )}
         </div>

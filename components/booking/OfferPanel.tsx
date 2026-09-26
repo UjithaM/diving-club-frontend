@@ -1,5 +1,5 @@
 import { Fish, Tang } from "@/components/illustrations/Sea";
-import { formatDay, promoLabel, travelWindow } from "@/lib/discount";
+import { formatDay, itemLabel, promoLabel, promoPhrase, travelWindow } from "@/lib/discount";
 import type { Promotion } from "@/lib/types";
 
 /**
@@ -25,7 +25,7 @@ export default function OfferPanel({
 }) {
   const dives = travelWindow(lead);
   const steps = [
-    "Choose what you'd like to book below.",
+    "Choose something on the deal below.",
     dives ? `Pick a dive date ${dives}.` : "Pick any dive date.",
     "The discount comes off automatically. No code needed.",
   ];
@@ -64,14 +64,32 @@ export default function OfferPanel({
         ))}
       </ol>
 
+      {/* Each item has its own value and some aren't on the deal at all, so the full list is here. */}
+      <details className="relative mt-4 group/items">
+        <summary className="cursor-pointer text-sm font-bold text-sunrise underline decoration-2 underline-offset-4 min-h-11 flex items-center">
+          What&apos;s on the deal ({lead.items.length} {lead.items.length === 1 ? "item" : "items"})
+        </summary>
+        <ul className="mt-2 list-none divide-y divide-warm-white/12 text-sm">
+          {lead.items.map((item) => (
+            <li key={`${item.type}-${item.slug}`} className="flex items-baseline justify-between gap-4 py-2">
+              <span>{item.name}</span>
+              <span className="shrink-0 font-bold text-sunrise tabular-nums">{itemLabel(lead, item)}</span>
+            </li>
+          ))}
+        </ul>
+      </details>
+
       {others.length > 0 && (
-        <ul className="relative mt-4 space-y-1 list-none text-sm">
+        <ul className="relative mt-4 space-y-2 list-none text-sm">
           {others.map((p) => (
-            <li key={p.id} className="border-l-4 border-sunrise pl-3">
-              <span className="font-bold">{p.min_people ? `${p.min_people}+ divers?` : p.title}</span>{" "}
-              <span className="text-muted">
-                {promoLabel(p)}
-                {p.min_people ? ` with ${p.title}` : ""}
+            <li key={p.id} className="flex items-baseline gap-2.5">
+              <span className="h-2 w-2 shrink-0 translate-y-[-1px] rounded-full bg-sunrise" aria-hidden="true" />
+              <span>
+                <span className="font-bold">{p.min_people ? `${p.min_people}+ divers?` : p.title}</span>{" "}
+                <span className="text-muted">
+                  {promoLabel(p)}
+                  {p.min_people ? ` with ${p.title}` : ""}
+                </span>
               </span>
             </li>
           ))}
@@ -88,7 +106,7 @@ export default function OfferPanel({
         {applied
           ? `✓ ${applied.title} applied${saving ? `: you save ${saving}` : ""}.`
           : dateChosen && dives
-          ? `Your date is outside the offer. Pick a date ${dives} to get ${promoLabel(lead)}.`
+          ? `Your date is outside the offer. Pick a date ${dives} to get ${promoPhrase(lead)}.`
           : "Your saving shows here as soon as your booking qualifies."}
       </p>
 

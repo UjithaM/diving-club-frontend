@@ -4,6 +4,9 @@ import WhatsAppCta from "./WhatsAppCta";
 import AdBookingForm from "./AdBookingForm";
 import BookCta from "./BookCta";
 import StickyCta from "./StickyCta";
+import PromoSection from "@/components/home/PromoSection";
+import { getActivePromotions } from "@/lib/api/promotions";
+import { isLive } from "@/lib/discount";
 import ReefScene from "@/components/illustrations/ReefScene";
 import Waterline from "@/components/illustrations/Waterline";
 import { BranchCoral, BrainCoral, Bubbles, Diver, FanCoral, Fins, Fish, Mask, Seaweed, Tang, Turtle } from "@/components/illustrations/Sea";
@@ -103,7 +106,7 @@ interface AdLandingPageProps {
   bookingHeading: string;
 }
 
-export default function AdLandingPage({
+export default async function AdLandingPage({
   heading,
   subheading,
   objections,
@@ -119,6 +122,11 @@ export default function AdLandingPage({
   summaryItem,
   bookingHeading,
 }: AdLandingPageProps) {
+  const allPromotions = await getActivePromotions().catch(() => []);
+  // Same as the home page: the list is cached for an hour, so re-check the book-by moment.
+  // eslint-disable-next-line react-hooks/purity
+  const serverNow = Date.now();
+  const promotions = allPromotions.filter((p) => isLive(p, serverNow));
   const includes = summaryItem?.includes ?? [];
   const saving =
     summaryItem?.originalPrice && summaryItem.originalPrice > summaryItem.price
@@ -190,6 +198,18 @@ export default function AdLandingPage({
           <ReefScene className="hidden lg:block aspect-[4/5]" />
         </div>
       </section>
+
+      {/* The running deal on what this page sells, in the home page's offer style, before the
+          proof and the form. Single-offer pages show only their item's discount; /padi shows its
+          courses. Nothing renders when none is on a deal. Its sunrise runs straight on into the
+          proof strip's, so there's no waterline between them. */}
+      <PromoSection
+        promotions={promotions}
+        serverNow={serverNow}
+        scope={(fixedItem ? [fixedItem] : items).map((item) => ({ type: bookingFor, slug: item.slug }))}
+        ctaSource={source}
+        joinBelow
+      />
 
       {/* Proof strip. One big star with the count under it — the star is decorative and
           aria-hidden, so the claim never depends on a reader seeing the glyph. The words carry
@@ -270,6 +290,7 @@ export default function AdLandingPage({
               fixedItem={fixedItem}
               source={source}
               message={message}
+              promotions={promotions}
             />
           </div>
         </div>

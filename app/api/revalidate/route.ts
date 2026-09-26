@@ -44,8 +44,10 @@ export async function POST(req: Request) {
   const AD_LANDING_PAGES = ["/padi", "/dive", "/open-water", "/fun-dives"];
 
   switch (type) {
+    // Promotions carry each covered item's name, price and visibility, so item edits bust them too.
     case "course":
       tag("courses");
+      tag("promotions");
       path("/courses");
       if (slug) path(`/courses/${slug}`);
       AD_LANDING_PAGES.forEach(path);
@@ -53,12 +55,14 @@ export async function POST(req: Request) {
 
     case "activity":
       tag("activities");
+      tag("promotions");
       path("/activities");
       if (slug) path(`/activities/${slug}`);
       break;
 
     case "package":
       tag("packages");
+      tag("promotions");
       path("/packages");
       if (slug) {
         tag(`package:${slug}`);
@@ -83,7 +87,7 @@ export async function POST(req: Request) {
       break;
 
     case "promotion":
-      // Promotions appear on the home page
+      // Promotions appear on the home page, and on item and ad pages through this tag
       tag("promotions");
       path("/");
       break;
